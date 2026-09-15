@@ -218,7 +218,7 @@
   .spin { width: 15px; height: 15px; border-radius: 50%; border: 2px solid currentColor; border-top-color: transparent; opacity: 0.85; }
 
   /* button group */
-  .bg-wrap { display: inline-flex; border: 1px solid #27292F; border-radius: 999px; overflow: hidden; background: #121212; }
+  .bg-wrap { display: inline-flex; border: 1px solid #333333; border-radius: 999px; overflow: hidden; background: #28292D; }
   .bg-seg { display: flex; align-items: center; justify-content: center; font-family: "Inter", sans-serif; font-weight: 600; border-radius: 999px; box-sizing: border-box; border: 0; padding: 0; appearance: none; -webkit-appearance: none; }
   .bg-lg { height: 44px; font-size: 14px; } .bg-md { height: 40px; font-size: 13px; } .bg-sm { height: 36px; font-size: 12px; }
   .cz { display: inline-flex; }
@@ -324,6 +324,29 @@
   .pg-status { font-size: 12px; color: var(--text-muted); font-family: var(--body); }
   .pg-status b { color: var(--accent); font-weight: 600; }
 
+  /* figures: token maps and to-scale dimension bars */
+  .fig { border: 1px solid #27292F; border-radius: 9px; background: #0C0D0E; padding: 18px; margin-bottom: 14px; overflow-x: auto; }
+  .fig svg { display: block; max-width: 100%; height: auto; }
+  .fig-cap { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: #5C6670; margin: 0 0 14px; }
+
+  .dim { display: grid; grid-template-columns: 154px minmax(0, 1fr) 104px; gap: 9px 14px; align-items: center; min-width: 660px; }
+  .dim-k { font-family: var(--mono); font-size: 11px; color: #9498A1; white-space: nowrap; }
+  .dim-b { height: 24px; border-radius: 4px; box-sizing: border-box; border: 1px solid #00A88C; background: rgba(0, 168, 140, 0.16); }
+  .dim-b.ghost { background: transparent; border-style: dashed; border-color: #3A3D42; }
+  .dim-b.flex { width: 100%; background: repeating-linear-gradient(45deg, rgba(0,168,140,0.22) 0 7px, transparent 7px 14px); }
+  .dim-b.red { border-color: #FF586C; background: rgba(255, 88, 108, 0.14); }
+  .dim-n { font-family: var(--mono); font-size: 11px; color: #E7EAF0; font-variant-numeric: tabular-nums; text-align: right; }
+  .dim-n.mute { color: #767E8A; }
+
+  .tok { display: grid; grid-template-columns: 252px 132px minmax(0, 1fr); gap: 14px; padding: 8px 18px; border-bottom: 1px solid var(--border); align-items: center; }
+  .comp .tok:last-child { border-bottom: 0; }
+  .tok-n { font-family: var(--mono); font-size: 11.5px; color: var(--text); word-break: break-word; }
+  .tok-v { font-family: var(--mono); font-size: 11.5px; color: var(--text-muted); display: flex; align-items: center; gap: 8px; }
+  .sw { width: 15px; height: 15px; border-radius: 3px; border: 1px solid var(--border-strong); flex-shrink: 0; }
+  .tok-u { font-size: 13px; color: var(--text-muted); }
+  .tok-u em { color: var(--crit); font-style: normal; }
+  .tok-u b { color: var(--text); font-weight: 500; }
+  @media (max-width: 760px) { .tok { grid-template-columns: 1fr; gap: 4px; } }
   .beh { border: 1px solid var(--border); border-radius: 8px; background: var(--surface); overflow: hidden; margin-top: 16px; }
   .beh-r { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 16px; padding: 10px 16px; border-bottom: 1px solid var(--border); font-size: 13.5px; }
   .beh-r:last-child { border-bottom: 0; }
@@ -404,7 +427,7 @@
       <div class="group" style="margin-top:30px">
         <h3>Interactive Demo</h3>
         <div class="pg-mount" data-comp="autocomplete"></div>
-        <p class="sub-h" style="margin-top:22px">Behaviour <span>the pattern the demo implements — none of this is expressed in Figma</span></p>
+        <p class="sub-h" style="margin-top:22px">Behaviour</p>
         <div class="beh">
           <div class="beh-r"><span class="beh-k">Third character</span><span class="beh-v">The panel opens. Nothing happens at one or two — the threshold stops a query firing on every keystroke.</span></div>
           <div class="beh-r"><span class="beh-k">While resolving</span><span class="beh-v">Loading State holds the panel open at full height, so the list does not jump when results land.</span></div>
@@ -424,36 +447,131 @@
       <div class="group">
         <h3>Properties</h3>
         <div class="sub-block">
-          <p class="sub-h">Search <span>9 variants · 3 properties · width 220</span></p>
-        <div class="comp">
-          <div class="comp-body">
-            <div class="prop"><span class="prop-k">Size</span><span class="prop-v"><b>Large</b> 44, <b>Medium</b> 40, <b>Small</b> 36</span></div>
-            <div class="prop"><span class="prop-k bad">State</span><span class="prop-v"><b>Enabled</b>, <b>Focused</b> <em>— no Hover, and "Enabled" overlaps the Disabled property</em></span></div>
-            <div class="prop"><span class="prop-k bad">Disabled</span><span class="prop-v"><b>False</b>, <b>True</b> <em>— combines with State=Enabled into a contradiction</em></span></div>
+          <p class="sub-h">Search &mdash; variant properties</p>
+          <div class="comp">
+            <div class="comp-body">
+              <div class="prop"><span class="prop-k">Size</span><span class="prop-v"><b>Large</b> 44, <b>Medium</b> 40, <b>Small</b> 36</span></div>
+              <div class="prop"><span class="prop-k bad">State</span><span class="prop-v"><b>Enabled</b>, <b>Focused</b> <em>&mdash; no Hover, and "Enabled" overlaps the Disabled property</em></span></div>
+              <div class="prop"><span class="prop-k bad">Disabled</span><span class="prop-v"><b>False</b>, <b>True</b> <em>&mdash; combines with State=Enabled into a contradiction</em></span></div>
+            </div>
           </div>
-        </div>
         </div>
         <div class="sub-block">
-          <p class="sub-h">Dropdown - Search &amp; List <span>8 variants · 1 property · 400 × 271</span></p>
-        <div class="comp">
-          <div class="comp-body">
-            <div class="prop"><span class="prop-k bad">State</span><span class="prop-v"><b>Default</b>, <b>Hover</b>, <b>Selected</b>, <b>Error</b>, <b>Loading State</b>, <b>RD Select</b>, <b>Saham Select</b>, <b>Grouped</b> <em>— interaction states and content types on one axis</em></span></div>
-            <div class="prop"><span class="prop-k">Notes</span><span class="prop-v"><code>State=Loading State</code> repeats the property name in its own value. <code>RD Select</code> is abbreviated in the variant but written "Reksa Dana Select" on the page label.</span></div>
+          <p class="sub-h">Search &mdash; master properties</p>
+          <div class="comp">
+            <div class="comp-body">
+              <div class="prop"><span class="prop-k">Size</span><span class="prop-v"><b>middle</b> <em>&mdash; the published value is Medium</em></span></div>
+              <div class="prop"><span class="prop-k">State</span><span class="prop-v"><b>enable</b> <em>&mdash; the published value is Enabled</em></span></div>
+              <div class="prop"><span class="prop-k">Disabled</span><span class="prop-v"><b>false</b></span></div>
+            </div>
           </div>
         </div>
+        <div class="sub-block">
+          <p class="sub-h">Dropdown - Search &amp; List</p>
+          <div class="comp">
+            <div class="comp-body">
+              <div class="prop"><span class="prop-k bad">State</span><span class="prop-v"><b>Default</b>, <b>Hover</b>, <b>Selected</b>, <b>Error</b>, <b>Loading State</b>, <b>RD Select</b>, <b>Saham Select</b>, <b>Grouped</b> <em>&mdash; content kind, status and interaction on one axis, so a grouped list can never be hovered</em></span></div>
+              <div class="prop"><span class="prop-k">Scroll</span><span class="prop-v"><b>true</b> <em>&mdash; a master property, absent from the variant set</em></span></div>
+              <div class="prop"><span class="prop-k">Notes</span><span class="prop-v"><code>State=Loading State</code> repeats the property name in its own value. <code>RD Select</code> is abbreviated in the variant but written "Reksa Dana Select" on the page label.</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="beh">
+          <div class="beh-r"><span class="beh-k">Not published</span><span class="beh-v">Search has no <b>Hover</b>, <b>Pressed</b> or error state. The panel has no <b>Focus</b>, <b>Pressed</b> or <b>Disabled</b>. Between the two they cover hover and focus; neither covers both</span></div>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Tokens</h3>
+        <div class="sub-block">
+          <p class="sub-h">Search</p>
+          <div class="fig"><p class="fig-cap">Token map &mdash; Search at Medium, at rest</p><svg viewBox="0 0 760 195" role="img" aria-label="Search token map">
+  <rect x="34" y="72" width="220" height="40" rx="8" fill="#28292D" stroke="#333333" stroke-width="1"/>
+  <text x="50" y="97" fill="#888888" font-family="Inter,sans-serif" font-size="14">Cari</text>
+  <circle cx="228" cy="90" r="6" fill="none" stroke="#B9BFCE" stroke-width="1.6"/>
+  <line x1="232" y1="94" x2="237" y2="99" stroke="#B9BFCE" stroke-width="1.6"/>
+  <line x1="150" y1="76" x2="400" y2="18" stroke="#3A3D42" stroke-width="1"/><circle cx="150" cy="76" r="3" fill="#00A88C"/><text x="408" y="22" fill="#E7EAF0" font-family="ui-monospace,monospace" font-size="11">BW09</text><text x="408" y="36" fill="#767E8A" font-family="ui-monospace,monospace" font-size="10">field fill #28292D</text><line x1="254" y1="108" x2="400" y2="56" stroke="#3A3D42" stroke-width="1"/><circle cx="254" cy="108" r="3" fill="#00A88C"/><text x="408" y="60" fill="#E7EAF0" font-family="ui-monospace,monospace" font-size="11">BW08 (Stroke Field)</text><text x="408" y="74" fill="#767E8A" font-family="ui-monospace,monospace" font-size="10">border #333333 · T09 when focused</text><line x1="80" y1="106" x2="400" y2="98" stroke="#3A3D42" stroke-width="1"/><circle cx="80" cy="106" r="3" fill="#00A88C"/><text x="408" y="102" fill="#E7EAF0" font-family="ui-monospace,monospace" font-size="11">BW06</text><text x="408" y="116" fill="#767E8A" font-family="ui-monospace,monospace" font-size="10">placeholder #888888 · Body/B5</text><line x1="240" y1="90" x2="400" y2="140" stroke="#3A3D42" stroke-width="1"/><circle cx="240" cy="90" r="3" fill="#00A88C"/><text x="408" y="144" fill="#E7EAF0" font-family="ui-monospace,monospace" font-size="11">BW16 (Icon No Active)</text><text x="408" y="158" fill="#767E8A" font-family="ui-monospace,monospace" font-size="10">glyph #B9BFCE</text>
+  <text x="408" y="182" fill="#767E8A" font-family="ui-monospace,monospace" font-size="10">T09 - Shadow — focus glow #0AA88D80, ±1px, radius 4</text>
+</svg></div>
+          <div class="comp">
+            <div class="comp-body">
+              <div class="tok"><span class="tok-n">Black - White/BW09</span><span class="tok-v"><span class="sw" style="background:#28292D"></span>#28292D</span><span class="tok-u">Field fill</span></div>
+              <div class="tok"><span class="tok-n">Black - White/BW08 (Stroke Field)</span><span class="tok-v"><span class="sw" style="background:#333333"></span>#333333</span><span class="tok-u">Field border at rest</span></div>
+              <div class="tok"><span class="tok-n">Black - White/BW06</span><span class="tok-v"><span class="sw" style="background:#888888"></span>#888888</span><span class="tok-u">Placeholder</span></div>
+              <div class="tok"><span class="tok-n">Black - White/BW16 (Icon No Active)</span><span class="tok-v"><span class="sw" style="background:#B9BFCE"></span>#B9BFCE</span><span class="tok-u">Search glyph</span></div>
+              <div class="tok"><span class="tok-n">Black - White/Turquoise/T09 (Primary)</span><span class="tok-v"><span class="sw" style="background:#00A88C"></span>#00A88C</span><span class="tok-u">Focused border</span></div>
+              <div class="tok"><span class="tok-n">T09 - Shadow</span><span class="tok-v">two drop shadows</span><span class="tok-u">Focus glow: <code>#0AA88D80</code> at offset (1, 1) and (&minus;1, &minus;1), radius 4, spread 0 <em>&mdash; a focus ring the specimens on this page do not draw</em></span></div>
+              <div class="tok"><span class="tok-n">Body/B5</span><span class="tok-v">Inter Regular 14/20</span><span class="tok-u">Field text</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="sub-block">
+          <p class="sub-h">Dropdown - Search &amp; List</p>
+          <div class="fig"><p class="fig-cap">Token map &mdash; Dropdown, RD Select with one row hovered and one selected</p><svg viewBox="0 0 760 222" role="img" aria-label="Dropdown token map">
+  <rect x="34" y="22" width="270" height="178" rx="9" fill="#18191C" stroke="#333333" stroke-width="1"/>
+  <rect x="42" y="34" width="254" height="30" rx="5" fill="#27292F"/>
+  <text x="56" y="54" fill="#FFFFFF" font-family="Inter,sans-serif" font-size="13">Bahana Liquid Syariah</text>
+  <text x="56" y="88" fill="#DDDDDD" font-family="Inter,sans-serif" font-size="13">Bahana Dana Likuid</text>
+  <text x="56" y="122" fill="#DDDDDD" font-family="Inter,sans-serif" font-size="13">Bahana Mes Syariah</text>
+  <text x="56" y="156" fill="#00A88C" font-family="Inter,sans-serif" font-size="13">Bahana Primavera 99</text>
+  <text x="56" y="188" fill="#9498A1" font-family="Inter,sans-serif" font-size="11">A</text>
+  <line x1="300" y1="26" x2="420" y2="18" stroke="#3A3D42" stroke-width="1"/><circle cx="300" cy="26" r="3" fill="#00A88C"/><text x="428" y="22" fill="#E7EAF0" font-family="ui-monospace,monospace" font-size="11">BW10 (Card 1)</text><text x="428" y="36" fill="#767E8A" font-family="ui-monospace,monospace" font-size="10">panel fill #18191C</text><line x1="290" y1="49" x2="420" y2="60" stroke="#3A3D42" stroke-width="1"/><circle cx="290" cy="49" r="3" fill="#00A88C"/><text x="428" y="64" fill="#E7EAF0" font-family="ui-monospace,monospace" font-size="11">BW17 (Hover)</text><text x="428" y="78" fill="#767E8A" font-family="ui-monospace,monospace" font-size="10">row hover #27292F · BW13 shares this value</text><line x1="290" y1="84" x2="420" y2="102" stroke="#3A3D42" stroke-width="1"/><circle cx="290" cy="84" r="3" fill="#00A88C"/><text x="428" y="106" fill="#E7EAF0" font-family="ui-monospace,monospace" font-size="11">BW14 (DM - Body Text)</text><text x="428" y="120" fill="#767E8A" font-family="ui-monospace,monospace" font-size="10">row label #DDDDDD · Body/B5</text><line x1="290" y1="152" x2="420" y2="144" stroke="#3A3D42" stroke-width="1"/><circle cx="290" cy="152" r="3" fill="#00A88C"/><text x="428" y="148" fill="#E7EAF0" font-family="ui-monospace,monospace" font-size="11">Turquoise/T09 (Primary)</text><text x="428" y="162" fill="#767E8A" font-family="ui-monospace,monospace" font-size="10">selected row #00A88C</text><line x1="290" y1="185" x2="420" y2="186" stroke="#3A3D42" stroke-width="1"/><circle cx="290" cy="185" r="3" fill="#00A88C"/><text x="428" y="190" fill="#E7EAF0" font-family="ui-monospace,monospace" font-size="11">BW07</text><text x="428" y="204" fill="#767E8A" font-family="ui-monospace,monospace" font-size="10">group header #9498A1 — published twice</text>
+</svg></div>
+          <div class="comp">
+            <div class="comp-body">
+              <div class="tok"><span class="tok-n">Black - White/BW10 (Card 1)</span><span class="tok-v"><span class="sw" style="background:#18191C"></span>#18191C</span><span class="tok-u">Panel fill</span></div>
+              <div class="tok"><span class="tok-n">BW18 (DM - CARD 2)</span><span class="tok-v"><span class="sw" style="background:#212227"></span>#212227</span><span class="tok-u"><em>the only token in the set with no Black - White prefix</em></span></div>
+              <div class="tok"><span class="tok-n">Black - White/BW17 (Hover)</span><span class="tok-v"><span class="sw" style="background:#27292F"></span>#27292F</span><span class="tok-u">Row hover fill</span></div>
+              <div class="tok"><span class="tok-n">Black - White/BW13 (Line Focus State)</span><span class="tok-v"><span class="sw" style="background:#27292F"></span>#27292F</span><span class="tok-u"><em>same value as BW17, and the only token in the section whose name mentions focus</em></span></div>
+              <div class="tok"><span class="tok-n">Black - White/BW14 (DM - Body Text)</span><span class="tok-v"><span class="sw" style="background:#DDDDDD"></span>#DDDDDD</span><span class="tok-u">Row label</span></div>
+              <div class="tok"><span class="tok-n">Black - White/BW07 (Idle)</span><span class="tok-v"><span class="sw" style="background:#9498A1"></span>#9498A1</span><span class="tok-u"><em>BW07 is published twice under two different names</em></span></div>
+              <div class="tok"><span class="tok-n">Black - White/BW07 (Disable&amp;Subtext)</span><span class="tok-v"><span class="sw" style="background:#9498A1"></span>#9498A1</span><span class="tok-u"><em>the second BW07 &mdash; same number, same value, different label</em></span></div>
+              <div class="tok"><span class="tok-n">Black - White/BW01</span><span class="tok-v"><span class="sw" style="background:#FFFFFF"></span>#FFFFFF</span><span class="tok-u">Emphasised text</span></div>
+              <div class="tok"><span class="tok-n">BW/BW01</span><span class="tok-v"><span class="sw" style="background:#FFFFFF"></span>#FFFFFF</span><span class="tok-u"><em>a second collection defining BW01 &mdash; &ldquo;BW01&rdquo; alone does not name one token</em></span></div>
+              <div class="tok"><span class="tok-n">BW/BW04</span><span class="tok-v"><span class="sw" style="background:#DADADA"></span>#DADADA</span><span class="tok-u">From the same second collection</span></div>
+              <div class="tok"><span class="tok-n">Black - White/BW06</span><span class="tok-v"><span class="sw" style="background:#888888"></span>#888888</span><span class="tok-u"></span></div>
+              <div class="tok"><span class="tok-n">Black - White/BW08 (Stroke Field)</span><span class="tok-v"><span class="sw" style="background:#333333"></span>#333333</span><span class="tok-u">Panel border</span></div>
+              <div class="tok"><span class="tok-n">Black - White/BW16 (Icon No Active)</span><span class="tok-v"><span class="sw" style="background:#B9BFCE"></span>#B9BFCE</span><span class="tok-u">Row glyphs</span></div>
+              <div class="tok"><span class="tok-n">Black - White/Turquoise/T09 (Primary)</span><span class="tok-v"><span class="sw" style="background:#00A88C"></span>#00A88C</span><span class="tok-u">Selected row</span></div>
+              <div class="tok"><span class="tok-n">Black - White/Turquoise/T11 (Hover)</span><span class="tok-v"><span class="sw" style="background:#00A88C"></span>#00A88C</span><span class="tok-u"><em>identical to T09, as on Button</em></span></div>
+              <div class="tok"><span class="tok-n">Body/B5</span><span class="tok-v">Inter Regular 14/20</span><span class="tok-u">Row label</span></div>
+              <div class="tok"><span class="tok-n">Body/B6</span><span class="tok-v">Inter Regular 12/18</span><span class="tok-u">Secondary line</span></div>
+              <div class="tok"><span class="tok-n">Subtitle/S3</span><span class="tok-v">Inter SemiBold 12/18</span><span class="tok-u">Ticker and emphasis</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Layout</h3>
+        <div class="fig"><p class="fig-cap">Drawn at 1:1 &mdash; these bars are the real widths</p>
+          <div class="dim">
+            <span class="dim-k">Field &middot; minimum</span><span class="dim-b ghost" style="width:100px"></span><span class="dim-n mute">100px</span>
+            <span class="dim-k">Field &middot; drawn</span><span class="dim-b " style="width:220px"></span><span class="dim-n">220px</span>
+            <span class="dim-k">Field &middot; maximum</span><span class="dim-b ghost" style="width:400px"></span><span class="dim-n mute">400px</span>
+            <span class="dim-k">Panel &middot; min = max</span><span class="dim-b red" style="width:400px"></span><span class="dim-n">400px</span>
+          </div>
+        </div>
+        <div class="beh">
+          <div class="beh-r"><span class="beh-k">Field</span><span class="beh-v">Elastic between 100px and 400px. All nine variants are drawn at 220px &mdash; a specimen width, not a constraint</span></div>
+          <div class="beh-r"><span class="beh-k">Panel</span><span class="beh-v">Min and max width both 400px, min and max height both 270px. Fixed on both axes</span></div>
+          <div class="beh-r"><span class="beh-k">The consequence</span><span class="beh-v">The panel cannot follow the field. At the drawn 220px it overhangs by 180px, and the only alignment available is to push the field to its own 400px maximum</span></div>
+          <div class="beh-r"><span class="beh-k">Height</span><span class="beh-v">270px pinned with <code>Scroll: true</code>, so the list neither grows with a long set of results nor shrinks with a short one. Two results occupy the same box as twenty</span></div>
+          <div class="beh-r"><span class="beh-k">Row truncation</span><span class="beh-v">Rows cut with an ellipsis &mdash; visible in the published Saham Select variant, where a call-warrant name is cut mid-word</span></div>
+          <div class="beh-r"><span class="beh-k">Why that matters here</span><span class="beh-v">Fund names differ from their siblings at the end of the string &mdash; &ldquo;Bahana Liquid Syariah Kelas G&rdquo; against &ldquo;Bahana Liquid USD&rdquo; &mdash; which is exactly what an ellipsis removes</span></div>
         </div>
       </div>
 
       <div class="group">
         <h3>Variants</h3>
         <div class="sub-block">
-          <p class="sub-h">Search <span>9</span></p>
+          <p class="sub-h">Search</p>
           <div class="stage">
             <div id="srch-gallery"></div>
           </div>
         </div>
         <div class="sub-block">
-          <p class="sub-h">Dropdown - Search &amp; List <span>8</span></p>
+          <p class="sub-h">Dropdown - Search &amp; List</p>
           <div class="stage">
             <div class="dd-list" id="dd-gallery"></div>
           </div>
@@ -500,15 +618,79 @@
 
       <div class="group">
         <h3>Properties</h3>
+        <div class="sub-block">
+          <p class="sub-h">Variant properties</p>
+          <div class="comp">
+            <div class="comp-body">
+              <div class="prop"><span class="prop-k bad">Size</span><span class="prop-v"><b>Big/40</b>, <b>Med/36</b>, <b>Small/32</b> <em>&mdash; pixel values baked into the value names, and a step below every sibling</em></span></div>
+              <div class="prop"><span class="prop-k">State</span><span class="prop-v"><b>Default</b>, <b>Hover</b></span></div>
+              <div class="prop"><span class="prop-k bad">Tipe</span><span class="prop-v"><b>Buy</b>, <b>Sell</b> <em>&mdash; Bahasa property name beside English ones</em></span></div>
+              <div class="prop"><span class="prop-k bad">Type/Color</span><span class="prop-v">Solid, Soft, Outline, <b>Transparant</b> &times; Green / Red, plus Transparant/White <em>&mdash; misspelled, and fully determined by Tipe</em></span></div>
+              <div class="prop"><span class="prop-k bad">Disable</span><span class="prop-v"><b>False</b>, <b>True</b> <em>&mdash; "Disable" here, "Disabled" on Search</em></span></div>
+              <div class="prop"><span class="prop-k">Loading</span><span class="prop-v"><b>False</b>, <b>True</b> <em>&mdash; the spinner replaces the label rather than joining it, so the control keeps its height and loses its text</em></span></div>
+            </div>
+          </div>
+        </div>
+        <div class="sub-block">
+          <p class="sub-h">Master properties</p>
+          <div class="comp">
+            <div class="comp-body">
+              <div class="prop"><span class="prop-k">Iconleft</span><span class="prop-v"><b>true</b></span></div>
+              <div class="prop"><span class="prop-k">Iconright</span><span class="prop-v"><b>true</b></span></div>
+              <div class="prop"><span class="prop-k">Icon Left Select</span><span class="prop-v"><b>Style=Filled</b></span></div>
+              <div class="prop"><span class="prop-k">Icon Right Select</span><span class="prop-v"><b>Style=Filled</b></span></div>
+              <div class="prop"><span class="prop-k">Label</span><span class="prop-v"><b>True</b></span></div>
+            </div>
+          </div>
+        </div>
+        <div class="beh">
+          <div class="beh-r"><span class="beh-k">Master vs variant</span><span class="beh-v">The five above sit on the master, not in the variant set, and every published variant is drawn with both icons on. Read only the variant list and you would not know the component takes icons at all. The specimens on this page omit them &mdash; the artwork cannot be extracted from this environment.</span></div>
+          <div class="beh-r"><span class="beh-k">Not published</span><span class="beh-v"><b>Focus</b> and <b>Pressed / Active</b>, at no size, type or colour. Both have to be authored outside the library, and focus is the one a keyboard user depends on.</span></div>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Tokens</h3>
+        <div class="fig"><p class="fig-cap">Token map &mdash; Solid / Green at Big/40</p><svg viewBox="0 0 760 185" role="img" aria-label="Button token map">
+  <rect x="34" y="72" width="150" height="40" rx="20" fill="#00A88C"/>
+  <text x="109" y="97" text-anchor="middle" fill="#FFFFFF" font-family="Inter,sans-serif" font-size="14" font-weight="600">Button</text>
+  <line x1="109" y1="74" x2="330" y2="24" stroke="#3A3D42" stroke-width="1"/><circle cx="109" cy="74" r="3" fill="#00A88C"/><text x="338" y="28" fill="#E7EAF0" font-family="ui-monospace,monospace" font-size="11">Turquoise/T09 (Primary)</text><text x="338" y="42" fill="#767E8A" font-family="ui-monospace,monospace" font-size="10">fill #00A88C · Hover binds T08 #008375</text><line x1="176" y1="92" x2="330" y2="80" stroke="#3A3D42" stroke-width="1"/><circle cx="176" cy="92" r="3" fill="#00A88C"/><text x="338" y="84" fill="#E7EAF0" font-family="ui-monospace,monospace" font-size="11">BW01</text><text x="338" y="98" fill="#767E8A" font-family="ui-monospace,monospace" font-size="10">label #FFFFFF</text><line x1="109" y1="110" x2="330" y2="136" stroke="#3A3D42" stroke-width="1"/><circle cx="109" cy="110" r="3" fill="#00A88C"/><text x="338" y="140" fill="#E7EAF0" font-family="ui-monospace,monospace" font-size="11">Subtitle/S2</text><text x="338" y="154" fill="#767E8A" font-family="ui-monospace,monospace" font-size="10">Inter SemiBold 14/20 at Big/40</text>
+</svg></div>
         <div class="comp">
           <div class="comp-body">
-            <div class="prop"><span class="prop-k bad">Size</span><span class="prop-v"><b>Big/40</b>, <b>Med/36</b>, <b>Small/32</b> <em>— pixel values baked into the value names, and a step below every sibling</em></span></div>
-            <div class="prop"><span class="prop-k">State</span><span class="prop-v"><b>Default</b>, <b>Hover</b></span></div>
-            <div class="prop"><span class="prop-k bad">Tipe</span><span class="prop-v"><b>Buy</b>, <b>Sell</b> <em>— Bahasa property name beside English ones</em></span></div>
-            <div class="prop"><span class="prop-k bad">Type/Color</span><span class="prop-v">Solid, Soft, Outline, <b>Transparant</b> × Green / Red, plus Transparant/White <em>— misspelled, and fully determined by Tipe</em></span></div>
-            <div class="prop"><span class="prop-k bad">Disable</span><span class="prop-v"><b>False</b>, <b>True</b> <em>— "Disable" here, "Disabled" on Search</em></span></div>
-            <div class="prop"><span class="prop-k">Loading</span><span class="prop-v"><b>False</b>, <b>True</b></span></div>
+            <div class="tok"><span class="tok-n">Black - White/BW01</span><span class="tok-v"><span class="sw" style="background:#FFFFFF"></span>#FFFFFF</span><span class="tok-u">Label on every Solid button &mdash; <b>verified</b> on Default and Hover</span></div>
+            <div class="tok"><span class="tok-n">Black - White/Turquoise/T09 (Primary)</span><span class="tok-v"><span class="sw" style="background:#00A88C"></span>#00A88C</span><span class="tok-u">Solid / Green Default fill &mdash; <b>verified</b></span></div>
+            <div class="tok"><span class="tok-n">Black - White/Turquoise/T08</span><span class="tok-v"><span class="sw" style="background:#008375"></span>#008375</span><span class="tok-u">Solid / Green Hover fill &mdash; <b>verified</b>. A darker step, not a lighter one</span></div>
+            <div class="tok"><span class="tok-n">Black - White/Turquoise/T10 (Secondary)</span><span class="tok-v"><span class="sw" style="background:#00A88C"></span>#00A88C</span><span class="tok-u"><em>same value as T09 and T11</em></span></div>
+            <div class="tok"><span class="tok-n">Black - White/Turquoise/T11 (Hover)</span><span class="tok-v"><span class="sw" style="background:#00A88C"></span>#00A88C</span><span class="tok-u"><em>named Hover, but identical to T09 &mdash; the hover fill actually used is T08</em></span></div>
+            <div class="tok"><span class="tok-n">Red/R03</span><span class="tok-v"><span class="sw" style="background:#FF586C"></span>#FF586C</span><span class="tok-u">Solid / Red Default fill</span></div>
+            <div class="tok"><span class="tok-n">Red/R05 (Hover)</span><span class="tok-v"><span class="sw" style="background:#FA3149"></span>#FA3149</span><span class="tok-u">Solid / Red Hover fill &mdash; <b>verified</b></span></div>
+            <div class="tok"><span class="tok-n">Red/R07 (Hover)</span><span class="tok-v"><span class="sw" style="background:#FF586C"></span>#FF586C</span><span class="tok-u"><em>a second token named Hover, carrying R03&rsquo;s value</em></span></div>
+            <div class="tok"><span class="tok-n">Black - White/BW07 (Disable&amp;Subtext)</span><span class="tok-v"><span class="sw" style="background:#9498A1"></span>#9498A1</span><span class="tok-u">Disabled label</span></div>
+            <div class="tok"><span class="tok-n">Black - White/BW09</span><span class="tok-v"><span class="sw" style="background:#28292D"></span>#28292D</span><span class="tok-u"></span></div>
+            <div class="tok"><span class="tok-n">Subtitle/S2</span><span class="tok-v">Inter SemiBold 14/20</span><span class="tok-u">Label at Big/40 &mdash; <b>verified</b></span></div>
+            <div class="tok"><span class="tok-n">Subtitle/S3</span><span class="tok-v">Inter SemiBold 12/18</span><span class="tok-u">Also bound to the set</span></div>
           </div>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Layout</h3>
+        <div class="fig"><p class="fig-cap">Drawn at 1:1 &mdash; these bars are the real widths</p>
+          <div class="dim">
+            <span class="dim-k">Declared</span><span class="dim-b flex"></span><span class="dim-n">fill</span>
+            <span class="dim-k">Drawn &middot; Big/40</span><span class="dim-b " style="width:106px"></span><span class="dim-n">106px</span>
+            <span class="dim-k">Drawn &middot; Med/36</span><span class="dim-b " style="width:106px"></span><span class="dim-n">106px</span>
+            <span class="dim-k">Drawn &middot; Small/32</span><span class="dim-b " style="width:99px"></span><span class="dim-n">99px</span>
+            <span class="dim-k">Exhibit on the page</span><span class="dim-b ghost" style="width:179px"></span><span class="dim-n mute">179px</span>
+          </div>
+        </div>
+        <div class="beh">
+          <div class="beh-r"><span class="beh-k">Declared</span><span class="beh-v">Flexible / fill container, height S &middot; M &middot; L. No minimum and no maximum are published</span></div>
+          <div class="beh-r"><span class="beh-k">Drawn</span><span class="beh-v">Every variant sits at 106px, or 99px at Small/32 &mdash; and one exhibit on the same Figma page renders the button at 179px. The 106 is the width of the specimen, not a constraint on the component</span></div>
+          <div class="beh-r"><span class="beh-k">Three names for one axis</span><span class="beh-v">The anatomy calls the heights <code>S, M, L</code>, the variants call them <code>Big/40 &middot; Med/36 &middot; Small/32</code>, and Search calls them <code>Large &middot; Medium &middot; Small</code></span></div>
+          <div class="beh-r"><span class="beh-k">Wrapping</span><span class="beh-v">Not published. Height is pinned at 40 / 36 / 32, so there is no room for a second line &mdash; something has to give, and the library does not say whether it truncates, shrinks or grows</span></div>
+          <div class="beh-r"><span class="beh-k">Why that matters here</span><span class="beh-v">Labels ship in Bahasa and English, and the Bahasa string is usually the longer one. The undefined case is the common case</span></div>
         </div>
       </div>
 
@@ -567,14 +749,78 @@
 
       <div class="group">
         <h3>Properties</h3>
+        <div class="sub-block">
+          <p class="sub-h">Variant properties</p>
+          <div class="comp">
+            <div class="comp-body">
+              <div class="prop"><span class="prop-k">Size</span><span class="prop-v"><b>Large</b> 44, <b>Medium</b> 40, <b>Small</b> 36</span></div>
+              <div class="prop"><span class="prop-k">State</span><span class="prop-v"><b>Default</b>, <b>Hover</b></span></div>
+              <div class="prop"><span class="prop-k">Type</span><span class="prop-v"><b>Dual</b> 382px, <b>Triple</b> 545px, <b>Customize</b> 326px</span></div>
+              <div class="prop"><span class="prop-k">Disable</span><span class="prop-v"><b>False</b>, <b>True</b></span></div>
+              <div class="prop"><span class="prop-k bad">Tipe Oder</span><span class="prop-v"><b>Buy</b>, <b>Sell</b>, <b>Default</b> <em>&mdash; Bahasa, and missing the r in "Order"</em></span></div>
+            </div>
+          </div>
+        </div>
+        <div class="sub-block">
+          <p class="sub-h">Master properties</p>
+          <div class="comp">
+            <div class="comp-body">
+              <div class="prop"><span class="prop-k">Size</span><span class="prop-v"><b>middle</b> <em>&mdash; the published value is Medium</em></span></div>
+              <div class="prop"><span class="prop-k">State</span><span class="prop-v"><b>default</b></span></div>
+              <div class="prop"><span class="prop-k">Type</span><span class="prop-v"><b>dual</b></span></div>
+              <div class="prop"><span class="prop-k">Disabled</span><span class="prop-v"><b>False</b> <em>&mdash; spelled Disabled on the master, Disable in the variants</em></span></div>
+            </div>
+          </div>
+        </div>
+        <div class="beh">
+          <div class="beh-r"><span class="beh-k">Not published</span><span class="beh-v"><b>Focus</b> and <b>Pressed / Active</b>, and nothing anywhere records <b>which segment is live</b> on Dual or Triple &mdash; every variant is drawn with the first one on</span></div>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Tokens</h3>
+        <div class="fig"><p class="fig-cap">Token map &mdash; Dual at Large, first segment live</p><svg viewBox="0 0 760 190" role="img" aria-label="Button Group token map">
+  <rect x="34" y="66" width="260" height="44" rx="22" fill="#28292D" stroke="#333333" stroke-width="1"/>
+  <rect x="35" y="67" width="129" height="42" rx="21" fill="#00A88C"/>
+  <text x="99" y="94" text-anchor="middle" fill="#FFFFFF" font-family="Inter,sans-serif" font-size="14" font-weight="600">Button</text>
+  <text x="229" y="94" text-anchor="middle" fill="#B9BFCE" font-family="Inter,sans-serif" font-size="14" font-weight="600">Button</text>
+  <line x1="99" y1="70" x2="420" y2="18" stroke="#3A3D42" stroke-width="1"/><circle cx="99" cy="70" r="3" fill="#00A88C"/><text x="428" y="22" fill="#E7EAF0" font-family="ui-monospace,monospace" font-size="11">Turquoise/T09 (Primary)</text><text x="428" y="36" fill="#767E8A" font-family="ui-monospace,monospace" font-size="10">live segment #00A88C</text><line x1="140" y1="89" x2="420" y2="56" stroke="#3A3D42" stroke-width="1"/><circle cx="140" cy="89" r="3" fill="#00A88C"/><text x="428" y="60" fill="#E7EAF0" font-family="ui-monospace,monospace" font-size="11">BW01</text><text x="428" y="74" fill="#767E8A" font-family="ui-monospace,monospace" font-size="10">live label #FFFFFF</text><line x1="286" y1="73" x2="420" y2="96" stroke="#3A3D42" stroke-width="1"/><circle cx="286" cy="73" r="3" fill="#00A88C"/><text x="428" y="100" fill="#E7EAF0" font-family="ui-monospace,monospace" font-size="11">BW09</text><text x="428" y="114" fill="#767E8A" font-family="ui-monospace,monospace" font-size="10">idle segment #28292D</text><line x1="266" y1="94" x2="420" y2="134" stroke="#3A3D42" stroke-width="1"/><circle cx="266" cy="94" r="3" fill="#00A88C"/><text x="428" y="138" fill="#E7EAF0" font-family="ui-monospace,monospace" font-size="11">BW16 (Icon No Active)</text><text x="428" y="152" fill="#767E8A" font-family="ui-monospace,monospace" font-size="10">idle label #B9BFCE</text>
+  <text x="34" y="176" fill="#767E8A" font-family="ui-monospace,monospace" font-size="10">BW17 (Hover) #27292F is an idle tone — the live segment has no hover token.</text>
+</svg></div>
         <div class="comp">
           <div class="comp-body">
-            <div class="prop"><span class="prop-k">Size</span><span class="prop-v"><b>Large</b> 44, <b>Medium</b> 40, <b>Small</b> 36</span></div>
-            <div class="prop"><span class="prop-k">State</span><span class="prop-v"><b>Default</b>, <b>Hover</b></span></div>
-            <div class="prop"><span class="prop-k">Type</span><span class="prop-v"><b>Dual</b> 382px, <b>Triple</b> 545px, <b>Customize</b> 326px</span></div>
-            <div class="prop"><span class="prop-k">Disable</span><span class="prop-v"><b>False</b>, <b>True</b></span></div>
-            <div class="prop"><span class="prop-k bad">Tipe Oder</span><span class="prop-v"><b>Buy</b>, <b>Sell</b>, <b>Default</b> <em>— Bahasa, and missing the r in "Order"</em></span></div>
+            <div class="tok"><span class="tok-n">Black - White/Turquoise/T09 (Primary)</span><span class="tok-v"><span class="sw" style="background:#00A88C"></span>#00A88C</span><span class="tok-u">Live segment fill</span></div>
+            <div class="tok"><span class="tok-n">Black - White/BW01</span><span class="tok-v"><span class="sw" style="background:#FFFFFF"></span>#FFFFFF</span><span class="tok-u">Live segment label</span></div>
+            <div class="tok"><span class="tok-n">Black - White/BW09</span><span class="tok-v"><span class="sw" style="background:#28292D"></span>#28292D</span><span class="tok-u">Idle segment fill</span></div>
+            <div class="tok"><span class="tok-n">Black - White/BW16 (Icon No Active)</span><span class="tok-v"><span class="sw" style="background:#B9BFCE"></span>#B9BFCE</span><span class="tok-u">Idle segment label</span></div>
+            <div class="tok"><span class="tok-n">Black - White/BW08 (Stroke Field)</span><span class="tok-v"><span class="sw" style="background:#333333"></span>#333333</span><span class="tok-u">Group border</span></div>
+            <div class="tok"><span class="tok-n">Black - White/BW17 (Hover)</span><span class="tok-v"><span class="sw" style="background:#27292F"></span>#27292F</span><span class="tok-u"><em>an idle-segment tone &mdash; no hover token exists for the live segment, so hovering the teal block has nothing published to change to</em></span></div>
+            <div class="tok"><span class="tok-n">Black - White/BW07 (Disable&amp;Subtext)</span><span class="tok-v"><span class="sw" style="background:#9498A1"></span>#9498A1</span><span class="tok-u">Disabled label</span></div>
+            <div class="tok"><span class="tok-n">Red/R03</span><span class="tok-v"><span class="sw" style="background:#FF586C"></span>#FF586C</span><span class="tok-u">Sell block on Customize <em>&mdash; no red hover token is bound, though the green side has none either</em></span></div>
+            <div class="tok"><span class="tok-n">Subtitle/S2</span><span class="tok-v">Inter SemiBold 14/20</span><span class="tok-u">Label at Large</span></div>
+            <div class="tok"><span class="tok-n">Subtitle/S3</span><span class="tok-v">Inter SemiBold 12/18</span><span class="tok-u">Label at the smaller sizes</span></div>
+            <div class="tok"><span class="tok-n">Body/B5</span><span class="tok-v">Inter Regular 14/20</span><span class="tok-u">Also bound to the set</span></div>
+            <div class="tok"><span class="tok-n">Body/B6</span><span class="tok-v">Inter Regular 12/18</span><span class="tok-u">Also bound to the set</span></div>
           </div>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Layout</h3>
+        <div class="fig"><p class="fig-cap">Drawn at 1:1 &mdash; these bars are the real widths</p>
+          <div class="dim">
+            <span class="dim-k">Declared</span><span class="dim-b flex"></span><span class="dim-n">fill</span>
+            <span class="dim-k">Drawn &middot; Dual</span><span class="dim-b " style="width:382px"></span><span class="dim-n">382px</span>
+            <span class="dim-k">Drawn &middot; Triple</span><span class="dim-b " style="width:545px"></span><span class="dim-n">545px</span>
+            <span class="dim-k">Drawn &middot; Customize</span><span class="dim-b " style="width:326px"></span><span class="dim-n">326px</span>
+          </div>
+        </div>
+        <div class="beh">
+          <div class="beh-r"><span class="beh-k">Declared</span><span class="beh-v">Flexible / fill container, height S &middot; M &middot; L &mdash; the same declaration Button carries</span></div>
+          <div class="beh-r"><span class="beh-k">Drawn</span><span class="beh-v">Dual 382px, Triple 545px, Customize 326px, identical at all three heights. Three fixed widths under a declaration that says the component is flexible</span></div>
+          <div class="beh-r"><span class="beh-k">Segment division</span><span class="beh-v">Segments split the width evenly &mdash; 191px each on Dual, 181.7px on Triple. Customize is two 170px blocks overlapped by a 14px slant, which is why it is narrower than Dual despite holding the same two labels</span></div>
+          <div class="beh-r"><span class="beh-k">Wrapping</span><span class="beh-v">Not published. With the width fixed and the height pinned, a label longer than its share of the track has nowhere to go &mdash; and Triple gives each label only 181px</span></div>
+          <div class="beh-r"><span class="beh-k">Why that matters here</span><span class="beh-v">These carry trade actions in Bahasa. &ldquo;Beli&rdquo; is short; &ldquo;Konfirmasi Pesanan&rdquo; is not</span></div>
         </div>
       </div>
 
@@ -1014,6 +1260,8 @@
 (function () {
   var GREEN = '#00A88C', GREEN_H = '#00B7A6', RED = '#FF586C', RED_H = '#FA3149';
   var DARK_TXT = '#0C0D0E', OFF_BG = '#333333', OFF_TXT = '#9498A1';
+  var GREEN_P = '#008375';      // T08 — the Solid/Green Hover fill
+  var SOLID_TXT = '#FFFFFF';    // BW01 — the label on every Solid button
 
   function rgba(hex, a) {
     var n = parseInt(hex.slice(1), 16);
@@ -1042,8 +1290,11 @@
       return s;
     }
     if (type === 'Solid') {
-      s.background = col === 'Hover' ? hov : base;
-      s.color = DARK_TXT;
+      // read from Figma: Solid/Green Default binds T09 #00A88C and Hover binds T08
+      // #008375 — a darker step, not a lighter one. The label is BW01 #FFFFFF on
+      // both, confirmed against the rendered component set.
+      s.background = col === 'Hover' ? (hue === 'red' ? RED_H : GREEN_P) : base;
+      s.color = SOLID_TXT;
     } else if (type === 'Soft') {
       s.background = rgba(base, col === 'Hover' ? 0.25 : 0.15);
       s.color = base;
@@ -1177,12 +1428,12 @@
         seg.style.color = OFF_TXT;
       } else if (i === 0) {
         seg.style.background = GREEN;
-        seg.style.color = DARK_TXT;
+        seg.style.color = '#FFFFFF';
       } else if (state === 'Hover' && i === 1) {
         seg.style.background = '#27292F';
         seg.style.color = '#FFFFFF';
       } else {
-        seg.style.background = 'transparent';
+        seg.style.background = '#28292D';
         seg.style.color = '#B9BFCE';
       }
       wrap.appendChild(seg);
@@ -1208,9 +1459,9 @@
         seg.style.color = OFF_TXT;
       } else if (active) {
         seg.style.background = side === 'Sell' ? RED : GREEN;
-        seg.style.color = DARK_TXT;
+        seg.style.color = '#FFFFFF';
       } else {
-        seg.style.background = state === 'Hover' ? '#33363C' : '#2A2D33';
+        seg.style.background = state === 'Hover' ? '#27292F' : '#28292D';
         seg.style.color = '#B9BFCE';
       }
       wrap.appendChild(seg);
@@ -1336,6 +1587,10 @@
 (function () {
   var GREEN = '#00A88C', GREEN_H = '#00B7A6', RED = '#FF586C', RED_H = '#FA3149';
   var PRESS_G = '#172022', PRESS_R = '#2A1418';
+  // Button Group, read from Figma: the live segment's label is BW01 #FFFFFF, the
+  // idle segment is BW09 #28292D and the track border is BW08 #333333. No hover
+  // token is bound for the live segment, so that tone stays invented.
+  var BG_LIVE_TXT = '#FFFFFF', BG_IDLE_BG = '#28292D', BG_TRACK = '#333333';
   var DARK = '#0C0D0E', OFF_BG = '#333333', OFF_TXT = '#9498A1', MUTED = '#B9BFCE';
 
   function rgba(hex, a) {
@@ -1417,9 +1672,12 @@
   function buttonEl(s) {
     var hue = s['Tipe'] === 'Sell' ? 'red' : 'green';
     var base = hue === 'red' ? RED : GREEN;
-    var hov = hue === 'red' ? RED_H : GREEN_H;
+    // Solid/Green Hover binds T08 #008375 in Figma, not a lighter tint. Red hover
+    // binds R05. Pressed is published for neither, so those two tones are invented
+    // — the finding below says so.
+    var hov = hue === 'red' ? RED_H : '#008375';
     var press = hue === 'red' ? PRESS_R : PRESS_G;
-    var solidPress = hue === 'red' ? '#C45038' : '#008375';
+    var solidPress = hue === 'red' ? '#C45038' : '#00655A';
     var type = s['Type/Color'];
     var dis = s['Disable'] === 'True', load = s['Loading'] === 'True';
     var sizeCls = s['Size'] === 'Big/40' ? 'lg' : s['Size'] === 'Med/36' ? 'md' : 'sm';
@@ -1430,7 +1688,7 @@
 
     var rest = { bg: 'transparent', fg: base, bd: 'transparent' };
     if (dis) { rest = { bg: type === 'Transparant' ? 'transparent' : OFF_BG, fg: OFF_TXT, bd: 'transparent' }; }
-    else if (type === 'Solid') { rest = { bg: base, fg: DARK, bd: 'transparent' }; }
+    else if (type === 'Solid') { rest = { bg: base, fg: '#FFFFFF', bd: 'transparent' }; }
     else if (type === 'Soft') { rest = { bg: rgba(base, 0.15), fg: base, bd: 'transparent' }; }
     else if (type === 'Outline') { rest = { bg: 'transparent', fg: base, bd: base }; }
 
@@ -1444,10 +1702,10 @@
     el.style.setProperty('--rest-fg', rest.fg);
     el.style.setProperty('--rest-bd', rest.bd);
     el.style.setProperty('--h-bg', hBg);
-    el.style.setProperty('--h-fg', dis ? rest.fg : (type === 'Solid' ? DARK : nonSolidFg));
+    el.style.setProperty('--h-fg', dis ? rest.fg : (type === 'Solid' ? '#FFFFFF' : nonSolidFg));
     el.style.setProperty('--h-bd', type === 'Outline' ? base : 'transparent');
     el.style.setProperty('--p-bg', pBg);
-    el.style.setProperty('--p-fg', dis ? rest.fg : (type === 'Solid' ? DARK : nonSolidFg));
+    el.style.setProperty('--p-fg', dis ? rest.fg : (type === 'Solid' ? '#FFFFFF' : nonSolidFg));
     el.style.setProperty('--p-bd', type === 'Outline' ? base : 'transparent');
 
     if (load) { var sp = document.createElement('span'); sp.className = 'spin'; el.appendChild(sp); }
@@ -1474,22 +1732,24 @@
       var dis = s['Disable'] === 'True';
       var side = s['Tipe Oder'];
       var onColour = side === 'Sell' ? RED : GREEN;
-      var onHover = side === 'Sell' ? RED_H : GREEN_H;
+      // no hover token is bound for the live segment; T08 and R05 are the nearest
+      // published steps, so the demo borrows those rather than inventing a hex
+      var onHover = side === 'Sell' ? RED_H : '#008375';
       var onPress = side === 'Sell' ? '#C45038' : '#008375';
 
       function paint_seg(seg, on, i) {
         var bg = dis ? (on ? '#3A3D42' : 'transparent') : on ? onColour : 'transparent';
-        var fg = dis ? OFF_TXT : on ? DARK : MUTED;
+        var fg = dis ? OFF_TXT : on ? BG_LIVE_TXT : MUTED;
         seg.style.background = bg;
         seg.style.color = fg;
         seg.style.setProperty('--rest-bg', bg);
         seg.style.setProperty('--rest-fg', fg);
         seg.style.setProperty('--rest-bd', 'transparent');
         seg.style.setProperty('--h-bg', dis ? bg : on ? onHover : '#27292F');
-        seg.style.setProperty('--h-fg', dis ? fg : on ? DARK : '#FFFFFF');
+        seg.style.setProperty('--h-fg', dis ? fg : on ? BG_LIVE_TXT : '#FFFFFF');
         seg.style.setProperty('--h-bd', 'transparent');
         seg.style.setProperty('--p-bg', dis ? bg : on ? onPress : PRESS_G);
-        seg.style.setProperty('--p-fg', dis ? fg : on ? DARK : MUTED);
+        seg.style.setProperty('--p-fg', dis ? fg : on ? BG_LIVE_TXT : MUTED);
         seg.style.setProperty('--p-bd', 'transparent');
       }
 
@@ -1505,16 +1765,16 @@
           var on = (side === 'Buy' && i === 0) || (side === 'Sell' && i === 1);
           // on Customize the live side IS a published property, so a click sets it
           var bg = dis ? (i === 0 ? '#3A3D42' : '#2A2D33') : on ? (side === 'Sell' ? RED : GREEN) : '#2A2D33';
-          var fg = dis ? OFF_TXT : on ? DARK : MUTED;
+          var fg = dis ? OFF_TXT : on ? BG_LIVE_TXT : MUTED;
           seg.style.background = bg; seg.style.color = fg;
           seg.style.setProperty('--rest-bg', bg);
           seg.style.setProperty('--rest-fg', fg);
           seg.style.setProperty('--rest-bd', 'transparent');
           seg.style.setProperty('--h-bg', dis ? bg : on ? (side === 'Sell' ? RED_H : GREEN_H) : '#33363C');
-          seg.style.setProperty('--h-fg', dis ? fg : on ? DARK : '#FFFFFF');
+          seg.style.setProperty('--h-fg', dis ? fg : on ? BG_LIVE_TXT : '#FFFFFF');
           seg.style.setProperty('--h-bd', 'transparent');
           seg.style.setProperty('--p-bg', dis ? bg : on ? (side === 'Sell' ? '#C45038' : '#008375') : PRESS_G);
-          seg.style.setProperty('--p-fg', dis ? fg : on ? DARK : MUTED);
+          seg.style.setProperty('--p-fg', dis ? fg : on ? BG_LIVE_TXT : MUTED);
           seg.style.setProperty('--p-bd', 'transparent');
           if (!dis) {
             seg.addEventListener('click', function () { ctx.setProp('Tipe Oder', i === 0 ? 'Buy' : 'Sell'); });
