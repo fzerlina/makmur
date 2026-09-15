@@ -1,0 +1,2191 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Audit of the Makmur DS — DESKTOP Figma library: foundations, Inputs components, interactive demos and findings.">
+<title>DS — DESKTOP Library Index</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --ground: #F6F8F8; --surface: #FFFFFF; --surface-2: #EDF1F1;
+    --border: #DBE2E1; --border-strong: #C3CDCC;
+    --text: #16191A; --text-muted: #63706E;
+    --accent: #0E8F82; --accent-soft: rgba(14, 143, 130, 0.10);
+    --warn: #9C6208; --warn-soft: rgba(156, 98, 8, 0.10);
+    --crit: #A93A31; --crit-soft: rgba(169, 58, 49, 0.10);
+    --shadow: 0 1px 2px rgba(16, 24, 24, 0.05);
+    --display: "Bricolage Grotesque", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0C0D0E; --surface: #18191C; --surface-2: #212227;
+      --border: #2A2D33; --border-strong: #404249;
+      --text: #FFFFFF; --text-muted: #9498A1;
+      --accent: #35D6C3; --accent-soft: rgba(53, 214, 195, 0.12);
+      --warn: #E0A34A; --warn-soft: rgba(224, 163, 74, 0.12);
+      --crit: #E8776C; --crit-soft: rgba(232, 119, 108, 0.12);
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #0C0D0E; --surface: #18191C; --surface-2: #212227;
+    --border: #2A2D33; --border-strong: #404249;
+    --text: #FFFFFF; --text-muted: #9498A1;
+    --accent: #35D6C3; --accent-soft: rgba(53, 214, 195, 0.12);
+    --warn: #E0A34A; --warn-soft: rgba(224, 163, 74, 0.12);
+    --crit: #E8776C; --crit-soft: rgba(232, 119, 108, 0.12);
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body { background: var(--ground); color: var(--text); font-family: var(--body); font-size: 15px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+  .shell { display: grid; grid-template-columns: 248px minmax(0, 1fr); height: 100vh; overflow: hidden; }
+
+  .side {
+    height: 100vh; overflow-y: auto; display: flex; flex-direction: column; gap: 20px;
+    padding: 28px 16px 24px; border-right: 1px solid var(--border); background: var(--surface);
+  }
+  main { height: 100vh; overflow-y: auto; padding-inline: 36px; padding-block: 38px 90px; }
+  main > .page { max-width: 1020px; margin: 0 auto; }
+
+  .drawer-toggle { display: none; }
+  .scrim { display: none; }
+  .brand { display: flex; flex-direction: column; gap: 4px; }
+  .brand-name { font-family: var(--display); font-weight: 700; font-size: 21px; letter-spacing: -0.01em; line-height: 1.1; }
+  .brand-sub { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); }
+
+  nav { display: flex; flex-direction: column; gap: 16px; }
+  .nav-group { display: flex; flex-direction: column; gap: 2px; }
+  .nav-label { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted); padding: 0 11px 5px; }
+  .nav-btn {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
+    font-family: var(--body); font-size: 14px; font-weight: 500; text-align: left;
+    padding: 7px 11px; border-radius: 6px; border: 0; cursor: pointer;
+    background: transparent; color: var(--text-muted); width: 100%; line-height: 1.35;
+  }
+  .nav-btn:hover:not(:disabled) { background: var(--surface-2); color: var(--text); }
+  .nav-btn[aria-current="true"] { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+  .nav-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .nav-btn:disabled { opacity: 0.45; cursor: default; }
+  .nav-n { font-family: var(--mono); font-size: 10.5px; opacity: 0.75; font-variant-numeric: tabular-nums; }
+
+
+  .page { display: none; }
+  .page.on { display: block; }
+  .page-head { margin-bottom: 28px; }
+  .eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin: 0 0 8px; }
+  h1 { font-family: var(--display); font-weight: 700; font-size: clamp(30px, 4.5vw, 42px); line-height: 1.05; letter-spacing: -0.02em; margin: 0 0 12px; text-wrap: balance; }
+  .lede { max-width: 66ch; color: var(--text-muted); margin: 0; font-size: 15.5px; }
+
+
+
+  .group { margin-bottom: 40px; }
+  /* section titles read at the same level as Findings; only Findings keeps the rule above it */
+  h3 { font-family: var(--display); font-weight: 700; font-size: 20px; letter-spacing: -0.01em; text-transform: none; color: var(--text); margin: 0 0 16px; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+
+  .ramp { display: grid; grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); gap: 10px; }
+  .chip { border: 1px solid var(--border); border-radius: 6px; overflow: hidden; background: var(--surface); }
+  .chip-fill { height: 40px; border-bottom: 1px solid var(--border); }
+  .chip-meta { padding: 7px 9px 8px; display: flex; flex-direction: column; gap: 1px; }
+  .chip-name { font-size: 12px; font-weight: 600; }
+  .chip-hex { font-family: var(--mono); font-size: 10.5px; color: var(--text-muted); }
+  .chip-role { font-size: 11px; color: var(--text-muted); line-height: 1.35; margin-top: 2px; }
+  .chip.flag { border-color: var(--crit); }
+  .chip.flag .chip-hex { color: var(--crit); }
+
+  .spec-list { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--surface); }
+  .spec { display: flex; align-items: baseline; gap: 18px; padding: 13px 18px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+  .spec:last-child { border-bottom: 0; }
+  .spec-label { font-family: var(--mono); font-size: 12px; color: var(--accent); min-width: 92px; flex-shrink: 0; }
+  .spec-sample { font-family: "Inter", sans-serif; flex: 1 1 220px; line-height: 1.15; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .spec-val { font-family: var(--mono); font-size: 11px; color: var(--text-muted); font-variant-numeric: tabular-nums; flex-shrink: 0; min-width: 92px; text-align: right; }
+  .spec.flag .spec-val { color: var(--crit); }
+
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag { font-size: 12.5px; padding: 4px 9px; border: 1px solid var(--border); border-radius: 5px; background: var(--surface); color: var(--text); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tag.set { border-color: var(--border-strong); font-weight: 500; }
+  .tag.dup { border-color: var(--crit); color: var(--crit); }
+  .tag.done { border-color: var(--accent); color: var(--accent); font-weight: 500; }
+  .tag.todo { opacity: 0.6; }
+
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px; color: var(--text-muted); margin-top: 16px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .swatch-key { width: 11px; height: 11px; border-radius: 3px; border: 1px solid var(--border-strong); display: inline-block; }
+  .swatch-key.dup { border-color: var(--crit); }
+  .swatch-key.done { border-color: var(--accent); background: var(--accent-soft); }
+
+  /* component detail */
+  .comp { border: 1px solid var(--border); border-radius: 9px; background: var(--surface); box-shadow: var(--shadow); margin-bottom: 14px; overflow: hidden; }
+  .comp-head { padding: 15px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .comp-name { font-family: var(--display); font-weight: 700; font-size: 17px; letter-spacing: -0.01em; }
+  .comp-meta { font-family: var(--mono); font-size: 11px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+  .comp-body { padding: 4px 0 0; }
+  .prop { display: grid; grid-template-columns: 140px minmax(0,1fr); gap: 14px; padding: 9px 18px; border-bottom: 1px solid var(--border); align-items: baseline; }
+  .comp .prop:last-child { border-bottom: 0; }
+  .prop-k { font-family: var(--mono); font-size: 12px; color: var(--text); }
+  .prop-k.bad { color: var(--crit); }
+  .prop-v { font-size: 13.5px; color: var(--text-muted); }
+  .prop-v b { color: var(--text); font-weight: 500; }
+  .prop-v em { color: var(--crit); font-style: normal; }
+
+  /* size scale diagram */
+
+  .find-head { margin-top: 46px; padding-top: 26px; border-top: 1px solid var(--border-strong); display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+  h2 { font-family: var(--display); font-weight: 700; font-size: 20px; letter-spacing: -0.01em; margin: 0; }
+
+  .findings { display: flex; flex-direction: column; gap: 12px; }
+  .finding { display: grid; grid-template-columns: 4px 1fr; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--surface); box-shadow: var(--shadow); }
+  .sev { background: var(--text-muted); }
+  .sev.high { background: var(--crit); }
+  .sev.med { background: var(--warn); }
+  .finding-body { padding: 15px 18px; display: flex; flex-direction: column; gap: 7px; }
+  .finding-top { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .finding-title { font-weight: 600; font-size: 15px; }
+  .pill { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 7px; border-radius: 20px; border: 1px solid currentColor; }
+  .pill.high { color: var(--crit); background: var(--crit-soft); }
+  .pill.med { color: var(--warn); background: var(--warn-soft); }
+  .pill.low { color: var(--text-muted); background: var(--surface-2); }
+  .pill.where { color: var(--accent); background: var(--accent-soft); }
+  .finding p { margin: 0; font-size: 14px; color: var(--text-muted); }
+  code { font-family: var(--mono); font-size: 12.5px; background: var(--surface-2); padding: 1px 5px; border-radius: 3px; color: var(--text); }
+
+  .ov-title { font-weight: 600; font-size: 15px; }
+  .ov-body { font-size: 13.5px; color: var(--text-muted); margin: 0; }
+
+  @media (max-width: 860px) {
+    .shell { grid-template-columns: 1fr; }
+    .side {
+      position: fixed; top: 0; left: 0; width: 262px; z-index: 40;
+      transform: translateX(-100%); transition: transform 0.18s ease;
+      box-shadow: 0 0 44px rgba(0, 0, 0, 0.4);
+    }
+    .shell.nav-open .side { transform: none; }
+    .scrim { display: block; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.45); z-index: 30; }
+    .scrim[hidden] { display: none; }
+    main { padding-top: 66px; padding-inline: 18px; }
+    .drawer-toggle {
+      display: inline-flex; align-items: center; gap: 8px; position: fixed; top: 12px; left: 12px; z-index: 50;
+      font-family: var(--body); font-size: 13px; font-weight: 600; color: var(--text);
+      background: var(--surface); border: 1px solid var(--border-strong); border-radius: 7px;
+      padding: 8px 13px; cursor: pointer; box-shadow: var(--shadow);
+    }
+    .drawer-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+    .bars { display: inline-flex; flex-direction: column; gap: 3px; }
+    .bars i { display: block; width: 14px; height: 1.5px; background: currentColor; border-radius: 1px; }
+  }
+  @media (max-width: 560px) {
+    .spec-sample { white-space: normal; }
+    .spec-val { text-align: left; }
+    .prop { grid-template-columns: 1fr; gap: 2px; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+  /* ---------- rendered variant gallery ---------- */
+  .stage { background: #0C0D0E; border: 1px solid #27292F; border-radius: 9px; padding: 18px; overflow-x: auto; }
+
+  /* one sheet convention, shared by every variant gallery on the site:
+     rows are what changes the drawing, columns are the interaction state, and
+     size — which only ever changes height and type scale — is pulled out into a
+     ramp underneath rather than tripling the matrix. */
+  .vsheet { display: grid; align-items: center; gap: 0; }
+  .vhead { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase; color: #5C6670; padding: 0 16px 11px 0; }
+  .vlab { font-family: var(--body); font-size: 12.5px; font-weight: 600; color: #E7EAF0; padding: 14px 16px 14px 0; align-self: stretch; }
+  .vlab-span { display: block; }
+  .vlab em { display: block; font-family: var(--mono); font-size: 10px; font-weight: 400; font-style: normal; color: #767E8A; margin-top: 3px; }
+  .vstate { font-family: var(--mono); font-size: 11px; color: #9498A1; white-space: nowrap; padding: 14px 16px 14px 0; }
+  .vcell { display: flex; align-items: center; padding: 14px 16px 14px 0; }
+  .rule { border-top: 1px solid #1B1D22; }
+  .vmiss { display: inline-flex; align-items: center; height: 21px; padding: 0 9px; border: 1px dashed #2A2D33; border-radius: 5px; font-family: var(--mono); font-size: 9px; letter-spacing: 0.05em; color: #4A4F57; }
+
+  .vsub { font-size: 12.5px; font-weight: 600; color: #FFFFFF; margin: 26px 0 14px; padding-top: 18px; border-top: 1px solid #1B1D22; display: flex; gap: 9px; align-items: baseline; flex-wrap: wrap; }
+  .vsub span { font-family: var(--mono); font-size: 10.5px; font-weight: 400; color: #9498A1; }
+  .vramp { display: flex; align-items: flex-end; gap: 22px; flex-wrap: wrap; }
+  .vramp.col { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .vramp-i { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+  .vramp-i b { font-family: var(--mono); font-size: 10px; font-weight: 400; color: #767E8A; }
+
+  /* button */
+  .btn { display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; font-family: "Inter", sans-serif; font-weight: 600; white-space: nowrap; border: 1px solid transparent; box-sizing: border-box; }
+  .btn.lg { height: 40px; min-width: 106px; font-size: 14px; padding: 0 18px; }
+  .btn.md { height: 36px; min-width: 106px; font-size: 13px; padding: 0 16px; }
+  .btn.sm { height: 32px; min-width: 99px; font-size: 12px; padding: 0 14px; }
+  .spin { width: 15px; height: 15px; border-radius: 50%; border: 2px solid currentColor; border-top-color: transparent; opacity: 0.85; }
+
+  /* button group */
+  .bg-wrap { display: inline-flex; border: 1px solid #27292F; border-radius: 999px; overflow: hidden; background: #121212; }
+  .bg-seg { display: flex; align-items: center; justify-content: center; font-family: "Inter", sans-serif; font-weight: 600; border-radius: 999px; box-sizing: border-box; border: 0; padding: 0; appearance: none; -webkit-appearance: none; }
+  .bg-lg { height: 44px; font-size: 14px; } .bg-md { height: 40px; font-size: 13px; } .bg-sm { height: 36px; font-size: 12px; }
+  .cz { display: inline-flex; }
+  .cz-seg { display: flex; align-items: center; justify-content: center; font-family: "Inter", sans-serif; font-weight: 600; box-sizing: border-box; border: 0; padding: 0; appearance: none; -webkit-appearance: none; }
+  .cz-l { clip-path: polygon(0 0, 100% 0, calc(100% - 14px) 100%, 0 100%); border-radius: 6px 0 0 6px; }
+  .cz-r { clip-path: polygon(14px 0, 100% 0, 100% 100%, 0 100%); margin-left: -14px; border-radius: 0 6px 6px 0; }
+
+  /* search */
+  .srch { display: inline-flex; align-items: center; justify-content: space-between; gap: 8px; width: 220px; border-radius: 8px; padding: 0 12px; font-family: "Inter", sans-serif; box-sizing: border-box; border: 1px solid #27292F; background: #1F2022; }
+  .srch.lg { height: 44px; font-size: 14px; } .srch.md { height: 40px; font-size: 13px; } .srch.sm { height: 36px; font-size: 12px; }
+  .srch-ico { width: 13px; height: 13px; border: 1.5px solid currentColor; border-radius: 50%; opacity: 0.8; flex-shrink: 0; position: relative; }
+  .srch-ico::after { content: ""; position: absolute; right: -4px; bottom: -3px; width: 5px; height: 1.5px; background: currentColor; transform: rotate(45deg); }
+  @keyframes caret-blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+  .caret { display: inline-block; width: 1.5px; height: 1.05em; background: #00A88C; vertical-align: -2px; margin-left: 1px; animation: caret-blink 1.06s steps(1, end) infinite; }
+  .caret[hidden] { display: none; }
+
+  /* dropdown schematic */
+  .dd {
+    width: 400px; height: 271px; box-sizing: border-box;
+    background: #18191C; border: 1px solid #27292F; border-radius: 8px;
+    padding: 10px 0 0 10px; overflow-y: auto; overflow-x: hidden;
+    font-family: "Inter", sans-serif;
+  }
+  .dd::-webkit-scrollbar { width: 9px; }
+  .dd::-webkit-scrollbar-track { background: transparent; }
+  .dd::-webkit-scrollbar-thumb { background: #3A3D42; border-radius: 4px; border: 2px solid transparent; background-clip: content-box; }
+  .dd-row {
+    height: 32px; box-sizing: border-box; width: 381px; display: flex; align-items: center; gap: 10px;
+    padding: 0 10px 0 5px; border-radius: 6px; font-size: 13px; color: #B9BFCE; background: transparent;
+  }
+  .dd-row .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .dd-av { width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: #0C0D0E; background: #4A4F57; }
+  .dd-tkr { font-weight: 700; color: #FFFFFF; flex-shrink: 0; }
+  .dd-check { width: 15px; height: 15px; flex-shrink: 0; margin-left: auto; }
+  .dd-head { font-size: 12px; color: #9498A1; padding: 7px 5px 3px; }
+  .dd-empty { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 7px; text-align: center; padding: 0 40px 10px 30px; }
+  .dd-empty b { font-size: 13.5px; font-weight: 700; color: #FFFFFF; }
+  .dd-empty span { font-size: 12.5px; color: #9498A1; line-height: 1.45; }
+  .dd-spin { height: 100%; display: flex; align-items: center; justify-content: center; padding-right: 10px; }
+  .dd-ring { width: 22px; height: 22px; border-radius: 50%; border: 2px solid #4A4F57; border-top-color: #FFFFFF; animation: dd-turn 0.9s linear infinite; }
+  @keyframes dd-turn { to { transform: rotate(360deg); } }
+  .dd-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(412px, 1fr)); gap: 18px; }
+  .dd-cap { font-family: var(--mono); font-size: 10.5px; color: #9498A1; margin: 0 0 7px; }
+
+  /* ---------- interactive playground ---------- */
+  .pg-switch { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 22px; }
+  .pg-switch button {
+    font-family: var(--body); font-size: 13.5px; font-weight: 600; padding: 7px 14px;
+    border-radius: 7px; border: 1px solid var(--border); background: var(--surface);
+    color: var(--text-muted); cursor: pointer;
+  }
+  .pg-switch button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+  .pg-switch button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  .pg { display: grid; grid-template-columns: 236px minmax(0, 1fr); gap: 18px; align-items: start; }
+  @media (max-width: 720px) { .pg { grid-template-columns: 1fr; } }
+
+  .pg-panel { border: 1px solid var(--border); border-radius: 9px; background: var(--surface); padding: 4px 0; box-shadow: var(--shadow); }
+  .pg-prop { padding: 11px 14px; border-bottom: 1px solid var(--border); }
+  .pg-panel .pg-prop:last-child { border-bottom: 0; }
+  .pg-prop-k { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 7px; }
+  .pg-opts { display: flex; flex-wrap: wrap; gap: 5px; }
+  .pg-opt {
+    font-family: var(--body); font-size: 12px; font-weight: 500; padding: 4px 9px; border-radius: 5px;
+    border: 1px solid var(--border); background: transparent; color: var(--text-muted); cursor: pointer;
+  }
+  .pg-opt[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+  .pg-opt:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  .pg-stage { border: 1px solid #27292F; border-radius: 9px; background: #0C0D0E; padding: 0; overflow: hidden; }
+  .pg-canvas { min-height: 190px; display: flex; align-items: center; justify-content: center; padding: 28px 20px; }
+  .pg-bar { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; padding: 11px 16px; border-top: 1px solid #27292F; background: #121212; }
+  .pg-read { display: inline-flex; align-items: center; gap: 7px; font-family: var(--mono); font-size: 11px; color: #9498A1; }
+  .pg-dot { width: 7px; height: 7px; border-radius: 50%; background: #404249; }
+  .pg-dot.on { background: #00A88C; }
+  .pg-badge {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.07em; text-transform: uppercase;
+    padding: 3px 8px; border-radius: 20px; border: 1px solid currentColor; margin-left: auto;
+  }
+  .pg-badge.yes { color: #35D6C3; background: rgba(53, 214, 195, 0.12); }
+  .pg-badge.no { color: #E8776C; background: rgba(232, 119, 108, 0.12); }
+
+  /* the live control */
+  .live { cursor: pointer; transition: background-color 0.12s ease, color 0.12s ease, border-color 0.12s ease; }
+  .live:hover { background: var(--h-bg) !important; color: var(--h-fg) !important; border-color: var(--h-bd) !important; }
+  .live:active { background: var(--p-bg) !important; color: var(--p-fg) !important; border-color: var(--p-bd) !important; }
+  .live:focus-visible { outline: 2px dashed #FBC800; outline-offset: 3px; }
+  .live.is-off { cursor: not-allowed; }
+  .live.is-off:hover, .live.is-off:active { background: var(--rest-bg) !important; color: var(--rest-fg) !important; border-color: var(--rest-bd) !important; }
+  @media (prefers-reduced-motion: reduce) { .live { transition: none; } }
+
+
+
+  .sub-h { font-family: var(--body); font-weight: 600; font-size: 13.5px; color: var(--text); margin: 0 0 10px; display: flex; gap: 9px; align-items: baseline; flex-wrap: wrap; }
+  .sub-h span { font-family: var(--mono); font-size: 10.5px; font-weight: 400; color: var(--text-muted); }
+  .sub-h + .comp, .sub-h + .stage { margin-top: 0; }
+  .sub-block + .sub-block { margin-top: 26px; }
+
+  .srch-input { flex: 1 1 auto; min-width: 0; background: transparent; border: 0; outline: none; padding: 0; font-family: inherit; font-size: inherit; color: inherit; }
+  .srch-input::placeholder { color: currentColor; opacity: 1; }
+  .srch:focus-within { border-color: var(--f-bd) !important; }
+  .srch:focus-within .srch-input { color: var(--f-fg); }
+  .pg-status { font-size: 12px; color: var(--text-muted); font-family: var(--body); }
+  .pg-status b { color: var(--accent); font-weight: 600; }
+
+  .beh { border: 1px solid var(--border); border-radius: 8px; background: var(--surface); overflow: hidden; margin-top: 16px; }
+  .beh-r { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 16px; padding: 10px 16px; border-bottom: 1px solid var(--border); font-size: 13.5px; }
+  .beh-r:last-child { border-bottom: 0; }
+  .beh-k { font-family: var(--mono); font-size: 11.5px; color: var(--accent); }
+  .beh-v { color: var(--text-muted); }
+  @media (max-width: 560px) { .beh-r { grid-template-columns: 1fr; gap: 2px; } }
+
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+  .dd-hit { color: #FFFFFF; font-weight: 600; }
+</style>
+<style>
+  :root { color-scheme: dark light; }
+  html, body { margin: 0; }
+  img { max-width: 100%; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="shell" id="shell">
+
+  <button class="drawer-toggle" id="drawerToggle" aria-controls="nav" aria-expanded="false"><span class="bars"><i></i><i></i><i></i></span>Sections</button>
+  <div class="scrim" id="scrim" hidden></div>
+
+
+  <aside class="side">
+    <div class="brand">
+      <span class="brand-name">DS — DESKTOP</span>
+      <span class="brand-sub">Makmur Product Team</span>
+    </div>
+    <nav id="nav">
+      <div class="nav-group">
+        <span class="nav-label">Foundations</span>
+        <button class="nav-btn" data-go="color">Color <span class="nav-n">6</span></button>
+        <button class="nav-btn" data-go="type">Type <span class="nav-n">2</span></button>
+        <button class="nav-btn" data-go="icons">Icons <span class="nav-n">1</span></button>
+      </div>
+      <div class="nav-group">
+        <span class="nav-label">Inputs</span>
+        <button class="nav-btn" data-go="autocomplete">Autocomplete / Search <span class="nav-n">5</span></button>
+        <button class="nav-btn" data-go="button">Button <span class="nav-n">7</span></button>
+        <button class="nav-btn" data-go="buttongroup">Button Group <span class="nav-n">5</span></button>
+        <button class="nav-btn" disabled>Checkbox <span class="nav-n">—</span></button>
+        <button class="nav-btn" disabled>Filter <span class="nav-n">—</span></button>
+        <button class="nav-btn" disabled>Number Field <span class="nav-n">—</span></button>
+        <button class="nav-btn" disabled>Radio Group <span class="nav-n">—</span></button>
+        <button class="nav-btn" disabled>Select <span class="nav-n">—</span></button>
+        <button class="nav-btn" disabled>Slider <span class="nav-n">—</span></button>
+        <button class="nav-btn" disabled>Switch <span class="nav-n">—</span></button>
+        <button class="nav-btn" disabled>Text Field <span class="nav-n">—</span></button>
+        <button class="nav-btn" disabled>Toggle Button <span class="nav-n">—</span></button>
+      </div>
+      <div class="nav-group">
+        <span class="nav-label">Other sections</span>
+        <button class="nav-btn" disabled>Data Display <span class="nav-n">—</span></button>
+        <button class="nav-btn" disabled>Feedback <span class="nav-n">—</span></button>
+        <button class="nav-btn" disabled>Surfaces <span class="nav-n">—</span></button>
+        <button class="nav-btn" disabled>Navigation <span class="nav-n">—</span></button>
+        <button class="nav-btn" disabled>Customization <span class="nav-n">—</span></button>
+      </div>
+      <div class="nav-group">
+        <span class="nav-label">Reference</span>
+        <button class="nav-btn" data-go="components">Library index <span class="nav-n">2</span></button>
+      </div>
+    </nav>
+  </aside>
+
+  <main>
+
+    <!-- ===================== OVERVIEW ===================== -->
+    <article class="page" id="autocomplete">
+      <div class="page-head">
+        <p class="eyebrow">Inputs · component page</p>
+        <h1>Autocomplete / Search</h1>
+      </div>
+
+
+      <div class="group" style="margin-top:30px">
+        <h3>Interactive Demo</h3>
+        <div class="pg-mount" data-comp="autocomplete"></div>
+        <p class="sub-h" style="margin-top:22px">Behaviour <span>the pattern the demo implements — none of this is expressed in Figma</span></p>
+        <div class="beh">
+          <div class="beh-r"><span class="beh-k">Third character</span><span class="beh-v">The panel opens. Nothing happens at one or two — the threshold stops a query firing on every keystroke.</span></div>
+          <div class="beh-r"><span class="beh-k">While resolving</span><span class="beh-v">Loading State holds the panel open at full height, so the list does not jump when results land.</span></div>
+          <div class="beh-r"><span class="beh-k">Typing pauses</span><span class="beh-v">Each keystroke restarts a 250ms wait, so one query fires per pause rather than one per character.</span></div>
+          <div class="beh-r"><span class="beh-k">A slow response</span><span class="beh-v">Results that arrive after a newer keystroke are discarded, so an answer to "BB" can never overwrite one to "BBRI".</span></div>
+          <div class="beh-r"><span class="beh-k">Matched characters</span><span class="beh-v">The part of each result that matches what was typed is emphasised.</span></div>
+          <div class="beh-r"><span class="beh-k">Nothing matches</span><span class="beh-v">The panel shows the Error state, which quotes the query back and suggests checking the spelling. It holds nothing to choose, so clicking it dismisses, and returning to the field does not bring an empty panel back. Error is a result, not a content type — so it is reached by searching, not by a switch.</span></div>
+          <div class="beh-r"><span class="beh-k">Click or Enter a row</span><span class="beh-v">Its label is written into the field, the panel closes, and the row becomes the committed value.</span></div>
+          <div class="beh-r"><span class="beh-k">Return to the field</span><span class="beh-v">The panel reopens against the same query without refetching, and the committed row shows in Selected.</span></div>
+          <div class="beh-r"><span class="beh-k">Edit the query</span><span class="beh-v">The committed value is dropped and a new query resolves. A changed query always refetches; an unchanged one never does.</span></div>
+          <div class="beh-r"><span class="beh-k">Click away, or Escape</span><span class="beh-v">Both abandon the edit. Whatever has been typed is discarded and the last committed value returns; if nothing was ever chosen the field empties. The panel closes and anything still in flight is dropped rather than allowed to land later. Leaving the field is not a way to commit a query nobody picked — only choosing a row sets the value.</span></div>
+          <div class="beh-r"><span class="beh-k">Arrow keys, Home, End</span><span class="beh-v">Move one highlight through the options. Pointer and keyboard share it, so hovering moves what Enter would take. It borrows the Hover treatment, because no keyboard-active variant exists.</span></div>
+          <div class="beh-r"><span class="beh-k">Screen readers</span><span class="beh-v">The field is a combobox and the panel a listbox; the active row is announced as you move, and the number of results is read out when they land.</span></div>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Properties</h3>
+        <div class="sub-block">
+          <p class="sub-h">Search <span>9 variants · 3 properties · width 220</span></p>
+        <div class="comp">
+          <div class="comp-body">
+            <div class="prop"><span class="prop-k">Size</span><span class="prop-v"><b>Large</b> 44, <b>Medium</b> 40, <b>Small</b> 36</span></div>
+            <div class="prop"><span class="prop-k bad">State</span><span class="prop-v"><b>Enabled</b>, <b>Focused</b> <em>— no Hover, and "Enabled" overlaps the Disabled property</em></span></div>
+            <div class="prop"><span class="prop-k bad">Disabled</span><span class="prop-v"><b>False</b>, <b>True</b> <em>— combines with State=Enabled into a contradiction</em></span></div>
+          </div>
+        </div>
+        </div>
+        <div class="sub-block">
+          <p class="sub-h">Dropdown - Search &amp; List <span>8 variants · 1 property · 400 × 271</span></p>
+        <div class="comp">
+          <div class="comp-body">
+            <div class="prop"><span class="prop-k bad">State</span><span class="prop-v"><b>Default</b>, <b>Hover</b>, <b>Selected</b>, <b>Error</b>, <b>Loading State</b>, <b>RD Select</b>, <b>Saham Select</b>, <b>Grouped</b> <em>— interaction states and content types on one axis</em></span></div>
+            <div class="prop"><span class="prop-k">Notes</span><span class="prop-v"><code>State=Loading State</code> repeats the property name in its own value. <code>RD Select</code> is abbreviated in the variant but written "Reksa Dana Select" on the page label.</span></div>
+          </div>
+        </div>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Variants</h3>
+        <div class="sub-block">
+          <p class="sub-h">Search <span>9</span></p>
+          <div class="stage">
+            <div id="srch-gallery"></div>
+          </div>
+        </div>
+        <div class="sub-block">
+          <p class="sub-h">Dropdown - Search &amp; List <span>8</span></p>
+          <div class="stage">
+            <div class="dd-list" id="dd-gallery"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="find-head"><h2>Findings</h2></div>
+      <div class="findings">
+        <div class="finding"><div class="sev med"></div><div class="finding-body">
+          <div class="finding-top"><span class="finding-title">The pattern has eight states and no defined behaviour</span><span class="pill med">Medium</span></div>
+          <p>Between them the two sets publish every state this pattern needs — rest, loading, results, grouped, error, hover, selected. What no artefact in Figma records is the sequence that moves between them: when the panel opens, whether a query refetches, what a selection does to the field, what dismissing leaves behind. Those are the decisions an engineer has to make to ship it, so right now each implementation invents them and they drift. The behaviour table above the Properties section is a first draft of that contract — worth agreeing and then writing into the component description, where it travels with the component instead of living in whoever built it last.</p>
+        </div></div>
+        <div class="finding"><div class="sev high"></div><div class="finding-body">
+          <div class="finding-top"><span class="finding-title">Search and the Dropdown are focus and hover mirror images</span><span class="pill high">High</span></div>
+          <p>Search publishes a Focused variant and no Hover. The Dropdown publishes Hover and no Focus. Between them they cover both states, but neither covers both — so a search field gives no pointer feedback and a results list gives no keyboard indicator. Button and Button Group sit on the Dropdown's side of that split, publishing Hover and never Focus, which leaves Search as the only component in the whole section that tells a keyboard user where they are. This is the one finding in the audit with an accessibility consequence rather than a consistency one.</p>
+        </div></div>
+        <div class="finding"><div class="sev med"></div><div class="finding-body">
+          <div class="finding-top"><span class="finding-title">The field and its panel are two unrelated sets, 180px apart in width</span><span class="pill med">Medium</span></div>
+          <p>Search is 220px wide. Dropdown - Search &amp; List is 400px. Nothing in either component references the other — no boolean for an open panel, no shared width, no slot. Every autocomplete in the product is therefore two instances stacked by hand, and the results panel is nearly twice the width of the field it drops from. That may well be deliberate, but because it is assembled per screen rather than published as one component, nothing holds the offset, the gap or the alignment steady between screens. Composing them into a single set with the panel as an optional slot would fix the drift and give the pattern one name.</p>
+        </div></div>
+        <div class="finding"><div class="sev med"></div><div class="finding-body">
+          <div class="finding-top"><span class="finding-title">Search's state model contradicts itself</span><span class="pill med">Medium</span></div>
+          <p><code>State=Enabled, Disabled=True</code> is a selectable combination — two properties describing the same thing in opposite directions, and the file ships three variants in exactly that state. Renaming the State values to describe interaction (Rest, Focus) rather than availability resolves it. The same property is spelled <code>Disabled</code> here and <code>Disable</code> on both Button components, so the section disagrees with itself on one of its most common properties.</p>
+        </div></div>
+        <div class="finding"><div class="sev med"></div><div class="finding-body">
+          <div class="finding-top"><span class="finding-title">Dropdown collapses content type and interaction state</span><span class="pill med">Medium</span></div>
+          <p><code>Default</code>, <code>Hover</code>, <code>Selected</code>, <code>Error</code> and <code>Loading State</code> describe what the list is doing. <code>RD Select</code>, <code>Saham Select</code> and <code>Grouped</code> describe what the list contains. All eight are values of one <code>State</code> property, so a grouped list can never also be hovered and a Saham list can never show an error. Splitting into <code>Content</code> and <code>State</code> gives you the combinations the product actually needs without drawing them individually.</p>
+        </div></div>
+      </div>
+    </article>
+
+    <!-- ===================== BUTTON ===================== -->
+    <article class="page" id="button">
+      <div class="page-head">
+        <p class="eyebrow">Inputs · component page</p>
+        <h1>Button</h1>
+      </div>
+
+
+      <div class="group" style="margin-top:30px">
+        <h3>Interactive Demo</h3>
+        <div class="pg-mount" data-comp="button"></div>
+      </div>
+
+      <div class="group">
+        <h3>Properties</h3>
+        <div class="comp">
+          <div class="comp-body">
+            <div class="prop"><span class="prop-k bad">Size</span><span class="prop-v"><b>Big/40</b>, <b>Med/36</b>, <b>Small/32</b> <em>— pixel values baked into the value names, and a step below every sibling</em></span></div>
+            <div class="prop"><span class="prop-k">State</span><span class="prop-v"><b>Default</b>, <b>Hover</b></span></div>
+            <div class="prop"><span class="prop-k bad">Tipe</span><span class="prop-v"><b>Buy</b>, <b>Sell</b> <em>— Bahasa property name beside English ones</em></span></div>
+            <div class="prop"><span class="prop-k bad">Type/Color</span><span class="prop-v">Solid, Soft, Outline, <b>Transparant</b> × Green / Red, plus Transparant/White <em>— misspelled, and fully determined by Tipe</em></span></div>
+            <div class="prop"><span class="prop-k bad">Disable</span><span class="prop-v"><b>False</b>, <b>True</b> <em>— "Disable" here, "Disabled" on Search</em></span></div>
+            <div class="prop"><span class="prop-k">Loading</span><span class="prop-v"><b>False</b>, <b>True</b></span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Variants</h3>
+        <div class="stage">
+          <div id="btn-gallery"></div>
+        </div>
+      </div>
+
+      <div class="find-head"><h2>Findings</h2></div>
+      <div class="findings">
+        <div class="finding"><div class="sev high"></div><div class="finding-body">
+          <div class="finding-top"><span class="finding-title">The size scale is off by one step</span><span class="pill high">High</span></div>
+          <p>Button publishes at 40 / 36 / 32. Button Group and Search both publish at 44 / 40 / 36. So Button's largest size is the same height as everyone else's medium, its smallest has no counterpart anywhere, and it has no 44px variant at all. A Large Button Group beside a Big Button in the same toolbar is 44 against 40. This is invisible while you work inside a single component sheet and only shows up once controls sit side by side in a real screen — which is also why it tends to get patched per screen with manual overrides rather than fixed at the source.</p>
+        </div></div>
+        <div class="finding"><div class="sev high"></div><div class="finding-body">
+          <div class="finding-top"><span class="finding-title">Hover is published, focus is not</span><span class="pill high">High</span></div>
+          <p>Button publishes a Hover variant and no Focus variant. Whatever the browser draws by default is therefore what ships, which on a <code>#0C0D0E</code> ground is frequently invisible. Button Group has the same gap; Search is the only component in the section that publishes a Focused state, and it publishes no Hover — the two are exact mirror images of each other. Of everything in this audit, this is the finding with an accessibility consequence rather than a consistency one.</p>
+        </div></div>
+        <div class="finding"><div class="sev med"></div><div class="finding-body">
+          <div class="finding-top"><span class="finding-title">Four property names break convention, each differently</span><span class="pill med">Med</span></div>
+          <p><code>Tipe</code> is Bahasa where every other property on this component is English. <code>Transparant</code> is misspelled, and it appears in four of the nine colour options. <code>Disable</code> is the verb where Search uses the adjective <code>Disabled</code>. And <code>Big/40</code>, <code>Med/36</code>, <code>Small/32</code> bake pixel values into the value names, which no sibling does and which guarantees the name goes stale the moment a height changes. Worth settling as a written convention before the remaining nine pages in the section harden.</p>
+        </div></div>
+        <div class="finding"><div class="sev med"></div><div class="finding-body">
+          <div class="finding-top"><span class="finding-title">A pressed-state token exists that no component uses</span><span class="pill med">Med</span></div>
+          <p>Turquoise <code>T12</code> <code>#172022</code> is documented on the colour page as "Click button", and <code>T13</code> <code>#195E57</code> as "Disabled". T13 is in use; T12 is not — no component in this section publishes a pressed or active variant at all. The decision about what a press looks like was made, written down as a token, and never reached a component. The playground above uses T12 for its pressed state to show what that decision looked like.</p>
+        </div></div>
+        <div class="finding"><div class="sev high"></div><div class="finding-body">
+          <div class="finding-top"><span class="finding-title">Sell has no disabled state, at any size or style</span><span class="pill high">High</span></div>
+          <p>Every dashed cell in the Disable column above sits in a Red row. Green publishes 48 variants plus three disabled-and-loading; Red publishes 36 and stops. There is no way to show a disabled Sell button, which in a trading product is exactly the state you need when an order cannot be placed — insufficient balance, market closed, suspended counter. It gets built by hand on the screen that needs it, outside the library, where nothing keeps it in step.</p>
+        </div></div>
+        <div class="finding"><div class="sev med"></div><div class="finding-body">
+          <div class="finding-top"><span class="finding-title">One decision is encoded in two properties</span><span class="pill med">Medium</span></div>
+          <p><code>Tipe=Buy</code> always pairs with a <code>/Green</code> colour and <code>Tipe=Sell</code> always with <code>/Red</code>, so the colour axis carries no information the trade side does not already carry. <code>Type/Color</code> is also doing double duty in a second way: seen side by side, Soft is a 15% tint, Outline is the same colour as a border, and Transparant is the colour with nothing behind it — all three are the same decision about emphasis, bundled with hue. Separating emphasis from colour, and deriving colour from Tipe, collapses the set substantially and gives Sell its missing states for free.</p>
+        </div></div>
+        <div class="finding"><div class="sev med"></div><div class="finding-body">
+          <div class="finding-top"><span class="finding-title">Six variants describe a state that cannot happen</span><span class="pill med">Medium</span></div>
+          <p>The Disable + Loading column is empty everywhere except Transparant/Green and Transparant/White. A button that is simultaneously disabled and loading is not a state anyone designs for. Transparant/White is stranger still: it appears nowhere else in the set — no Default, no Hover, no Disabled, no Loading of its own — so a whole colour option exists only inside an impossible state. Both look like artefacts of duplicating variants rather than decisions.</p>
+        </div></div>
+      </div>
+    </article>
+
+    <!-- ===================== BUTTON GROUP ===================== -->
+    <article class="page" id="buttongroup">
+      <div class="page-head">
+        <p class="eyebrow">Inputs · component page</p>
+        <h1>Button Group</h1>
+      </div>
+
+
+      <div class="group" style="margin-top:30px">
+        <h3>Interactive Demo</h3>
+        <div class="pg-mount" data-comp="buttongroup"></div>
+      </div>
+
+      <div class="group">
+        <h3>Properties</h3>
+        <div class="comp">
+          <div class="comp-body">
+            <div class="prop"><span class="prop-k">Size</span><span class="prop-v"><b>Large</b> 44, <b>Medium</b> 40, <b>Small</b> 36</span></div>
+            <div class="prop"><span class="prop-k">State</span><span class="prop-v"><b>Default</b>, <b>Hover</b></span></div>
+            <div class="prop"><span class="prop-k">Type</span><span class="prop-v"><b>Dual</b> 382px, <b>Triple</b> 545px, <b>Customize</b> 326px</span></div>
+            <div class="prop"><span class="prop-k">Disable</span><span class="prop-v"><b>False</b>, <b>True</b></span></div>
+            <div class="prop"><span class="prop-k bad">Tipe Oder</span><span class="prop-v"><b>Buy</b>, <b>Sell</b>, <b>Default</b> <em>— Bahasa, and missing the r in "Order"</em></span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Variants</h3>
+        <div class="stage">
+          <div id="bg-gallery"></div>
+        </div>
+      </div>
+
+      <div class="find-head"><h2>Findings</h2></div>
+      <div class="findings">
+        <div class="finding"><div class="sev med"></div><div class="finding-body">
+          <div class="finding-top"><span class="finding-title">Nothing records which segment is live</span><span class="pill med">Medium</span></div>
+          <p>Dual and Triple publish five properties and none of them says which segment is on. Every variant in the file is drawn with the first segment active, so a designer needing the second or third has to reach inside the instance and override the layers by hand — which detaches those fills from the library and quietly opts that instance out of any future update. Customize does not have the problem, because <code>Tipe Oder</code> doubles as the answer there: Buy lights the left block, Sell the right. Giving Dual and Triple an equivalent property — an index, or one boolean per segment — would close the gap and make the set describable in code.</p>
+        </div></div>
+        <div class="finding"><div class="sev high"></div><div class="finding-body">
+          <div class="finding-top"><span class="finding-title">Hover is published, focus is not</span><span class="pill high">High</span></div>
+          <p>Button Group publishes a Hover variant and no Focus variant — the same gap Button has. A segmented control is reached by keyboard more often than a plain button, since moving between segments is the whole interaction, so the missing focus indicator costs more here than it does on Button. Search is the only component in the section that publishes a Focused state.</p>
+        </div></div>
+        <div class="finding"><div class="sev med"></div><div class="finding-body">
+          <div class="finding-top"><span class="finding-title">The order-side property is Bahasa and misspelled</span><span class="pill med">Med</span></div>
+          <p><code>Tipe Oder</code> should be <code>Tipe Order</code>, and sits beside <code>Size</code>, <code>State</code>, <code>Type</code> and <code>Disable</code> in English. Button has the same mixed-language problem under a different name — <code>Tipe</code> — so the two components disagree with the convention and with each other. Renaming both to one English property applied consistently would also make the Buy/Sell axis searchable in the insert menu.</p>
+        </div></div>
+        <div class="finding"><div class="sev high"></div><div class="finding-body">
+          <div class="finding-top"><span class="finding-title">A variant carries the wrong Type</span><span class="pill high">High</span></div>
+          <p>The variant published as <code>Size=Large, State=Default, Type=Dual, Disable=False, Tipe Oder=Sell</code> is 326px wide. Dual variants are 382px and Customize variants are 326px, and on the canvas it sits inside the Customize block between the Large Customize Buy variant and its Hover twin. The geometry and the position both say Customize; only the property says Dual. Anyone switching a Customize group to Sell lands on a variant that reports itself as something else, and any code generated from these names inherits the error. Worth opening in the file to confirm before renaming.</p>
+        </div></div>
+        <div class="finding"><div class="sev med"></div><div class="finding-body">
+          <div class="finding-top"><span class="finding-title">Only Customize carries Buy and Sell, and none of them disable</span><span class="pill med">Medium</span></div>
+          <p>Dual and Triple are published exclusively with <code>Tipe Oder=Default</code>, so trade-side colouring is available in one of the three forms. And every disabled variant across all three forms is <code>Default</code> — the same gap Button has, reached by a different route. A disabled Buy or Sell group cannot be assembled from the library at any size.</p>
+        </div></div>
+      </div>
+    </article>
+
+    <!-- ===================== COLOR ===================== -->
+    <article class="page on" id="color">
+      <div class="page-head">
+        <p class="eyebrow">Foundations · read from COLOR VARIABLE</p>
+        <h1>Color</h1>
+        <p class="lede">Eight families, 76 tokens, all published as fill styles. Roles are recorded in a Notes column on the page, in Bahasa, rather than in the token names — the short English glosses below come from that column.</p>
+      </div>
+
+      <div class="group">
+        <h3>Black &amp; White</h3>
+        <div class="ramp">
+          <div class="chip"><div class="chip-fill" style="background:#FFFFFF"></div><div class="chip-meta"><span class="chip-name">BW01</span><span class="chip-hex">#FFFFFF</span><span class="chip-role">Primary text</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#F9F9F9"></div><div class="chip-meta"><span class="chip-name">BW02</span><span class="chip-hex">#F9F9F9</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#F0F0F0"></div><div class="chip-meta"><span class="chip-name">BW03</span><span class="chip-hex">#F0F0F0</span></div></div>
+          <div class="chip flag"><div class="chip-fill" style="background:#DADADA"></div><div class="chip-meta"><span class="chip-name">BW04</span><span class="chip-hex">#DADADA</span></div></div>
+          <div class="chip flag"><div class="chip-fill" style="background:#D6D6D6"></div><div class="chip-meta"><span class="chip-name">BW05</span><span class="chip-hex">#D6D6D6</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#888888"></div><div class="chip-meta"><span class="chip-name">BW06</span><span class="chip-hex">#888888</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#9498A1"></div><div class="chip-meta"><span class="chip-name">BW07</span><span class="chip-hex">#9498A1</span><span class="chip-role">Disabled text, subtext</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#333333"></div><div class="chip-meta"><span class="chip-name">BW08</span><span class="chip-hex">#333333</span><span class="chip-role">Text-field stroke only</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#28292D"></div><div class="chip-meta"><span class="chip-name">BW09</span><span class="chip-hex">#28292D</span></div></div>
+          <div class="chip flag"><div class="chip-fill" style="background:#18191C"></div><div class="chip-meta"><span class="chip-name">BW10</span><span class="chip-hex">#18191C</span><span class="chip-role">Card 1 — container, modal, pop-up</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#0C0D0E"></div><div class="chip-meta"><span class="chip-name">BW11</span><span class="chip-hex">#0C0D0E</span><span class="chip-role">Background</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#1A1A1A"></div><div class="chip-meta"><span class="chip-name">BW12</span><span class="chip-hex">#1A1A1A</span><span class="chip-role">Header menu</span></div></div>
+          <div class="chip flag"><div class="chip-fill" style="background:#27292F"></div><div class="chip-meta"><span class="chip-name">BW13</span><span class="chip-hex">#27292F</span><span class="chip-role">Line focus state, disabled field</span></div></div>
+          <div class="chip flag"><div class="chip-fill" style="background:#18191A"></div><div class="chip-meta"><span class="chip-name">BW14 · NEW</span><span class="chip-hex">#18191A</span><span class="chip-role">Withdrawn &amp; pending-withdrawn status</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#121212"></div><div class="chip-meta"><span class="chip-name">BW15</span><span class="chip-hex">#121212</span><span class="chip-role">Sidebar</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#B9BFCE"></div><div class="chip-meta"><span class="chip-name">BW16</span><span class="chip-hex">#B9BFCE</span><span class="chip-role">Inactive icon, chip filter text, tab button text</span></div></div>
+          <div class="chip flag"><div class="chip-fill" style="background:#27292F"></div><div class="chip-meta"><span class="chip-name">BW17</span><span class="chip-hex">#27292F — no hex on page</span><span class="chip-role">Hover</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#212227"></div><div class="chip-meta"><span class="chip-name">BW18</span><span class="chip-hex">#212227</span><span class="chip-role">Card 2 — when the ground is BW10</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#161718"></div><div class="chip-meta"><span class="chip-name">BW19</span><span class="chip-hex">#161718</span></div></div>
+          <div class="chip flag"><div class="chip-fill" style="background:#1F2022"></div><div class="chip-meta"><span class="chip-name">BW20</span><span class="chip-hex">#1F2022</span><span class="chip-role">Page says table row line; style says DM text field</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#323338"></div><div class="chip-meta"><span class="chip-name">BW21</span><span class="chip-hex">#323338</span><span class="chip-role">Tooltip background</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#404249"></div><div class="chip-meta"><span class="chip-name">BW22</span><span class="chip-hex">#404249</span><span class="chip-role">Tooltip border</span></div></div>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Turquoise</h3>
+        <div class="ramp">
+          <div class="chip"><div class="chip-fill" style="background:#B8FCF5"></div><div class="chip-meta"><span class="chip-name">T01</span><span class="chip-hex">#B8FCF5</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#9CEFE6"></div><div class="chip-meta"><span class="chip-name">T02</span><span class="chip-hex">#9CEFE6</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#71E5D9"></div><div class="chip-meta"><span class="chip-name">T03</span><span class="chip-hex">#71E5D9</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#0DCEBB"></div><div class="chip-meta"><span class="chip-name">T04</span><span class="chip-hex">#0DCEBB</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#0CC6B2"></div><div class="chip-meta"><span class="chip-name">T05</span><span class="chip-hex">#0CC6B2</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#17C0AE"></div><div class="chip-meta"><span class="chip-name">T06</span><span class="chip-hex">#17C0AE</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#00B7A6"></div><div class="chip-meta"><span class="chip-name">T07</span><span class="chip-hex">#00B7A6</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#008375"></div><div class="chip-meta"><span class="chip-name">T08</span><span class="chip-hex">#008375</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#00A88C"></div><div class="chip-meta"><span class="chip-name">T09</span><span class="chip-hex">#00A88C</span><span class="chip-role">Primary — button, uptrend</span></div></div>
+          <div class="chip flag"><div class="chip-fill" style="background:#00A88C;opacity:0.15"></div><div class="chip-meta"><span class="chip-name">T10</span><span class="chip-hex">#00A88C @ 15%</span><span class="chip-role">Secondary button — resolves to T09</span></div></div>
+          <div class="chip flag"><div class="chip-fill" style="background:#00A88C;opacity:0.25"></div><div class="chip-meta"><span class="chip-name">T11</span><span class="chip-hex">#00A88C @ 25%</span><span class="chip-role">Hover — resolves to T09</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#172022"></div><div class="chip-meta"><span class="chip-name">T12 · NEW</span><span class="chip-hex">#172022</span><span class="chip-role">Click</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#195E57"></div><div class="chip-meta"><span class="chip-name">T13 · NEW</span><span class="chip-hex">#195E57</span><span class="chip-role">Disabled</span></div></div>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Red</h3>
+        <div class="ramp">
+          <div class="chip"><div class="chip-fill" style="background:#FFD4D9"></div><div class="chip-meta"><span class="chip-name">R01</span><span class="chip-hex">#FFD4D9</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#FF6F81"></div><div class="chip-meta"><span class="chip-name">R02</span><span class="chip-hex">#FF6F81</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#FF586C"></div><div class="chip-meta"><span class="chip-name">R03</span><span class="chip-hex">#FF586C</span><span class="chip-role">Primary — button, downtrend</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#C45038"></div><div class="chip-meta"><span class="chip-name">R04</span><span class="chip-hex">#C45038</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#FA3149"></div><div class="chip-meta"><span class="chip-name">R05</span><span class="chip-hex">#FA3149</span><span class="chip-role">Hover, primary button</span></div></div>
+          <div class="chip flag"><div class="chip-fill" style="background:#FF586C;opacity:0.15"></div><div class="chip-meta"><span class="chip-name">R06</span><span class="chip-hex">#FF586C @ 15%</span><span class="chip-role">Secondary button ground — resolves to R03</span></div></div>
+          <div class="chip flag"><div class="chip-fill" style="background:#FF586C;opacity:0.25"></div><div class="chip-meta"><span class="chip-name">R07</span><span class="chip-hex">#FF586C @ 25%</span><span class="chip-role">Resolves to R03</span></div></div>
+          <div class="chip flag"><div class="chip-fill" style="background:#FF586C;opacity:0.05"></div><div class="chip-meta"><span class="chip-name">R08 · NEW</span><span class="chip-hex">#FF586C @ 5%</span><span class="chip-role">Table error row</span></div></div>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Yellow</h3>
+        <div class="ramp">
+          <div class="chip"><div class="chip-fill" style="background:#FFFBE5"></div><div class="chip-meta"><span class="chip-name">Y01</span><span class="chip-hex">#FFFBE5</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#FEF1CC"></div><div class="chip-meta"><span class="chip-name">Y02</span><span class="chip-hex">#FEF1CC</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#FFE7A1"></div><div class="chip-meta"><span class="chip-name">Y03</span><span class="chip-hex">#FFE7A1</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#FBC800"></div><div class="chip-meta"><span class="chip-name">Y04</span><span class="chip-hex">#FBC800</span><span class="chip-role">Main</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#E0AA04"></div><div class="chip-meta"><span class="chip-name">Y05</span><span class="chip-hex">#E0AA04</span><span class="chip-role">Warning</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#DCA400"></div><div class="chip-meta"><span class="chip-name">Y06</span><span class="chip-hex">#DCA400</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#A0714D"></div><div class="chip-meta"><span class="chip-name">Y07</span><span class="chip-hex">#A0714D</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#826100"></div><div class="chip-meta"><span class="chip-name">Y08</span><span class="chip-hex">#826100</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#504424"></div><div class="chip-meta"><span class="chip-name">Y09</span><span class="chip-hex">#504424</span><span class="chip-role">Warning toast, snackbar</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#FFE581"></div><div class="chip-meta"><span class="chip-name">Y10</span><span class="chip-hex">#FFE581</span></div></div>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Purple</h3>
+        <div class="ramp">
+          <div class="chip"><div class="chip-fill" style="background:#EEE6FF"></div><div class="chip-meta"><span class="chip-name">P01</span><span class="chip-hex">#EEE6FF</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#DED4F5"></div><div class="chip-meta"><span class="chip-name">P02</span><span class="chip-hex">#DED4F5</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#CEBCF8"></div><div class="chip-meta"><span class="chip-name">P03</span><span class="chip-hex">#CEBCF8</span></div></div>
+          <div class="chip flag"><div class="chip-fill" style="background:#AA89FA"></div><div class="chip-meta"><span class="chip-name">P04</span><span class="chip-hex">#AA89FA</span></div></div>
+          <div class="chip flag"><div class="chip-fill" style="background:#A884FF"></div><div class="chip-meta"><span class="chip-name">P05</span><span class="chip-hex">#A884FF</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#5829CD"></div><div class="chip-meta"><span class="chip-name">P06</span><span class="chip-hex">#5829CD</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#420EA2"></div><div class="chip-meta"><span class="chip-name">P07</span><span class="chip-hex">#420EA2</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#9860FF"></div><div class="chip-meta"><span class="chip-name">P08</span><span class="chip-hex">#9860FF</span><span class="chip-role">Status · published as P08 (DM)</span></div></div>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Blue</h3>
+        <div class="ramp">
+          <div class="chip"><div class="chip-fill" style="background:var(--surface-2)"></div><div class="chip-meta"><span class="chip-name">B01–B07</span><span class="chip-hex">published, absent from page</span></div></div>
+          <div class="chip flag"><div class="chip-fill" style="background:#1B4F8B"></div><div class="chip-meta"><span class="chip-name">B08</span><span class="chip-hex">#1B4F8B</span><span class="chip-role">Page documents this as #9860FF — Purple's value</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#1A2935"></div><div class="chip-meta"><span class="chip-name">B09 · NEW</span><span class="chip-hex">#1A2935</span><span class="chip-role">Open &amp; partial status ground</span></div></div>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Green Fuji &amp; Orange</h3>
+        <div class="ramp">
+          <div class="chip"><div class="chip-fill" style="background:#D4F1E0"></div><div class="chip-meta"><span class="chip-name">GF01</span><span class="chip-hex">#D4F1E0</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#6FCF97"></div><div class="chip-meta"><span class="chip-name">GF02</span><span class="chip-hex">#6FCF97</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#3AAD6A"></div><div class="chip-meta"><span class="chip-name">GF03</span><span class="chip-hex">#3AAD6A</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#1A3224"></div><div class="chip-meta"><span class="chip-name">GF04</span><span class="chip-hex">#1A3224</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#FFE2CF"></div><div class="chip-meta"><span class="chip-name">O01</span><span class="chip-hex">#FFE2CF</span></div></div>
+          <div class="chip"><div class="chip-fill" style="background:#FF9F60"></div><div class="chip-meta"><span class="chip-name">O02</span><span class="chip-hex">#FF9F60</span><span class="chip-role">Status</span></div></div>
+        </div>
+      </div>
+
+      <div class="legend">
+        <span><span class="swatch-key"></span> clean</span>
+        <span><span class="swatch-key dup"></span> raised below</span>
+      </div>
+
+      <div class="find-head"><h2>Findings in Color</h2></div>
+      <div class="findings">
+        <div class="finding"><div class="sev high"></div><div class="finding-body">
+          <div class="finding-top"><span class="finding-title">Five opacity tokens collapse to two colors on export</span><span class="pill high">High</span></div>
+          <p>T10 (Secondary) and T11 (Hover) are documented as <code>#00A88C</code> at 15% and 25% — but opacity lives on the layer, not in the style, so both resolve to <code>#00A88C</code>, identical to T09. Same in Red: R06, R07 and R08 all resolve to <code>#FF586C</code>, identical to R03. Anyone exporting tokens or reading values through the API gets five duplicates and loses every state distinction. Bake the alpha into the token — <code>rgba</code> or an 8-digit hex — and they survive the trip to code.</p>
+        </div></div>
+        <div class="finding"><div class="sev high"></div><div class="finding-body">
+          <div class="finding-top"><span class="finding-title">The Blue board documents Purple's hex</span><span class="pill high">High</span></div>
+          <p>The Blue board lists B08 as <code>#9860FF</code> — that is Purple's P08 value. The published <code>Blue/B08</code> style is actually <code>#1B4F8B</code>. The board was duplicated from Purple and the color code was never updated; P01–P07 rows from that duplication are still sitting in the layer tree behind the two visible rows. A designer reading the documentation and hand-entering that hex ships the wrong color.</p>
+        </div></div>
+        <div class="finding"><div class="sev med"></div><div class="finding-body">
+          <div class="finding-top"><span class="finding-title">Token architecture is split mid-migration</span><span class="pill med">Medium</span></div>
+          <p>Everything here is published as <em>styles</em>. Only two variables exist — <code>BW18 (DM - CARD 2)</code> and <code>BW21 - BG Tooltip</code> — in a collection named "Variable collection". Given the page is called COLOR VARIABLE, the intent was clearly to move to variables; two tokens in means the migration stalled at the start. Variables are also what would let you express light and dark as modes rather than as <code>(DM)</code> suffixes scattered through the names.</p>
+        </div></div>
+        <div class="finding"><div class="sev med"></div><div class="finding-body">
+          <div class="finding-top"><span class="finding-title">Three pairs of indistinguishable greys, one undocumented</span><span class="pill med">Medium</span></div>
+          <p>BW13 (Line focus state) and BW17 (Hover) are both <code>#27292F</code> — focus and hover render identically. BW10 <code>#18191C</code> and BW14 <code>#18191A</code> differ by two units in one channel; BW04 <code>#DADADA</code> and BW05 <code>#D6D6D6</code> are equally close, as are Purple's P04 <code>#AA89FA</code> and P05 <code>#A884FF</code>. BW17 also has no hex printed on the page at all — only a note reading "Untuk hover" — so its value is discoverable only by inspecting the style.</p>
+        </div></div>
+        <div class="finding"><div class="sev med"></div><div class="finding-body">
+          <div class="finding-top"><span class="finding-title">Roles are documented in prose, not in tokens</span><span class="pill med">Medium</span></div>
+          <p>The Notes column carries real semantics — "Warna utama, button, uptren" on T09, "down tren" on R03, "Untuk warning" on Y05, "Error row table" on R08. That knowledge lives only on the page, in Bahasa, where no tool can read it. A developer picking <code>Red/R01</code> has no way to know it is not the error color. Role-named aliases pointing at the hue ramp would carry these decisions into code.</p>
+        </div></div>
+        <div class="finding"><div class="sev"></div><div class="finding-body">
+          <div class="finding-top"><span class="finding-title">"NEW" is baked into five permanent token names</span><span class="pill low">Low</span></div>
+          <p><code>BW14 - NEW</code>, <code>B09 - NEW</code>, <code>T12 - NEW</code>, <code>T13 - NEW</code>, <code>R08 - NEW</code>. A temporary status has become part of the name, so it will read as new indefinitely and any code generated from these names inherits it. BW20 has a related problem: the page notes call it a table row line, while the published style is named <code>BW20 (DM - Text Field)</code>.</p>
+        </div></div>
+      </div>
+    </article>
+
+    <!-- ===================== TYPE ===================== -->
+    <article class="page" id="type">
+      <div class="page-head">
+        <p class="eyebrow">Foundations · read from TYPOGRAPHY</p>
+        <h1>Type</h1>
+        <p class="lede">Inter throughout, three ladders, nineteen styles documented on the page against sixteen published to the library. Sizes and line heights below are exactly as the page records them; sample text is set at a scanning size, not at the real one.</p>
+      </div>
+
+      <div class="group">
+        <h3>Heading</h3>
+        <div class="spec-list">
+          <div class="spec"><span class="spec-label">H1</span><span class="spec-sample" style="font-size:34px;font-weight:600">Posisi Saham</span><span class="spec-val">58 / 64</span></div>
+          <div class="spec"><span class="spec-label">H2</span><span class="spec-sample" style="font-size:32px;font-weight:600">Posisi Saham</span><span class="spec-val">54 / 60</span></div>
+          <div class="spec"><span class="spec-label">H3</span><span class="spec-sample" style="font-size:29px;font-weight:600">Posisi Saham</span><span class="spec-val">42 / 48</span></div>
+          <div class="spec"><span class="spec-label">H4</span><span class="spec-sample" style="font-size:26px;font-weight:600">Posisi Saham</span><span class="spec-val">32 / 38</span></div>
+          <div class="spec"><span class="spec-label">H5</span><span class="spec-sample" style="font-size:23px;font-weight:600">Posisi Saham</span><span class="spec-val">26 / 32</span></div>
+          <div class="spec"><span class="spec-label">H6</span><span class="spec-sample" style="font-size:21px;font-weight:600">Posisi Saham</span><span class="spec-val">24 / 30</span></div>
+          <div class="spec"><span class="spec-label">H7</span><span class="spec-sample" style="font-size:19px;font-weight:600">Posisi Saham</span><span class="spec-val">20 / 26</span></div>
+          <div class="spec"><span class="spec-label">H8</span><span class="spec-sample" style="font-size:17px;font-weight:600">Posisi Saham</span><span class="spec-val">18 / 24</span></div>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Subtitle</h3>
+        <div class="spec-list">
+          <div class="spec"><span class="spec-label">SUBTITLE 1</span><span class="spec-sample" style="font-size:16px;font-weight:600">Antrean order book</span><span class="spec-val">16 / 22</span></div>
+          <div class="spec"><span class="spec-label">SUBTITLE 2</span><span class="spec-sample" style="font-size:14px;font-weight:600">Antrean order book</span><span class="spec-val">14 / 20</span></div>
+          <div class="spec flag"><span class="spec-label">SUBTITLE 3</span><span class="spec-sample" style="font-size:12px;font-weight:600">Antrean order book</span><span class="spec-val">12 / 18</span></div>
+          <div class="spec flag"><span class="spec-label">SUBTITLE 4</span><span class="spec-sample" style="font-size:10px;font-weight:600">Antrean order book</span><span class="spec-val">10 / 18</span></div>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Body</h3>
+        <div class="spec-list">
+          <div class="spec"><span class="spec-label">BODY 1</span><span class="spec-sample" style="font-size:22px">Antrean order book</span><span class="spec-val">22 / 28</span></div>
+          <div class="spec"><span class="spec-label">BODY 2</span><span class="spec-sample" style="font-size:20px">Antrean order book</span><span class="spec-val">20 / 26</span></div>
+          <div class="spec"><span class="spec-label">BODY 3</span><span class="spec-sample" style="font-size:18px">Antrean order book</span><span class="spec-val">18 / 24</span></div>
+          <div class="spec flag"><span class="spec-label">BODY 4</span><span class="spec-sample" style="font-size:16px">Antrean order book</span><span class="spec-val">16 / 26</span></div>
+          <div class="spec"><span class="spec-label">BODY 5</span><span class="spec-sample" style="font-size:14px">Antrean order book</span><span class="spec-val">14 / 20</span></div>
+          <div class="spec"><span class="spec-label">BODY 6</span><span class="spec-sample" style="font-size:12px">Antrean order book</span><span class="spec-val">12 / 18</span></div>
+          <div class="spec"><span class="spec-label">BODY 7</span><span class="spec-sample" style="font-size:10px">Antrean order book</span><span class="spec-val">10 / 16</span></div>
+        </div>
+      </div>
+
+      <div class="find-head"><h2>Findings in Type</h2></div>
+      <div class="findings">
+        <div class="finding"><div class="sev high"></div><div class="finding-body">
+          <div class="finding-top"><span class="finding-title">Subtitle is documented but never published</span><span class="pill high">High</span></div>
+          <p>The typography page defines a full Subtitle ladder — 16/22, 14/20, 12/18, 10/18, all Semibold. None of it exists as a published text style; the library carries only Heading/H1–H8 and Body/B1–B8. Every subtitle in every screen is therefore detached type that no library update can reach. Conversely Body/B8 is published with nothing documenting it, so the page and the library disagree in both directions.</p>
+        </div></div>
+        <div class="finding"><div class="sev"></div><div class="finding-body">
+          <div class="finding-top"><span class="finding-title">Two steps break the ladder</span><span class="pill low">Low</span></div>
+          <p>BODY 4 is 16/26 while BODY 3 above it is 18/24 — the line height grows as the size shrinks, which no other step in any of the three ladders does. SUBTITLE 3 and SUBTITLE 4 share a line height of 18 at 12px and 10px, so the smaller step is proportionally much looser than its neighbours.</p>
+        </div></div>
+      </div>
+    </article>
+
+    <!-- ===================== ICONS ===================== -->
+    <article class="page" id="icons">
+      <div class="page-head">
+        <p class="eyebrow">Foundations · read from ICON SET</p>
+        <h1>Icons</h1>
+        <p class="lede">One bundled third-party set at Bold weight, published as <code>Bold / Category / Name</code> across 36 categories, plus six Makmur-authored sets for product-specific needs.</p>
+      </div>
+
+
+      <div class="group" style="margin-top:30px">
+        <h3>Bundled set</h3>
+        <div class="tags">
+          <span class="tag">Arrows</span><span class="tag">Arrows Action</span><span class="tag">Astronomy</span>
+          <span class="tag">Building, Infrastructure</span><span class="tag">Call</span><span class="tag">Design, Tools</span>
+          <span class="tag">Electronic, Devices</span><span class="tag dup">Essentional, UI</span><span class="tag">Faces, Emoticons, Stickers</span>
+          <span class="tag">Files</span><span class="tag">Folders</span><span class="tag">Food, Kitchen</span>
+          <span class="tag">Hands</span><span class="tag">Home, Furniture</span><span class="tag">Like</span>
+          <span class="tag">List</span><span class="tag">Map &amp; Location</span><span class="tag">Medicine</span>
+          <span class="tag">Messages, Conversation</span><span class="tag">Money</span><span class="tag">Nature, Travel</span>
+          <span class="tag">Network, IT, Programming</span><span class="tag">Notes, Documents</span><span class="tag">Notifications</span>
+          <span class="tag">School</span><span class="tag">Search</span><span class="tag">Security</span>
+          <span class="tag">Settings, Fine Tuning</span><span class="tag">Shopping, Ecommerce</span><span class="tag">Sports</span>
+          <span class="tag dup">Text Formating</span><span class="tag">Time</span><span class="tag">Transport, Parts, Service</span>
+          <span class="tag">Users</span><span class="tag">Video, Audio, Sound</span><span class="tag">Weather</span>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Makmur-authored</h3>
+        <div class="tags">
+          <span class="tag set">Icon All</span><span class="tag set">Icon - Menu</span><span class="tag set">Icon - Notification</span>
+          <span class="tag set">Icon - Max/Min</span><span class="tag set">Icon - Price Alert</span><span class="tag set">Notifikasi - Icon</span>
+        </div>
+      </div>
+
+      <div class="find-head"><h2>Findings in Icons</h2></div>
+      <div class="findings">
+        <div class="finding"><div class="sev"></div><div class="finding-body">
+          <div class="finding-top"><span class="finding-title">Two vendor typos propagate into every path beneath them</span><span class="pill low">Low</span></div>
+          <p><code>Essentional, UI</code> and <code>Text Formating</code> came in with the third-party set and are now part of the component path of every icon in those two categories — which, for Essentional UI, is the category the product's core interface icons sit in. Anyone searching the insert menu for "essential" finds nothing. Renaming the two category frames fixes it once; leaving them means every future reference carries the misspelling.</p>
+        </div></div>
+      </div>
+    </article>
+
+    <!-- ===================== LIBRARY INDEX ===================== -->
+    <article class="page" id="components">
+      <div class="page-head">
+        <p class="eyebrow">Reference · from the published library</p>
+        <h1>Library index</h1>
+        <p class="lede">Everything the team library exposes, gathered by querying it rather than by reading pages — a shallower pass than the Inputs section, kept as a cross-check on what is actually published. Confirmed-present, not provably complete.</p>
+      </div>
+
+      <div class="group">
+        <h3>Primitives</h3>
+        <div class="tags">
+          <span class="tag set">Button</span><span class="tag dup">Button Group</span><span class="tag dup">Button Group</span>
+          <span class="tag set">Button Group 3</span><span class="tag set">Checkbox</span><span class="tag set">Radio Group</span>
+          <span class="tag set">Switch</span><span class="tag set">Dropdown</span><span class="tag set">Search</span>
+          <span class="tag set">Multiline</span><span class="tag set">OTP</span><span class="tag set">Date Range Picker</span>
+          <span class="tag set">Tabs</span><span class="tag set">Table</span><span class="tag set">Grid Table</span>
+          <span class="tag set">Badge</span><span class="tag set">Chip</span><span class="tag set">Breadcrumbs</span>
+          <span class="tag set">Dialog</span><span class="tag set">Pop Up</span><span class="tag">Tooltip</span>
+          <span class="tag set">Tooltip - Info</span><span class="tag set">Tooltip - Hover sidebar</span><span class="tag">Component Title</span>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Market &amp; trading</h3>
+        <div class="tags">
+          <span class="tag set">Trade - Order</span><span class="tag set">Trade - Card Detail</span><span class="tag set">Trade Book - Tabing</span>
+          <span class="tag set">Order Card</span><span class="tag set">Order - PDP</span><span class="tag set">Antrean Order Book Section</span>
+          <span class="tag set">Pop Out - Card - Order Book/Running Trade</span><span class="tag set">Details - Order Book/…/Broker Summary</span>
+          <span class="tag">Running All Stock</span><span class="tag set">Market Insight</span><span class="tag set">Market insight - Explore</span>
+          <span class="tag dup">Tab Market</span><span class="tag dup">Tab Market New</span><span class="tag dup">Table grid market</span>
+          <span class="tag dup">market table grid</span><span class="tag set">Tabbing Detail Emiten</span><span class="tag">Seasonality Chart</span>
+          <span class="tag set">Sankey Diagram</span><span class="tag set">Balance Sheet</span><span class="tag set">PDP</span>
+          <span class="tag">Product Section</span><span class="tag set">Tabing Product</span><span class="tag set">Action Transaksi</span>
+          <span class="tag set">Transaction Section</span><span class="tag set">Button Jual Beli</span><span class="tag set">Button Group Transaksi</span>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Watchlist</h3>
+        <div class="tags">
+          <span class="tag set">Watchlist List</span><span class="tag set">Watchlist Header</span><span class="tag set">Card Watchlist</span>
+          <span class="tag set">Filter Watchlist</span><span class="tag set">Edit Watchlist</span><span class="tag set">Pilihan watchlist</span>
+          <span class="tag dup">Dropdown Watchlist</span><span class="tag dup">Dropdown - Watchlist</span><span class="tag set">Dropdown - Buat Watchlist</span>
+          <span class="tag set">Pop Up Watchlist Baru</span><span class="tag set">Button Tag Watchlist</span>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Portfolio, Advisor &amp; account</h3>
+        <div class="tags">
+          <span class="tag set">Card Porto</span><span class="tag set">Table Porto</span><span class="tag set">Komposisi Aset Portfolio</span>
+          <span class="tag set">Total Investasi Portfolio</span><span class="tag dup">Total INvestasi Card</span><span class="tag dup">Filter portofolio</span>
+          <span class="tag set">Kinerja Investasi</span><span class="tag set">Riwayat Card</span><span class="tag set">Detail Card Riwayat</span>
+          <span class="tag set">Card Tab Info</span><span class="tag set">Card - Agenda Hari Ini</span>
+          <span class="tag set">Makmur Advisor - Header</span><span class="tag set">Advisor - Section Manajemen Nasabah</span>
+          <span class="tag">Advisor - Onboarding Section</span><span class="tag set">Advisor - Posisi/Kinerja/Riwayat</span>
+          <span class="tag set">Sidebar Akun</span><span class="tag set">Tab - Profile</span><span class="tag set">Button deposit</span>
+          <span class="tag">Field Pencairan Rekening</span><span class="tag">Field - Cek Profile Risiko</span>
+          <span class="tag dup">Disclaimer/Frame 427322046</span><span class="tag set">Undang Teman - Card Total Bonus</span>
+          <span class="tag dup">Label PIC Designer</span>
+        </div>
+      </div>
+
+      <div class="legend">
+        <span><span class="swatch-key"></span> component set (has variants)</span>
+        <span><span class="swatch-key dup"></span> raised below</span>
+      </div>
+
+      <div class="find-head"><h2>Findings in the library index</h2></div>
+      <div class="findings">
+        <div class="finding"><div class="sev med"></div><div class="finding-body">
+          <div class="finding-top"><span class="finding-title">Same component published twice under near-identical names</span><span class="pill med">Medium</span></div>
+          <p>Two distinct component sets are both called <strong>Button Group</strong>. Elsewhere: <code>Dropdown Watchlist</code> vs <code>Dropdown - Watchlist</code>, <code>Table grid market</code> vs <code>market table grid</code>, <code>Tab Market</code> vs <code>Tab Market New</code>. In the insert menu these are indistinguishable, so which one a designer picks is chance — and the two will drift apart independently. Naming has also drifted on three axes at once: language mixes within single names (<code>Card - Agenda Hari Ini</code>), casing is inconsistent (<code>Total INvestasi Card</code>), and tabs appear as <code>Tabs</code>, <code>Tabing</code> and <code>Tabbing</code>.</p>
+        </div></div>
+        <div class="finding"><div class="sev"></div><div class="finding-body">
+          <div class="finding-top"><span class="finding-title">Working artifacts published as library components</span><span class="pill low">Low</span></div>
+          <p>Auto-generated Figma names are published to the whole team: <code>Disclaimer/Frame 427322046</code> and <code>Component 3/Pop Out - Table Posisi Saham/…</code>. Separately, <code>Label PIC Designer</code> was last touched in October 2025 while everything else updated in August–September 2026 — a process artifact that outlived its purpose and is still on offer in the insert menu.</p>
+        </div></div>
+      </div>
+    </article>
+
+  </main>
+</div>
+
+<script>
+  (function () {
+    var shell = document.getElementById('shell');
+    var toggle = document.getElementById('drawerToggle');
+    var scrim = document.getElementById('scrim');
+
+    function closeDrawer() {
+      if (!shell) { return; }
+      shell.classList.remove('nav-open');
+      if (toggle) { toggle.setAttribute('aria-expanded', 'false'); }
+      if (scrim) { scrim.hidden = true; }
+    }
+    function openDrawer() {
+      shell.classList.add('nav-open');
+      toggle.setAttribute('aria-expanded', 'true');
+      scrim.hidden = false;
+    }
+    if (toggle) {
+      toggle.addEventListener('click', function () {
+        if (shell.classList.contains('nav-open')) { closeDrawer(); } else { openDrawer(); }
+      });
+    }
+    if (scrim) { scrim.addEventListener('click', closeDrawer); }
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { closeDrawer(); } });
+
+    var pages = Array.prototype.slice.call(document.querySelectorAll('.page'));
+    var btns = Array.prototype.slice.call(document.querySelectorAll('.nav-btn[data-go]'));
+
+    // the hash is a convenience for linking, not the router. Inside a sandboxed
+    // srcdoc frame the document has no addressable URL, so reading or writing it
+    // throws SecurityError — routing has to keep working regardless.
+    function readHash() {
+      try { return location.hash.slice(1); } catch (e) { return ''; }
+    }
+    function writeHash(id) {
+      try {
+        if (location.hash.slice(1) !== id) { history.replaceState(null, '', '#' + id); }
+      } catch (e) { /* no URL to write to; the in-memory route is the truth */ }
+    }
+
+    function show(id) {
+      var found = pages.some(function (p) { return p.id === id; });
+      if (!found) { id = 'color'; }
+      pages.forEach(function (p) { p.classList.toggle('on', p.id === id); });
+      btns.forEach(function (b) { b.setAttribute('aria-current', String(b.dataset.go === id)); });
+      writeHash(id);
+      var canvas = document.querySelector('main');
+      if (canvas) { canvas.scrollTop = 0; }
+      closeDrawer();
+    }
+
+    btns.forEach(function (b) {
+      b.addEventListener('click', function () { show(b.dataset.go); });
+    });
+
+    window.addEventListener('hashchange', function () { show(readHash()); });
+    show(readHash() || 'color');
+  })();
+</script>
+
+<script>
+(function () {
+  var GREEN = '#00A88C', GREEN_H = '#00B7A6', RED = '#FF586C', RED_H = '#FA3149';
+  var DARK_TXT = '#0C0D0E', OFF_BG = '#333333', OFF_TXT = '#9498A1';
+
+  function rgba(hex, a) {
+    var n = parseInt(hex.slice(1), 16);
+    return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')';
+  }
+
+  var SIZES = [
+    { id: 'lg', label: 'Big/40' },
+    { id: 'md', label: 'Med/36' },
+    { id: 'sm', label: 'Small/32' }
+  ];
+  var COLS = ['Default', 'Hover', 'Disable', 'Loading', 'Disable + Loading'];
+  var TYPES = ['Solid', 'Soft', 'Outline', 'Transparant'];
+
+  // returns inline style for a button cell, or null when the variant is not published
+  function btnStyle(type, hue, col) {
+    var base = hue === 'red' ? RED : GREEN;
+    var hov = hue === 'red' ? RED_H : GREEN_H;
+    var isOff = col === 'Disable' || col === 'Disable + Loading';
+    var s = { background: 'transparent', color: base, border: '1px solid transparent' };
+
+    if (isOff) {
+      if (hue === 'white') { s.background = 'transparent'; s.color = OFF_TXT; }
+      else if (type === 'Transparant') { s.background = 'transparent'; s.color = OFF_TXT; }
+      else { s.background = OFF_BG; s.color = OFF_TXT; }
+      return s;
+    }
+    if (type === 'Solid') {
+      s.background = col === 'Hover' ? hov : base;
+      s.color = DARK_TXT;
+    } else if (type === 'Soft') {
+      s.background = rgba(base, col === 'Hover' ? 0.25 : 0.15);
+      s.color = base;
+    } else if (type === 'Outline') {
+      s.border = '1px solid ' + base;
+      s.background = col === 'Hover' ? rgba(base, 0.15) : 'transparent';
+      s.color = base;
+    } else {
+      s.background = col === 'Hover' ? rgba(base, 0.15) : 'transparent';
+      s.color = base;
+    }
+    return s;
+  }
+
+  function exists(type, hue, col) {
+    if (hue === 'white') return type === 'Transparant' && col === 'Disable + Loading';
+    if (hue === 'red') return col === 'Default' || col === 'Hover' || col === 'Loading';
+    // green
+    if (col === 'Disable + Loading') return type === 'Transparant';
+    return true;
+  }
+
+  function makeBtn(type, hue, size, col) {
+    var el = document.createElement('div');
+    el.className = 'btn ' + size;
+    var s = btnStyle(type, hue, col);
+    el.style.background = s.background;
+    el.style.color = s.color;
+    el.style.border = s.border;
+    if (col === 'Loading' || col === 'Disable + Loading') {
+      var sp = document.createElement('div');
+      sp.className = 'spin';
+      el.appendChild(sp);
+    } else {
+      el.textContent = 'Button';
+    }
+    return el;
+  }
+
+  function el(tag, cls, txt) {
+    var n = document.createElement(tag);
+    if (cls) { n.className = cls; }
+    if (txt != null) { n.textContent = txt; }
+    return n;
+  }
+
+  function missing() {
+    var m = document.createElement('div');
+    m.className = 'vmiss';
+    m.textContent = 'not published';
+    return m;
+  }
+
+  function sizeRamp(root, title, build, stack, sizes) {
+    root.appendChild(el('div', 'vsub', title));
+    var ramp = document.createElement('div');
+    ramp.className = 'vramp' + (stack ? ' col' : '');
+    (sizes || SIZES).forEach(function (sz) {
+      var it = document.createElement('div');
+      it.className = 'vramp-i';
+      it.appendChild(build(sz));
+      var cap = document.createElement('b');
+      cap.textContent = sz.label;
+      it.appendChild(cap);
+      ramp.appendChild(it);
+    });
+    root.appendChild(ramp);
+  }
+
+  var btnRoot = document.getElementById('btn-gallery');
+  if (btnRoot) {
+    // rows are Type x Tipe, columns are the interaction state. Size is left out
+    // on purpose: exists() and btnStyle() both ignore it, so it would triple the
+    // matrix without changing a single fill — it gets a ramp underneath instead.
+    var btnGroups = TYPES.map(function (t) {
+      return { type: t, hues: [{ hue: 'green', lab: 'Tipe = Buy' }, { hue: 'red', lab: 'Tipe = Sell' }] };
+    });
+    btnGroups[btnGroups.length - 1].hues.push({ hue: 'white', lab: 'white' });
+
+    var sheet = document.createElement('div');
+    sheet.className = 'vsheet';
+    sheet.style.gridTemplateColumns = '104px 92px repeat(' + COLS.length + ', minmax(112px, 1fr))';
+    sheet.style.minWidth = '740px';
+
+    sheet.appendChild(el('div', 'vhead'));
+    sheet.appendChild(el('div', 'vhead'));
+    COLS.forEach(function (c) { sheet.appendChild(el('div', 'vhead', c)); });
+
+    var firstRow = true;
+    btnGroups.forEach(function (g) {
+      var lab = el('div', 'vlab' + (firstRow ? '' : ' rule'));
+      lab.textContent = g.type;
+      lab.style.gridRow = 'span ' + g.hues.length;
+      sheet.appendChild(lab);
+
+      g.hues.forEach(function (h, j) {
+        var rule = (firstRow && j === 0) ? '' : ' rule';
+        sheet.appendChild(el('div', 'vstate' + rule, h.lab));
+        COLS.forEach(function (c) {
+          var cell = el('div', 'vcell' + rule);
+          cell.appendChild(exists(g.type, h.hue, c) ? makeBtn(g.type, h.hue, 'lg', c) : missing());
+          sheet.appendChild(cell);
+        });
+      });
+      firstRow = false;
+    });
+    btnRoot.appendChild(sheet);
+
+    sizeRamp(btnRoot, 'Sizes',
+      function (sz) { return makeBtn('Solid', 'green', sz.id, 'Default'); });
+  }
+
+  /* ---- button group ---- */
+  var BG_SIZES = [
+    { id: 'bg-lg', label: 'Large · 44' },
+    { id: 'bg-md', label: 'Medium · 40' },
+    { id: 'bg-sm', label: 'Small · 36' }
+  ];
+
+  function segmented(count, sizeCls, state) {
+    var wrap = document.createElement('div');
+    wrap.className = 'bg-wrap';
+    var total = count === 2 ? 382 : 545;
+    for (var i = 0; i < count; i++) {
+      var seg = document.createElement('div');
+      seg.className = 'bg-seg ' + sizeCls;
+      seg.style.width = (total / count) + 'px';
+      seg.textContent = 'Button';
+      if (state === 'Disable') {
+        seg.style.background = i === 0 ? '#3A3D42' : 'transparent';
+        seg.style.color = OFF_TXT;
+      } else if (i === 0) {
+        seg.style.background = GREEN;
+        seg.style.color = DARK_TXT;
+      } else if (state === 'Hover' && i === 1) {
+        seg.style.background = '#27292F';
+        seg.style.color = '#FFFFFF';
+      } else {
+        seg.style.background = 'transparent';
+        seg.style.color = '#B9BFCE';
+      }
+      wrap.appendChild(seg);
+    }
+    if (state === 'Disable') { wrap.style.opacity = '0.75'; }
+    return wrap;
+  }
+
+  function customize(sizeCls, state, side) {
+    var wrap = document.createElement('div');
+    wrap.className = 'cz';
+    var h = sizeCls === 'bg-lg' ? 44 : sizeCls === 'bg-md' ? 40 : 36;
+    [0, 1].forEach(function (i) {
+      var seg = document.createElement('div');
+      seg.className = 'cz-seg ' + (i === 0 ? 'cz-l' : 'cz-r');
+      seg.style.width = '170px';
+      seg.style.height = h + 'px';
+      seg.style.fontSize = (sizeCls === 'bg-lg' ? 14 : sizeCls === 'bg-md' ? 13 : 12) + 'px';
+      seg.textContent = 'Button';
+      var active = (side === 'Buy' && i === 0) || (side === 'Sell' && i === 1);
+      if (state === 'Disable') {
+        seg.style.background = i === 0 ? '#3A3D42' : '#2A2D33';
+        seg.style.color = OFF_TXT;
+      } else if (active) {
+        seg.style.background = side === 'Sell' ? RED : GREEN;
+        seg.style.color = DARK_TXT;
+      } else {
+        seg.style.background = state === 'Hover' ? '#33363C' : '#2A2D33';
+        seg.style.color = '#B9BFCE';
+      }
+      wrap.appendChild(seg);
+    });
+    return wrap;
+  }
+
+  var bgRoot = document.getElementById('bg-gallery');
+  if (bgRoot) {
+    // the segmented forms are 340-545px wide, so a state-per-column matrix would
+    // run to ~1800px and force a sideways scroll. Rows carry the state instead,
+    // and the type name spans its own block rather than repeating on every line.
+    var bgRows = [
+      { type: 'Dual',
+        vs: [{ state: 'Default' }, { state: 'Hover' }, { state: 'Disable' }] },
+      { type: 'Triple',
+        vs: [{ state: 'Default' }, { state: 'Hover' }, { state: 'Disable' }] },
+      { type: 'Customize',
+        vs: [
+          { state: 'Default', side: 'Buy' }, { state: 'Hover', side: 'Buy' },
+          { state: 'Default', side: 'Sell' }, { state: 'Hover', side: 'Sell' },
+          { state: 'Disable', side: 'Default' }
+        ] }
+    ];
+
+    var sheet = document.createElement('div');
+    sheet.className = 'vsheet';
+    sheet.style.gridTemplateColumns = '132px 108px 1fr';
+    sheet.style.minWidth = '640px';
+
+    var first = true;
+    bgRows.forEach(function (g) {
+      var lab = document.createElement('div');
+      lab.className = 'vlab' + (first ? '' : ' rule');
+      lab.textContent = g.type;
+      lab.style.gridRow = 'span ' + g.vs.length;
+      sheet.appendChild(lab);
+
+      g.vs.forEach(function (v, j) {
+        var rule = (first && j === 0) ? '' : ' rule';
+        var st = document.createElement('div');
+        st.className = 'vstate' + rule;
+        st.textContent = v.state + (v.side && v.side !== 'Default' ? ' · ' + v.side : '');
+        sheet.appendChild(st);
+        var cell = document.createElement('div');
+        cell.className = 'vcell' + rule;
+        cell.appendChild(g.type === 'Customize'
+          ? customize('bg-lg', v.state, v.side)
+          : segmented(g.type === 'Dual' ? 2 : 3, 'bg-lg', v.state));
+        sheet.appendChild(cell);
+      });
+      first = false;
+    });
+    bgRoot.appendChild(sheet);
+
+    sizeRamp(bgRoot, 'Sizes',
+      function (sz) { return segmented(2, sz.id, 'Default'); }, true, BG_SIZES);
+  }
+
+  /* ---- search ---- */
+  var srchRoot = document.getElementById('srch-gallery');
+  if (srchRoot) {
+    var SR_COLS = [
+      { st: 'Enabled', dis: 'False', head: 'Enabled' },
+      { st: 'Focused', dis: 'False', head: 'Focused' },
+      { st: 'Enabled', dis: 'True', head: 'Disabled' }
+    ];
+    var SR_SIZES = [
+      { s: 'lg', l: 'Large', h: '44' },
+      { s: 'md', l: 'Medium', h: '40' },
+      { s: 'sm', l: 'Small', h: '36' }
+    ];
+
+    function srchSpec(sizeCls, v) {
+      var f = document.createElement('div');
+      f.className = 'srch ' + sizeCls;
+      var txt = document.createElement('span');
+      if (v.st === 'Focused') {
+        f.style.borderColor = GREEN;
+        f.style.color = '#FFFFFF';
+        txt.innerHTML = 'Value<span class="caret"></span>';
+      } else if (v.dis === 'True') {
+        f.style.color = '#5A5E66';
+        f.style.background = '#18191C';
+        txt.textContent = 'Cari';
+      } else {
+        f.style.color = OFF_TXT;
+        txt.textContent = 'Cari';
+      }
+      var ico = document.createElement('span');
+      ico.className = 'srch-ico';
+      f.appendChild(txt);
+      f.appendChild(ico);
+      return f;
+    }
+
+    var sheet = document.createElement('div');
+    sheet.className = 'vsheet';
+    sheet.style.gridTemplateColumns = '104px repeat(3, minmax(210px, 1fr))';
+    sheet.style.minWidth = '700px';
+    sheet.appendChild(el('div', 'vhead'));
+    SR_COLS.forEach(function (c) { sheet.appendChild(el('div', 'vhead', c.head)); });
+
+    SR_SIZES.forEach(function (sz, i) {
+      var rule = i ? ' rule' : '';
+      var lab = el('div', 'vlab' + rule);
+      lab.innerHTML = sz.l + ' <em>' + sz.h + 'px</em>';
+      sheet.appendChild(lab);
+      SR_COLS.forEach(function (v) {
+        var cell = el('div', 'vcell' + rule);
+        cell.appendChild(srchSpec(sz.s, v));
+        sheet.appendChild(cell);
+      });
+    });
+    srchRoot.appendChild(sheet);
+  }
+
+  /* ---- dropdown schematic ---- */
+})();
+</script>
+
+<script>
+(function () {
+  var GREEN = '#00A88C', GREEN_H = '#00B7A6', RED = '#FF586C', RED_H = '#FA3149';
+  var PRESS_G = '#172022', PRESS_R = '#2A1418';
+  var DARK = '#0C0D0E', OFF_BG = '#333333', OFF_TXT = '#9498A1', MUTED = '#B9BFCE';
+
+  function rgba(hex, a) {
+    var n = parseInt(hex.slice(1), 16);
+    return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')';
+  }
+
+  var SPECS = {
+    button: {
+      props: [
+        { k: 'Size', vals: ['Big/40', 'Med/36', 'Small/32'] },
+        { k: 'Tipe', vals: ['Buy', 'Sell'] },
+        { k: 'Type/Color', vals: ['Solid', 'Soft', 'Outline', 'Transparant'] },
+        { k: 'Disable', vals: ['False', 'True'] },
+        { k: 'Loading', vals: ['False', 'True'] }
+      ],
+      init: { 'Size': 'Big/40', 'Tipe': 'Buy', 'Type/Color': 'Solid', 'Disable': 'False', 'Loading': 'False' }
+    },
+    buttongroup: {
+      props: [
+        { k: 'Size', vals: ['Large', 'Medium', 'Small'] },
+        { k: 'Type', vals: ['Dual', 'Triple', 'Customize'] },
+        { k: 'Tipe Oder', vals: ['Default', 'Buy', 'Sell'] },
+        { k: 'Disable', vals: ['False', 'True'] }
+      ],
+      init: { 'Size': 'Large', 'Type': 'Dual', 'Tipe Oder': 'Default', 'Disable': 'False' },
+      status: true
+    },
+    autocomplete: {
+      props: [
+        { k: 'Size', vals: ['Large', 'Medium', 'Small'] },
+        { k: 'Disabled', vals: ['False', 'True'] },
+        { k: 'Results', vals: ['Default', 'RD Select', 'Saham Select', 'Grouped'] }
+      ],
+      init: { 'Size': 'Large', 'Disabled': 'False', 'Results': 'Default' },
+      dots: ['hover', 'press', 'focus', 'selected'],
+      status: true
+    }
+  };
+
+  /* ---------- published-variant rules ---------- */
+  function publishedRest(comp, s) {
+    if (comp === 'autocomplete') { return false; }   // no component links the field to the panel
+    if (comp === 'button') {
+      var dis = s['Disable'] === 'True', load = s['Loading'] === 'True';
+      if (s['Tipe'] === 'Sell' && dis) return false;
+      if (dis && load) return s['Type/Color'] === 'Transparant' && s['Tipe'] === 'Buy';
+      return true;
+    }
+    if (comp === 'buttongroup') {
+      var d = s['Disable'] === 'True', t = s['Tipe Oder'];
+      if (s['Type'] === 'Customize') { return d ? t === 'Default' : (t === 'Buy' || t === 'Sell'); }
+      return t === 'Default';
+    }
+    return true;
+  }
+
+  function publishedState(comp, s, which, target) {
+    if (comp === 'autocomplete') {
+      if (target === 'panel') { return which === 'hover' || which === 'selected'; }  // the panel publishes both
+      if (which === 'focus') { return s['Disabled'] === 'False'; }  // the field publishes Focused
+      return false;                                            // and neither Hover nor a press
+    }
+    if (which === 'hover') {
+      if (comp === 'button') return s['Disable'] === 'False' && s['Loading'] === 'False' && publishedRest(comp, s);
+      return s['Disable'] === 'False' && publishedRest(comp, s);
+    }
+    if (which === 'press') return false;
+    return false;
+  }
+
+  function restLabel(comp, s) {
+    if (comp === 'autocomplete') { return { ok: false, text: 'field + panel composed by hand' }; }
+    var ok = publishedRest(comp, s);
+    return { ok: ok, text: ok ? 'combination published' : 'combination not published' };
+  }
+
+  /* ---------- control builders ---------- */
+  function buttonEl(s) {
+    var hue = s['Tipe'] === 'Sell' ? 'red' : 'green';
+    var base = hue === 'red' ? RED : GREEN;
+    var hov = hue === 'red' ? RED_H : GREEN_H;
+    var press = hue === 'red' ? PRESS_R : PRESS_G;
+    var solidPress = hue === 'red' ? '#C45038' : '#008375';
+    var type = s['Type/Color'];
+    var dis = s['Disable'] === 'True', load = s['Loading'] === 'True';
+    var sizeCls = s['Size'] === 'Big/40' ? 'lg' : s['Size'] === 'Med/36' ? 'md' : 'sm';
+
+    var el = document.createElement('button');
+    el.type = 'button';
+    el.className = 'btn live ' + sizeCls + (dis ? ' is-off' : '');
+
+    var rest = { bg: 'transparent', fg: base, bd: 'transparent' };
+    if (dis) { rest = { bg: type === 'Transparant' ? 'transparent' : OFF_BG, fg: OFF_TXT, bd: 'transparent' }; }
+    else if (type === 'Solid') { rest = { bg: base, fg: DARK, bd: 'transparent' }; }
+    else if (type === 'Soft') { rest = { bg: rgba(base, 0.15), fg: base, bd: 'transparent' }; }
+    else if (type === 'Outline') { rest = { bg: 'transparent', fg: base, bd: base }; }
+
+    var hBg = dis ? rest.bg : (type === 'Solid' ? hov : rgba(base, type === 'Soft' ? 0.25 : 0.15));
+    var pBg = dis ? rest.bg : (type === 'Solid' ? solidPress : press);
+    var nonSolidFg = dis ? rest.fg : base;
+
+    el.style.background = rest.bg; el.style.color = rest.fg;
+    el.style.border = '1px solid ' + rest.bd;
+    el.style.setProperty('--rest-bg', rest.bg);
+    el.style.setProperty('--rest-fg', rest.fg);
+    el.style.setProperty('--rest-bd', rest.bd);
+    el.style.setProperty('--h-bg', hBg);
+    el.style.setProperty('--h-fg', dis ? rest.fg : (type === 'Solid' ? DARK : nonSolidFg));
+    el.style.setProperty('--h-bd', type === 'Outline' ? base : 'transparent');
+    el.style.setProperty('--p-bg', pBg);
+    el.style.setProperty('--p-fg', dis ? rest.fg : (type === 'Solid' ? DARK : nonSolidFg));
+    el.style.setProperty('--p-bd', type === 'Outline' ? base : 'transparent');
+
+    if (load) { var sp = document.createElement('span'); sp.className = 'spin'; el.appendChild(sp); }
+    else { el.textContent = 'Button'; }
+    if (dis) { el.setAttribute('aria-disabled', 'true'); }
+    return el;
+  }
+
+  function bgEl(s, ctx) {
+    var host = document.createElement('div');
+    // the stage centres its contents and the three types are 382 / 545 / 326 wide,
+    // so pin the footprint or the control slides every time Type or Size changes
+    host.style.width = '560px';
+    host.style.height = '46px';
+    host.style.display = 'flex';
+    host.style.alignItems = 'center';
+
+    var active = 0;   // which segment is on. Dual and Triple publish no property for this.
+
+    function paint() {
+      host.innerHTML = '';
+      var h = s['Size'] === 'Large' ? 44 : s['Size'] === 'Medium' ? 40 : 36;
+      var fs = s['Size'] === 'Large' ? 14 : s['Size'] === 'Medium' ? 13 : 12;
+      var dis = s['Disable'] === 'True';
+      var side = s['Tipe Oder'];
+      var onColour = side === 'Sell' ? RED : GREEN;
+      var onHover = side === 'Sell' ? RED_H : GREEN_H;
+      var onPress = side === 'Sell' ? '#C45038' : '#008375';
+
+      function paint_seg(seg, on, i) {
+        var bg = dis ? (on ? '#3A3D42' : 'transparent') : on ? onColour : 'transparent';
+        var fg = dis ? OFF_TXT : on ? DARK : MUTED;
+        seg.style.background = bg;
+        seg.style.color = fg;
+        seg.style.setProperty('--rest-bg', bg);
+        seg.style.setProperty('--rest-fg', fg);
+        seg.style.setProperty('--rest-bd', 'transparent');
+        seg.style.setProperty('--h-bg', dis ? bg : on ? onHover : '#27292F');
+        seg.style.setProperty('--h-fg', dis ? fg : on ? DARK : '#FFFFFF');
+        seg.style.setProperty('--h-bd', 'transparent');
+        seg.style.setProperty('--p-bg', dis ? bg : on ? onPress : PRESS_G);
+        seg.style.setProperty('--p-fg', dis ? fg : on ? DARK : MUTED);
+        seg.style.setProperty('--p-bd', 'transparent');
+      }
+
+      if (s['Type'] === 'Customize') {
+        var wrap = document.createElement('div');
+        wrap.className = 'cz';
+        [0, 1].forEach(function (i) {
+          var seg = document.createElement('button');
+          seg.type = 'button';
+          seg.className = 'cz-seg live ' + (i === 0 ? 'cz-l' : 'cz-r') + (dis ? ' is-off' : '');
+          seg.style.width = '170px'; seg.style.height = h + 'px'; seg.style.fontSize = fs + 'px';
+          seg.textContent = 'Button ' + (i + 1);
+          var on = (side === 'Buy' && i === 0) || (side === 'Sell' && i === 1);
+          // on Customize the live side IS a published property, so a click sets it
+          var bg = dis ? (i === 0 ? '#3A3D42' : '#2A2D33') : on ? (side === 'Sell' ? RED : GREEN) : '#2A2D33';
+          var fg = dis ? OFF_TXT : on ? DARK : MUTED;
+          seg.style.background = bg; seg.style.color = fg;
+          seg.style.setProperty('--rest-bg', bg);
+          seg.style.setProperty('--rest-fg', fg);
+          seg.style.setProperty('--rest-bd', 'transparent');
+          seg.style.setProperty('--h-bg', dis ? bg : on ? (side === 'Sell' ? RED_H : GREEN_H) : '#33363C');
+          seg.style.setProperty('--h-fg', dis ? fg : on ? DARK : '#FFFFFF');
+          seg.style.setProperty('--h-bd', 'transparent');
+          seg.style.setProperty('--p-bg', dis ? bg : on ? (side === 'Sell' ? '#C45038' : '#008375') : PRESS_G);
+          seg.style.setProperty('--p-fg', dis ? fg : on ? DARK : MUTED);
+          seg.style.setProperty('--p-bd', 'transparent');
+          if (!dis) {
+            seg.addEventListener('click', function () { ctx.setProp('Tipe Oder', i === 0 ? 'Buy' : 'Sell'); });
+          }
+          wrap.appendChild(seg);
+        });
+        host.appendChild(wrap);
+        ctx.attach(host);
+        ctx.setStatus(side === 'Default'
+          ? 'Neither side live &mdash; <b>Tipe Oder</b> sets it'
+          : 'Side <b>' + side + '</b> &mdash; a published property');
+        return;
+      }
+
+      var count = s['Type'] === 'Dual' ? 2 : 3;
+      var total = count === 2 ? 382 : 545;
+      if (active > count - 1) { active = 0; }
+      var box = document.createElement('div');
+      box.className = 'bg-wrap';
+      for (var i = 0; i < count; i++) {
+        (function (idx) {
+          var seg = document.createElement('button');
+          seg.type = 'button';
+          seg.className = 'bg-seg live ' + (s['Size'] === 'Large' ? 'bg-lg' : s['Size'] === 'Medium' ? 'bg-md' : 'bg-sm') + (dis ? ' is-off' : '');
+          seg.style.width = (total / count) + 'px';
+          seg.textContent = 'Button ' + (idx + 1);
+          paint_seg(seg, idx === active, idx);
+          if (!dis) {
+            seg.addEventListener('click', function () { active = idx; paint(); });
+          }
+          box.appendChild(seg);
+        })(i);
+      }
+      host.appendChild(box);
+      ctx.attach(host);
+      ctx.setStatus('Segment <b>' + (active + 1) + '</b> of ' + count + ' live &mdash; no published property records this');
+    }
+
+    ctx.setProp = ctx.setProp || function () {};
+    paint();
+    return host;
+  }
+
+  function searchEl(s) {
+    var dis = s['Disabled'] === 'True';
+    var cls = s['Size'] === 'Large' ? 'lg' : s['Size'] === 'Medium' ? 'md' : 'sm';
+    var fg = dis ? '#5A5E66' : OFF_TXT;
+    var bg = dis ? '#18191C' : '#1F2022';
+
+    var box = document.createElement('div');
+    box.className = 'srch live ' + cls + (dis ? ' is-off' : '');
+    box.dataset.target = 'field';
+    box.style.cursor = dis ? 'not-allowed' : 'text';
+    box.style.background = bg; box.style.color = fg; box.style.borderColor = '#27292F';
+    box.style.setProperty('--rest-bg', bg);
+    box.style.setProperty('--rest-fg', fg);
+    box.style.setProperty('--rest-bd', '#27292F');
+    box.style.setProperty('--h-bg', bg);
+    box.style.setProperty('--h-fg', fg);
+    box.style.setProperty('--h-bd', '#27292F');
+    box.style.setProperty('--p-bg', bg);
+    box.style.setProperty('--p-fg', fg);
+    box.style.setProperty('--p-bd', '#27292F');
+    box.style.setProperty('--f-bd', dis ? '#27292F' : GREEN);
+    box.style.setProperty('--f-fg', dis ? fg : '#FFFFFF');
+
+    var input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'srch-input';
+    input.placeholder = 'Cari';
+    input.setAttribute('aria-label', 'Search');
+    if (dis) { input.disabled = true; }
+
+    var ico = document.createElement('span');
+    ico.className = 'srch-ico';
+    box.appendChild(input);
+    box.appendChild(ico);
+    box.addEventListener('mousedown', function (e) { if (!dis && e.target !== input) { input.focus(); } });
+    return box;
+  }
+
+  // Content read from the published variants of Dropdown - Search & List.
+  // Brand logos cannot be extracted, so the avatar is a neutral initial.
+  var DATA = {
+    'Default': { kind: 'plain', q: 'a', rows: [
+      'Aal Akbar', 'Bagaskara Andaro', 'Bahuwarna Habibi', 'Bramantyo Cipta Kusuma',
+      'Clarista Andjanie', 'Delia Maharani Triutama', 'Ilyas Najmudin', 'Kenji Sanjaya'
+    ] },
+    'RD Select': { kind: 'avatar', q: 'Bahana', rows: [
+      'Bahana Liquid Syariah Kelas G', 'Bahana Dana Likuid Kelas G', 'Bahana Mes Syariah Kelas G',
+      'Bahana BF Indonesia Bond Index Fund', 'Bahana Icon Syariah Kelas G', 'Bahana Makara Prima Kelas G',
+      'Bahana Primavera 99 Kelas G', 'Bahana Liquid USD'
+    ] },
+    'Saham Select': { kind: 'stock', q: 'BUMI', rows: [
+      ['BUMI', 'Bumi Resources Tbk.'], ['BBSS', 'Bumi Benowo Sukses Sejahtera Tbk.'],
+      ['BCIP', 'Bumi Citra Permai Tbk.'], ['BNBA', 'Bank Bumi Arta Tbk.'],
+      ['BRMS', 'Bumi Resources Minerals Tbk.'], ['BSDE', 'Bumi Serpong Damai Tbk.'],
+      ['BUMIBQCU6A', 'Call Warrant BUMI BQ Exp 30 September'], ['BUMIBQCZ6A', 'Call Warrant BUMI DR Exp 30 Desember']
+    ] },
+    'Grouped': { kind: 'grouped', q: 'a', rows: [
+      ['head', 'A'], ['row', 'Avrist Ada Liquid Syariah'], ['row', 'Avrist Ada Kas Mutiara'],
+      ['head', 'B'], ['row', 'Bahana Liquid Syariah Kelas G'], ['row', 'Bahana Dana Likuid Kelas G'],
+      ['row', 'Bahana Mes Syariah Kelas G'], ['row', 'Bahana BF Indonesia Bond Index Fund']
+    ] }
+  };
+
+  function labelsOf(state) {
+    var d = DATA[state];
+    if (!d) { return []; }
+    if (d.kind === 'stock') { return d.rows.map(function (r) { return r[0]; }); }
+    if (d.kind === 'grouped') { return d.rows.filter(function (r) { return r[0] === 'row'; }).map(function (r) { return r[1]; }); }
+    return d.rows.slice();
+  }
+
+  function markInto(el, label, q) {
+    var at = q ? label.toLowerCase().indexOf(q.toLowerCase()) : -1;
+    if (at < 0) { el.appendChild(document.createTextNode(label)); return; }
+    el.appendChild(document.createTextNode(label.slice(0, at)));
+    var hit = document.createElement('span');
+    hit.className = 'dd-hit';
+    hit.textContent = label.slice(at, at + q.length);
+    el.appendChild(hit);
+    el.appendChild(document.createTextNode(label.slice(at + q.length)));
+  }
+
+  function checkMark() {
+    var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 16 16');
+    svg.setAttribute('class', 'dd-check');
+    svg.setAttribute('aria-hidden', 'true');
+    var c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    c.setAttribute('cx', '8'); c.setAttribute('cy', '8'); c.setAttribute('r', '8');
+    c.setAttribute('fill', GREEN);
+    var pth = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    pth.setAttribute('d', 'M4.5 8.2l2.3 2.3 4.7-4.7');
+    pth.setAttribute('fill', 'none'); pth.setAttribute('stroke', '#0C0D0E');
+    pth.setAttribute('stroke-width', '1.8'); pth.setAttribute('stroke-linecap', 'round'); pth.setAttribute('stroke-linejoin', 'round');
+    svg.appendChild(c); svg.appendChild(pth);
+    return svg;
+  }
+
+  /* Builds one published state of Dropdown - Search & List.
+     opts: { q, chosen, active, interactive, onPick, onHoverRow, idPrefix } */
+  function ddPanel(state, opts) {
+    opts = opts || {};
+    var q = opts.q || '';
+    var panel = document.createElement('div');
+    panel.className = 'dd';
+
+    if (state === 'Loading State') {
+      var sp = document.createElement('div');
+      sp.className = 'dd-spin';
+      var ring = document.createElement('div');
+      ring.className = 'dd-ring';
+      sp.appendChild(ring);
+      panel.appendChild(sp);
+      return { el: panel, rows: [], labels: [] };
+    }
+
+    if (state === 'Error') {
+      var em = document.createElement('div');
+      em.className = 'dd-empty';
+      var t = document.createElement('b');
+      t.textContent = 'Tidak Ada Hasil Untuk "' + (q || 'Bar') + '"';
+      var sub = document.createElement('span');
+      sub.textContent = 'Coba nama client lain atau periksa kembali ejaannya';
+      em.appendChild(t); em.appendChild(sub);
+      panel.appendChild(em);
+      return { el: panel, rows: [], labels: [] };
+    }
+
+    var d = DATA[state] || DATA['Default'];
+    var rows = [];
+    var shown = [];
+    var idx = -1;
+
+    function keep(txt) {
+      return !opts.filter || !q || txt.toLowerCase().indexOf(q.toLowerCase()) >= 0;
+    }
+
+    function addRow(label, build) {
+      shown.push(label);
+      idx += 1;
+      var my = idx;
+      var r = document.createElement('div');
+      r.className = 'dd-row' + (opts.interactive ? ' live' : '');
+      if (opts.interactive) {
+        r.dataset.target = 'panel';
+        r.style.cursor = 'pointer';
+        r.id = (opts.idPrefix || 'dd') + '-opt' + my;
+        r.setAttribute('role', 'option');
+        r.style.setProperty('--rest-bd', 'transparent');
+        r.style.setProperty('--h-bg', '#2A2D33');
+        r.style.setProperty('--h-fg', '#FFFFFF');
+        r.style.setProperty('--h-bd', 'transparent');
+        r.style.setProperty('--p-bg', '#2A2D33');
+        r.style.setProperty('--p-fg', '#FFFFFF');
+        r.style.setProperty('--p-bd', 'transparent');
+        r.addEventListener('mouseenter', function () { if (opts.onHoverRow) { opts.onHoverRow(my); } });
+        r.addEventListener('mousedown', function (e) { e.preventDefault(); });
+        r.addEventListener('click', function () { if (opts.onPick) { opts.onPick(my); } });
+      }
+      build(r, my);
+      rows.push(r);
+      panel.appendChild(r);
+      return r;
+    }
+
+    if (d.kind === 'stock') {
+      d.rows.forEach(function (pair) {
+        if (!keep(pair[0] + ' ' + pair[1])) { return; }
+        addRow(pair[0], function (r) {
+          var av = document.createElement('div');
+          av.className = 'dd-av';
+          av.textContent = pair[0].slice(0, 1);
+          var tk = document.createElement('span');
+          tk.className = 'dd-tkr';
+          markInto(tk, pair[0], q);
+          var nm = document.createElement('span');
+          nm.className = 'nm';
+          markInto(nm, pair[1], q);
+          r.appendChild(av); r.appendChild(tk); r.appendChild(nm);
+        });
+      });
+    } else if (d.kind === 'avatar') {
+      d.rows.forEach(function (label) {
+        if (!keep(label)) { return; }
+        addRow(label, function (r) {
+          var av = document.createElement('div');
+          av.className = 'dd-av';
+          av.textContent = label.slice(0, 1);
+          var nm = document.createElement('span');
+          nm.className = 'nm';
+          markInto(nm, label, q);
+          r.appendChild(av); r.appendChild(nm);
+        });
+      });
+    } else if (d.kind === 'grouped') {
+      var pendingHead = null;
+      d.rows.forEach(function (pair) {
+        if (pair[0] === 'head') { pendingHead = pair[1]; return; }
+        if (!keep(pair[1])) { return; }
+        if (pendingHead) {                          // a group header only appears if the group has rows
+          var h = document.createElement('div');
+          h.className = 'dd-head';
+          h.setAttribute('role', 'presentation');   // a group label is not an option
+          h.textContent = pendingHead;
+          panel.appendChild(h);
+          pendingHead = null;
+        }
+        addRow(pair[1], function (r) {
+          var nm = document.createElement('span');
+          nm.className = 'nm';
+          markInto(nm, pair[1], q);
+          r.appendChild(nm);
+        });
+      });
+    } else {
+      d.rows.forEach(function (label) {
+        if (!keep(label)) { return; }
+        addRow(label, function (r) {
+          var nm = document.createElement('span');
+          nm.className = 'nm';
+          markInto(nm, label, q);
+          r.appendChild(nm);
+        });
+      });
+    }
+
+    return { el: panel, rows: rows, labels: shown };
+  }
+
+  function ddStyleRows(rows, chosen, active) {
+    rows.forEach(function (r, i) {
+      var picked = i === chosen, hot = i === active;
+      var bg = picked ? 'rgba(0, 168, 140, 0.08)' : hot ? '#2A2D33' : 'transparent';
+      var fg = picked || hot ? '#FFFFFF' : '#B9BFCE';
+      r.style.setProperty('--rest-bg', bg);
+      r.style.setProperty('--rest-fg', fg);
+      r.style.background = bg;
+      r.style.color = fg;
+      r.setAttribute('aria-selected', String(picked));
+      var old = r.querySelector('.dd-check');
+      if (old) { old.remove(); }
+      if (picked) { r.appendChild(checkMark()); }
+    });
+  }
+
+  // the Variants section renders all eight published states from the same builder
+  var ddGallery = document.getElementById('dd-gallery');
+  if (ddGallery) {
+    ['Default', 'RD Select', 'Saham Select', 'Grouped', 'Loading State', 'Error', 'Hover', 'Selected'].forEach(function (st) {
+      var box = document.createElement('div');
+      var cap = document.createElement('p');
+      cap.className = 'dd-cap';
+      cap.textContent = 'State = ' + st;
+      box.appendChild(cap);
+      var base = st === 'Hover' || st === 'Selected' ? 'Default' : st;
+      var built = ddPanel(base, { q: (DATA[base] || {}).q || '' });
+      if (st === 'Hover') { ddStyleRows(built.rows, -1, 3); }
+      else if (st === 'Selected') { ddStyleRows(built.rows, 3, -1); }
+      else { ddStyleRows(built.rows, -1, -1); }
+      box.appendChild(built.el);
+      ddGallery.appendChild(box);
+    });
+  }
+
+  var UID = 0;
+
+  function autocompleteEl(s, ctx) {
+    var uid = 'ac' + (++UID);
+    var col = document.createElement('div');
+    col.style.display = 'flex';
+    col.style.flexDirection = 'column';
+    col.style.gap = '5px';           // the 5px gap the Figma exhibit uses
+    col.style.alignItems = 'flex-start';
+    // the stage centres its contents, so reserve the panel's footprint up front —
+    // otherwise the field slides as the panel opens and closes
+    var fieldH = s['Size'] === 'Large' ? 44 : s['Size'] === 'Medium' ? 40 : 36;
+    col.style.width = '400px';
+    col.style.minHeight = (fieldH + 5 + 271) + 'px';
+
+    var box = searchEl({ 'Size': s['Size'], 'Disabled': s['Disabled'] });
+    var input = box.querySelector('input');
+    col.appendChild(box);
+
+    var host = document.createElement('div');
+    col.appendChild(host);
+
+    var say = document.createElement('div');   // polite live region for result counts
+    say.className = 'sr-only';
+    say.setAttribute('aria-live', 'polite');
+    col.appendChild(say);
+
+    var results = s['Results'];
+    var seed = (DATA[results] || {}).q || '';   // the query the published variant was drawn against
+
+    var mode = 'hidden';    // hidden | loading | open
+    var chosen = -1;        // index of the committed row, within what is currently shown
+    var active = -1;        // the one active option, shared by pointer and keyboard
+    var chosenLabel = null;
+    var loadedFor = null;
+    var seq = 0;            // request counter, so a stale response cannot land
+    var debounce = null;
+    var rowEls = [];
+    var shown = [];
+    var emptyResult = false;   // was the last resolved query a miss?
+    var lastCommitted = null;  // the value Escape reverts to
+
+    input.setAttribute('role', 'combobox');
+    input.setAttribute('aria-autocomplete', 'list');
+    input.setAttribute('aria-expanded', 'false');
+    input.setAttribute('aria-controls', uid + '-list');
+    input.placeholder = 'Cari — coba "' + seed + '"';
+
+    function open() { mode = 'open'; paint(); }
+    function close() {
+      // dismissing must also abandon anything in flight, or a pending request
+      // reopens the panel seconds after the user clicked away
+      clearTimeout(debounce);
+      clearTimeout(ctx.timer);
+      seq += 1;
+      mode = 'hidden';
+      active = -1;
+      paint();
+    }
+
+    // abandon the edit: restore the last committed value, or empty the field
+    // if nothing was ever chosen, then dismiss. Escape and clicking away both
+    // land here, so the two dismissals cannot drift apart.
+    function revert() {
+      input.value = lastCommitted || '';
+      chosenLabel = lastCommitted;
+      loadedFor = lastCommitted || null;
+      emptyResult = false;
+      ctx.setSelected(!!lastCommitted);
+      close();
+    }
+
+    function commit(idx) {
+      var label = shown[idx];
+      if (!label) { return; }
+      input.value = label;
+      chosenLabel = label;
+      lastCommitted = label;
+      loadedFor = label;
+      ctx.setSelected(true);
+      close();
+      input.focus();
+    }
+
+    function setActive(i) {
+      if (active === i) { return; }
+      active = i;
+      ddStyleRows(rowEls, chosen, active);
+      input.setAttribute('aria-activedescendant', active >= 0 ? uid + '-opt' + active : '');
+      if (rowEls[active]) { rowEls[active].scrollIntoView({ block: 'nearest' }); }
+    }
+
+    function paint() {
+      host.innerHTML = '';
+      rowEls = []; shown = [];
+      input.setAttribute('aria-expanded', String(mode !== 'hidden'));
+
+      if (mode === 'hidden') {
+        input.setAttribute('aria-activedescendant', '');
+        ctx.setStatus(chosenLabel ? 'Closed &mdash; <b>Selected</b> value held' : 'Hidden &mdash; type 3 letters to search');
+        return;
+      }
+      if (mode === 'loading') {
+        ctx.setStatus('<b>Loading State</b>');
+        say.textContent = 'Searching';
+        host.appendChild(ddPanel('Loading State').el);
+        return;
+      }
+
+      var q = input.value.trim();
+      var built = ddPanel(results, {
+        q: q, filter: true, interactive: true, idPrefix: uid,
+        onPick: commit, onHoverRow: setActive
+      });
+
+      if (!built.rows.length) {                     // nothing matched: the published Error state
+        emptyResult = true;
+        ctx.setStatus('<b>Error</b> &mdash; nothing matched');
+        say.textContent = 'No results';
+        var miss = ddPanel('Error', { q: q }).el;
+        // an empty panel holds nothing to choose, so clicking it dismisses
+        miss.style.cursor = 'pointer';
+        miss.addEventListener('mousedown', function (e) { e.preventDefault(); });
+        miss.addEventListener('click', close);
+        host.appendChild(miss);
+        return;
+      }
+      emptyResult = false;
+
+      rowEls = built.rows;
+      shown = built.labels;
+      chosen = chosenLabel ? shown.indexOf(chosenLabel) : -1;
+      built.el.id = uid + '-list';
+      built.el.setAttribute('role', 'listbox');
+      host.appendChild(built.el);
+      ddStyleRows(rowEls, chosen, active);
+      ctx.setStatus(chosen >= 0 ? '<b>' + results + '</b> &mdash; row <b>Selected</b>' : '<b>' + results + '</b>');
+      say.textContent = rowEls.length + ' results';
+      ctx.attach(host);
+    }
+
+    function run(q) {
+      clearTimeout(debounce);
+      clearTimeout(ctx.timer);
+      if (q.length < 3) { mode = 'hidden'; loadedFor = null; paint(); return; }
+      if (q === loadedFor) { open(); return; }          // an unchanged query never refetches
+      mode = 'loading';
+      paint();
+      var mine = ++seq;
+      debounce = setTimeout(function () {               // wait for typing to settle
+        ctx.timer = setTimeout(function () {            // then the request itself
+          if (mine !== seq) { return; }                 // a newer keystroke superseded this one
+          loadedFor = q;
+          mode = 'open';
+          paint();
+        }, 2000);
+      }, 250);
+    }
+
+    if (input && !input.disabled) {
+      input.addEventListener('input', function () {
+        if (chosenLabel) { chosenLabel = null; chosen = -1; ctx.setSelected(false); }
+        active = -1;
+        run(input.value.trim());
+      });
+
+      // clicking back into a field that already has results reopens without refetching.
+      // focus alone is not enough: after a commit the input never lost focus, so a
+      // second click fires click but not focus.
+      function reopen() {
+        if (emptyResult) { return; }   // nothing to come back to
+        if (mode === 'hidden' && input.value.trim().length >= 3 && input.value.trim() === loadedFor) { open(); }
+      }
+      input.addEventListener('focus', reopen);
+      input.addEventListener('click', reopen);
+
+      input.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') { revert(); return; }
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          if (mode === 'hidden' && !emptyResult && input.value.trim() === loadedFor) { open(); }
+          if (mode === 'open') { setActive(Math.min(active + 1, rowEls.length - 1)); }
+          return;
+        }
+        if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          if (mode === 'open') { setActive(Math.max(active - 1, 0)); }
+          return;
+        }
+        if (e.key === 'Home' && mode === 'open') { e.preventDefault(); setActive(0); return; }
+        if (e.key === 'End' && mode === 'open') { e.preventDefault(); setActive(rowEls.length - 1); return; }
+        if (e.key === 'Enter' && mode === 'open' && active >= 0) { e.preventDefault(); commit(active); }
+      });
+    }
+
+    // clicking anywhere outside abandons the edit exactly as Escape does — an
+    // unconfirmed query is not a value, whichever way the user leaves the field.
+    // It still fires with the panel already hidden, because a two-letter query
+    // never opened one but is just as uncommitted.
+    //
+    // The test is the field and the panel themselves, never the column that
+    // holds them: that column reserves the panel's full 400x320 footprint so
+    // the control cannot jump, which leaves blank stage around a 220x44 field.
+    // Counting that reserved space as "inside" made the most natural place to
+    // click away — just beside or below the box — do nothing at all.
+    function outside(e) {
+      if (box.contains(e.target) || host.contains(e.target)) { return; }
+      if (mode === 'hidden' && input.value === (lastCommitted || '')) { return; }
+      revert();
+    }
+    document.addEventListener('mousedown', outside);
+    ctx.cleanup = function () {
+      document.removeEventListener('mousedown', outside);
+      clearTimeout(debounce);
+    };
+
+    paint();
+    return col;
+  }
+
+  var BUILD = { button: buttonEl, buttongroup: bgEl, autocomplete: autocompleteEl };
+
+  /* ---------- one mountable playground ---------- */
+  function mount(root) {
+    var comp = root.dataset.comp;
+    var spec = SPECS[comp];
+    if (!spec) { return; }
+    var s = JSON.parse(JSON.stringify(spec.init));
+    var probe = { hover: null, press: null, focus: null, selected: null };  // each holds the target it belongs to
+
+    var statusEl = null;
+    var grid = document.createElement('div');
+    grid.className = 'pg';
+    var panel = document.createElement('div');
+    panel.className = 'pg-panel';
+    var stage = document.createElement('div');
+    stage.className = 'pg-stage';
+    var canvas = document.createElement('div');
+    canvas.className = 'pg-canvas';
+    var bar = document.createElement('div');
+    bar.className = 'pg-bar';
+
+    var dots = {};
+    (spec.dots || ['hover', 'press', 'focus']).forEach(function (k) {
+      var w = document.createElement('span');
+      w.className = 'pg-read';
+      var d = document.createElement('span');
+      d.className = 'pg-dot';
+      dots[k] = d;
+      w.appendChild(d);
+      w.appendChild(document.createTextNode(k === 'press' ? 'pressed' : k));
+      bar.appendChild(w);
+    });
+    var badge = document.createElement('span');
+    badge.className = 'pg-badge no';
+    bar.appendChild(badge);
+
+    stage.appendChild(canvas);
+    stage.appendChild(bar);
+    grid.appendChild(panel);
+    grid.appendChild(stage);
+    root.appendChild(grid);
+
+    function sync() {
+      Object.keys(dots).forEach(function (k) { dots[k].classList.toggle('on', !!probe[k]); });
+      // what you are pointing at beats what holds focus, which beats a standing selection
+      var which = probe.press ? 'press' : probe.hover ? 'hover' : probe.focus ? 'focus' : probe.selected ? 'selected' : null;
+      var ok, label;
+      if (which) {
+        var tgt = probe[which];
+        ok = publishedState(comp, s, which, tgt);
+        var noun = tgt === 'panel' ? 'panel ' : tgt === 'field' ? 'field ' : '';
+        label = ok ? noun + which + ' variant published' : 'no ' + noun + which + ' variant';
+      } else {
+        var r = restLabel(comp, s);
+        ok = r.ok; label = r.text;
+      }
+      badge.textContent = label;
+      badge.className = 'pg-badge ' + (ok ? 'yes' : 'no');
+    }
+
+    function attach(root) {
+      var targets = root.classList && root.classList.contains('live')
+        ? [root]
+        : Array.prototype.slice.call(root.querySelectorAll('.live'));
+      targets.forEach(function (t) {
+        var tgt = t.dataset.target || null;
+        t.addEventListener('mouseenter', function () { probe.hover = tgt || 'self'; sync(); });
+        t.addEventListener('mouseleave', function () { probe.hover = null; probe.press = null; sync(); });
+        t.addEventListener('mousedown', function () { probe.press = tgt || 'self'; sync(); });
+        t.addEventListener('focusin', function () { probe.focus = tgt || 'self'; sync(); });
+        t.addEventListener('focusout', function () { probe.focus = null; sync(); });   // a blur must not clear a press on another element
+      });
+    }
+
+    var ctx = {
+      timer: null,
+      cleanup: null,
+      attach: attach,
+      setProp: function (k, v) { s[k] = v; renderPanel(); renderStage(); },
+      setStatus: function (html) { if (statusEl) { statusEl.innerHTML = html; } },
+      setSelected: function (on) { probe.selected = on ? 'panel' : null; sync(); }
+    };
+
+    function renderStage() {
+      clearTimeout(ctx.timer);
+      if (ctx.cleanup) { ctx.cleanup(); ctx.cleanup = null; }
+      canvas.innerHTML = '';
+      probe.hover = null; probe.press = null; probe.focus = null; probe.selected = null;
+      var el = BUILD[comp](s, ctx);
+      canvas.appendChild(el);
+      attach(el);
+      sync();
+    }
+
+    function renderPanel() {
+      panel.innerHTML = '';
+      spec.props.forEach(function (p) {
+        var row = document.createElement('div');
+        row.className = 'pg-prop';
+        var k = document.createElement('span');
+        k.className = 'pg-prop-k';
+        k.textContent = p.k;
+        row.appendChild(k);
+        var opts = document.createElement('div');
+        opts.className = 'pg-opts';
+        p.vals.forEach(function (v) {
+          var b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'pg-opt';
+          b.textContent = v;
+          b.setAttribute('aria-pressed', String(s[p.k] === v));
+          b.addEventListener('click', function () { s[p.k] = v; renderPanel(); renderStage(); });
+          opts.appendChild(b);
+        });
+        row.appendChild(opts);
+        panel.appendChild(row);
+      });
+      if (spec.status) {
+        var sr = document.createElement('div');
+        sr.className = 'pg-prop';
+        var sk = document.createElement('span');
+        sk.className = 'pg-prop-k';
+        sk.textContent = 'Panel';
+        var sv = document.createElement('span');
+        sv.className = 'pg-status';
+        sr.appendChild(sk);
+        sr.appendChild(sv);
+        panel.appendChild(sr);
+        statusEl = sv;
+      }
+    }
+
+    document.addEventListener('mouseup', function () {
+      if (probe.press) { probe.press = null; sync(); }
+    });
+
+    renderPanel();
+    renderStage();
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll('.pg-mount'), mount);
+})();
+</script>
+
+</body>
+</html>
