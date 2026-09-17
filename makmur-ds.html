@@ -376,6 +376,22 @@
   .ren { font-family: var(--mono); font-size: 10.5px; font-weight: 400; color: var(--accent); text-transform: none; letter-spacing: 0; white-space: nowrap; }
   .muted { color: var(--text-muted); font-size: 12.5px; }
   .finding .fig { margin: 6px 0 0; }
+  .st { position: relative; display: inline-flex; align-items: center; gap: 6px; cursor: help; border-radius: 4px; }
+  .st:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .st-q { display: inline-flex; align-items: center; justify-content: center; width: 15px; height: 15px; border-radius: 50%; border: 1px solid var(--border-strong); font-family: var(--mono); font-size: 9.5px; color: var(--text-muted); }
+  .st-tip { display: none; position: absolute; top: calc(100% + 8px); left: 0; z-index: 20; width: 340px; max-width: calc(100vw - 32px); padding: 12px 14px; border: 1px solid var(--border-strong); border-radius: 8px; background: var(--surface); box-shadow: 0 8px 24px rgba(0,0,0,0.35); font-size: 12.5px; line-height: 1.45; cursor: default; }
+  .st:hover .st-tip, .st:focus .st-tip, .st:focus-within .st-tip { display: block; }
+  .st-tip-h { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
+  .st-tip ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 7px; }
+  .st-tip li { display: flex; flex-direction: column; gap: 1px; padding: 4px 6px; border-radius: 5px; }
+  .st-tip li.on { background: var(--accent-soft); }
+  .st-tip li b { font-weight: 600; color: var(--text); }
+  .st-tip li span { color: var(--text-muted); }
+  @media (max-width: 560px) { .meta { position: relative; } .st { position: static; } .st-tip { top: 28px; left: 0; right: 0; width: auto; max-width: none; } }
+  .ver { font-family: var(--body); font-size: 13px; color: var(--text); background: var(--surface); border: 1px solid var(--border-strong); border-radius: 6px; padding: 3px 8px; cursor: pointer; }
+  .ver:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .tbl td ul { margin: 0; padding-left: 16px; }
+  .tbl td li + li { margin-top: 2px; }
   .tbl tr.grp td { background: var(--surface-2); color: var(--text); font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; padding: 7px 14px; }
   .fig + .fig { margin-top: 0; }
   .finding .fig .fig-cap { font-size: 10px; color: #5C6670; }
@@ -446,8 +462,8 @@
         <h1>Autocomplete / Search</h1>
         <p class="lede">A search field that suggests matching results in a panel as the user types. Built from two sets: Search (the field) and Dropdown - Search &amp; List (the panel). <span class="draft">Draft</span></p>
         <div class="meta">
-          <span class="meta-i"><span class="meta-k">Status</span>🟢 Approved</span>
-          <span class="meta-i"><span class="meta-k">Version</span>v0</span>
+          <span class="meta-i"><span class="meta-k">Status</span><span class="st" tabindex="0" aria-describedby="st-tip-autocomplete">🟢 Approved<span class="st-q" aria-hidden="true">?</span><span class="st-tip" role="tooltip" id="st-tip-autocomplete"><span class="st-tip-h">Status definitions <span class="draft">Draft</span></span><ul><li class="on"><b>🟢 Approved</b><span>Passed component and final review. Safe to build against.</span></li><li class=""><b>🟡 In review</b><span>Designed and waiting for review. May still change.</span></li><li class=""><b>⚪ Not reviewed</b><span>In the library without the 🟢 marker, e.g. Filter and Toggle Button. Check with design before building.</span></li><li class=""><b>🔴 Deprecated</b><span>Being replaced. Don&rsquo;t use in new work.</span></li></ul></span></span></span>
+          <span class="meta-i"><span class="meta-k">Version</span><select class="ver" data-page="autocomplete" aria-label="Version"><option value="" selected>v1 · 16 Sep 2026 (current)</option><option value="archive/makmur-ds-v0.html">v0</option></select></span>
           <span class="meta-i"><span class="meta-k">Figma</span><a href="https://www.figma.com/design/aqR1UBKLKuHXRZCCXJbeE6/DS-DESKTOP?node-id=10080-102959" target="_blank" rel="noopener">Open page 10080:102959 ↗</a></span>
         </div>
       </div>
@@ -496,13 +512,13 @@
           <thead><tr><th>#</th><th>Part</th><th>Required</th><th>Tokens</th><th>Size</th><th>Behaviour</th></tr></thead>
           <tbody>
             <tr class="grp"><td colspan="6">Search &mdash; the field</td></tr>
-            <tr><td>1</td><td>Field container</td><td>Required</td><td>Fill: <code>BW09</code> <span class="sw sw-in" style="background:#28292D"></span>#28292D<br>Border: <code>BW08 (Stroke Field)</code> <span class="sw sw-in" style="background:#333333"></span>#333333</td><td>Width: elastic, 100&ndash;400px (drawn at 220px)<br>Height: set by Size</td><td><span class="muted">&mdash;</span></td></tr>
-            <tr><td>2</td><td>Input text</td><td>Required</td><td>Text: <code>Body/B5</code> Inter Regular 14/20<br>Placeholder: <code>BW06</code> <span class="sw sw-in" style="background:#888888"></span>#888888<br>Typed text: <span class="tofill">To fill</span></td><td><span class="muted">&mdash;</span></td><td>Opens the panel from the third character</td></tr>
-            <tr><td>3</td><td>Search glyph</td><td>Required</td><td>Colour: <code>BW16 (Icon No Active)</code> <span class="sw sw-in" style="background:#B9BFCE"></span>#B9BFCE</td><td><span class="tofill">To fill</span></td><td>Trailing</td></tr>
+            <tr><td>1</td><td>Field container</td><td>Required</td><td>Fill: <code>BW09</code> <span class="sw sw-in" style="background:#28292D"></span>#28292D<br>Border: <code>BW08 (Stroke Field)</code> <span class="sw sw-in" style="background:#333333"></span>#333333</td><td><ul><li>Width 100&ndash;400px, drawn at 220px</li><li>Height from Size</li></ul></td><td><span class="muted">&mdash;</span></td></tr>
+            <tr><td>2</td><td>Input text</td><td>Required</td><td>Text: <code>Body/B5</code> Inter Regular 14/20<br>Placeholder: <code>BW06</code> <span class="sw sw-in" style="background:#888888"></span>#888888<br>Typed text: <span class="tofill">To fill</span></td><td><span class="muted">&mdash;</span></td><td><ul><li>Opens the panel at the third character</li></ul></td></tr>
+            <tr><td>3</td><td>Search glyph</td><td>Required</td><td>Colour: <code>BW16 (Icon No Active)</code> <span class="sw sw-in" style="background:#B9BFCE"></span>#B9BFCE</td><td><span class="tofill">To fill</span></td><td><ul><li>Trailing</li></ul></td></tr>
             <tr class="grp"><td colspan="6">Dropdown - Search &amp; List &mdash; the panel</td></tr>
-            <tr><td>4</td><td>Panel container</td><td>Shown while a query is open</td><td>Fill: <code>BW10 (Card 1)</code> <span class="sw sw-in" style="background:#18191C"></span>#18191C<br>Border: <code>BW08 (Stroke Field)</code> <span class="sw sw-in" style="background:#333333"></span>#333333</td><td>400 &times; 270px, fixed on both axes</td><td>List scrolls, set by <code>Scroll</code> (boolean, default true)</td></tr>
-            <tr><td>5</td><td>Result row</td><td>One per result</td><td><span class="muted">&mdash;</span></td><td><span class="tofill">To fill</span></td><td>Single line. Truncates with an ellipsis</td></tr>
-            <tr><td>6</td><td>Row label</td><td>Required</td><td>Colour: <code>BW14 (DM - Body Text)</code> <span class="sw sw-in" style="background:#DDDDDD"></span>#DDDDDD<br>Text: <code>Body/B5</code> Inter Regular 14/20</td><td><span class="muted">&mdash;</span></td><td>The part matching the query is emphasised in <code>BW01</code> <span class="sw sw-in" style="background:#FFFFFF"></span>#FFFFFF</td></tr>
+            <tr><td>4</td><td>Panel container</td><td>Shown while a query is open</td><td>Fill: <code>BW10 (Card 1)</code> <span class="sw sw-in" style="background:#18191C"></span>#18191C<br>Border: <code>BW08 (Stroke Field)</code> <span class="sw sw-in" style="background:#333333"></span>#333333</td><td><ul><li>400 &times; 270px, fixed</li></ul></td><td><ul><li>Scrolls: <code>Scroll</code>, on by default</li></ul></td></tr>
+            <tr><td>5</td><td>Result row</td><td>One per result</td><td><span class="muted">&mdash;</span></td><td><span class="tofill">To fill</span></td><td><ul><li>Single line</li><li>Truncates with an ellipsis</li></ul></td></tr>
+            <tr><td>6</td><td>Row label</td><td>Required</td><td>Colour: <code>BW14 (DM - Body Text)</code> <span class="sw sw-in" style="background:#DDDDDD"></span>#DDDDDD<br>Text: <code>Body/B5</code> Inter Regular 14/20</td><td><span class="muted">&mdash;</span></td><td><ul><li>Query match shown in <code>BW01</code></li></ul></td></tr>
             <tr><td>7</td><td>Ticker</td><td>Saham Select only</td><td>Colour: <code>BW01</code> <span class="sw sw-in" style="background:#FFFFFF"></span>#FFFFFF <span class="muted">inferred</span><br>Text: <code>Subtitle/S3</code> Inter SemiBold 12/18</td><td><span class="muted">&mdash;</span></td><td><span class="muted">&mdash;</span></td></tr>
             <tr><td>8</td><td>Secondary line</td><td>Optional</td><td>Text: <code>Body/B6</code> Inter Regular 12/18<br>Colour: <span class="tofill">To fill</span></td><td><span class="muted">&mdash;</span></td><td><span class="muted">&mdash;</span></td></tr>
             <tr><td>9</td><td>Row glyph</td><td>Optional</td><td>Colour: <code>BW16 (Icon No Active)</code> <span class="sw sw-in" style="background:#B9BFCE"></span>#B9BFCE</td><td><span class="tofill">To fill</span></td><td><span class="muted">&mdash;</span></td></tr>
@@ -512,78 +528,10 @@
       </div>
 
       <div class="group">
-        <h3>Variant matrix</h3>
-        <div class="sub-block">
-          <p class="sub-h">Search</p>
-          <div class="stage">
-            <div id="srch-gallery"></div>
-          </div>
-        </div>
-        <div class="sub-block">
-          <p class="sub-h">Dropdown - Search &amp; List</p>
-          <div class="stage">
-            <div class="dd-list" id="dd-gallery"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="group">
-        <h3>Properties</h3>
-        <div class="sub-block">
-          <p class="sub-h">Search &mdash; variant properties <span>proposed renames after →</span></p>
-          <div class="tbl-wrap"><table class="tbl">
-            <thead><tr><th>Size</th><th>Height</th></tr></thead>
-            <tbody>
-              <tr><td>Large</td><td>44</td></tr>
-              <tr><td>Medium</td><td>40</td></tr>
-              <tr><td>Small</td><td>36</td></tr>
-            </tbody>
-          </table></div>
-          <p class="muted" style="margin:0 0 4px">State (Enabled <span class="ren">→ Rest</span>, Focused <span class="ren">→ Focus</span>) and Disabled are covered in States.</p>
-        </div>
-        <div class="sub-block">
-          <p class="sub-h">Dropdown - Search &amp; List &mdash; variant properties <span>proposed split after →</span></p>
-          <div class="tbl-wrap"><table class="tbl">
-            <thead><tr><th>State (published)</th><th>Describes</th></tr></thead>
-            <tbody>
-              <tr><td>RD Select <span class="ren">→ Content = Reksa Dana</span></td><td>Content</td></tr>
-              <tr><td>Saham Select <span class="ren">→ Content = Saham</span></td><td>Content</td></tr>
-              <tr><td>Grouped <span class="ren">→ Content = Grouped</span></td><td>Content</td></tr>
-              <tr><td>Default <span class="ren">→ State = Rest</span></td><td>Interaction</td></tr>
-              <tr><td>Hover <span class="ren">→ State = Hover</span></td><td>Interaction</td></tr>
-              <tr><td>Selected <span class="ren">→ State = Selected</span></td><td>Interaction</td></tr>
-              <tr><td>Loading State <span class="ren">→ Status = Loading</span></td><td>Status</td></tr>
-              <tr><td>Error <span class="ren">→ Status = No results</span></td><td>Status</td></tr>
-            </tbody>
-          </table></div>
-        </div>
-      </div>
-
-      <div class="group">
-        <h3>States</h3>
-        <p class="sub-h">Only what changes from the default in Anatomy and Properties</p>
-        <div class="tbl-wrap"><table class="tbl">
-          <thead><tr><th>State</th><th>Changes</th></tr></thead>
-          <tbody>
-            <tr class="grp"><td colspan="2">Search &mdash; the field</td></tr>
-            <tr><td>Focused <span class="ren">→ Focus</span></td><td>Border: <code>T09 (Primary)</code> <span class="sw sw-in" style="background:#00A88C"></span>#00A88C<br>Glow: <code>T09 - Shadow</code>, <code>#0AA88D80</code> at offsets (1, 1) and (&minus;1, &minus;1), radius 4, spread 0</td></tr>
-            <tr><td>Disabled</td><td><span class="tofill">To fill</span></td></tr>
-            <tr><td>Hover · Pressed · Error</td><td>Not published</td></tr>
-            <tr class="grp"><td colspan="2">Dropdown &mdash; rows and panel</td></tr>
-            <tr><td>Hover</td><td>Row fill: <code>BW17 (Hover)</code> <span class="sw sw-in" style="background:#27292F"></span>#27292F. The keyboard highlight uses the same treatment</td></tr>
-            <tr><td>Selected</td><td>Row label: <code>T09 (Primary)</code> <span class="sw sw-in" style="background:#00A88C"></span>#00A88C</td></tr>
-            <tr><td>Loading State</td><td>Rows replaced by a loading indicator; the panel keeps its height. Tokens: <span class="tofill">To fill</span></td></tr>
-            <tr><td>Error</td><td>Rows replaced by a message quoting the query. Tokens: <span class="tofill">To fill</span></td></tr>
-            <tr><td>Focus · Pressed · Disabled</td><td>Not published</td></tr>
-          </tbody>
-        </table></div>
-      </div>
-
-      <div class="group">
         <h3>Changelog</h3>
         <div class="tbl-wrap"><table class="tbl">
-          <thead><tr><th>Date</th><th>User</th><th>Change</th></tr></thead>
-          <tbody><tr><td>16 Sep 2026</td><td>Vina Zerlina</td><td>Page restructured to the engineering template</td></tr></tbody>
+          <thead><tr><th>Version</th><th>Date</th><th>User</th><th>Change</th></tr></thead>
+          <tbody><tr><td>v1</td><td>16 Sep 2026</td><td>Vina Zerlina</td><td>Page restructured to the engineering template</td></tr><tr><td>v0</td><td><span class="tofill">To fill</span></td><td>Vina Zerlina</td><td>Audit page, before the engineering template</td></tr></tbody>
         </table></div>
       </div>
 
@@ -647,8 +595,8 @@
         <h1>Button</h1>
         <p class="lede">Triggers a single action, most often placing a Buy or Sell order. <span class="draft">Draft</span></p>
         <div class="meta">
-          <span class="meta-i"><span class="meta-k">Status</span>🟢 Approved</span>
-          <span class="meta-i"><span class="meta-k">Version</span>v0</span>
+          <span class="meta-i"><span class="meta-k">Status</span><span class="st" tabindex="0" aria-describedby="st-tip-button">🟢 Approved<span class="st-q" aria-hidden="true">?</span><span class="st-tip" role="tooltip" id="st-tip-button"><span class="st-tip-h">Status definitions <span class="draft">Draft</span></span><ul><li class="on"><b>🟢 Approved</b><span>Passed component and final review. Safe to build against.</span></li><li class=""><b>🟡 In review</b><span>Designed and waiting for review. May still change.</span></li><li class=""><b>⚪ Not reviewed</b><span>In the library without the 🟢 marker, e.g. Filter and Toggle Button. Check with design before building.</span></li><li class=""><b>🔴 Deprecated</b><span>Being replaced. Don&rsquo;t use in new work.</span></li></ul></span></span></span>
+          <span class="meta-i"><span class="meta-k">Version</span><select class="ver" data-page="button" aria-label="Version"><option value="" selected>v1 · 16 Sep 2026 (current)</option><option value="archive/makmur-ds-v0.html">v0</option></select></span>
           <span class="meta-i"><span class="meta-k">Figma</span><a href="https://www.figma.com/design/aqR1UBKLKuHXRZCCXJbeE6/DS-DESKTOP?node-id=10128-2146" target="_blank" rel="noopener">Open page 10128:2146 ↗</a></span>
         </div>
       </div>
@@ -669,76 +617,21 @@
         <div class="tbl-wrap"><table class="tbl">
           <thead><tr><th>#</th><th>Part</th><th>Required</th><th>Tokens</th><th>Size</th><th>Behaviour</th></tr></thead>
           <tbody>
-            <tr><td>1</td><td>Container</td><td>Required</td><td>Fill: <code>Turquoise/T09</code> <span class="sw sw-in" style="background:#00A88C"></span>#00A88C</td><td>Width: hugs the label (<code>Responsive = Default</code>) or fills the container (<code>Responsive = True</code>). No min or max published<br>Height: set by Size</td><td><span class="muted">&mdash;</span></td></tr>
-            <tr><td>2</td><td>Label</td><td>Required <span class="draft">Draft</span></td><td>Colour: <code>BW01</code> <span class="sw sw-in" style="background:#FFFFFF"></span>#FFFFFF<br>Text: <code>Subtitle/S2</code> Inter SemiBold 14/20 at Big/40</td><td>Text style set by Size</td><td>Single line. Truncation not defined <span class="tofill">To fill</span><br>Shown by <code>Label</code> (boolean, default true). Editable text property: <span class="tofill">To fill</span></td></tr>
-            <tr><td>3</td><td>Leading icon</td><td>Optional</td><td><span class="tofill">To fill</span></td><td><span class="tofill">To fill</span></td><td>Shown by <code>Iconleft</code> (boolean, default true)<br>Icon set by <code>Icon Left Select</code> (instance swap, default Style=Filled). Allowed icons: <span class="tofill">To fill</span></td></tr>
-            <tr><td>4</td><td>Trailing icon</td><td>Optional</td><td><span class="tofill">To fill</span></td><td><span class="tofill">To fill</span></td><td>Shown by <code>Iconright</code> (boolean, default true)<br>Icon set by <code>Icon Right Select</code> (instance swap, default Style=Filled). Allowed icons: <span class="tofill">To fill</span></td></tr>
-            <tr><td>5</td><td>Loading spinner</td><td>When Loading = True</td><td><span class="tofill">To fill</span></td><td><span class="tofill">To fill</span></td><td>Replaces the label and icons; the button keeps its size</td></tr>
+            <tr><td>1</td><td>Container</td><td>Required</td><td>Fill: <code>Turquoise/T09</code> <span class="sw sw-in" style="background:#00A88C"></span>#00A88C</td><td><ul><li>Hugs the label by default</li><li>Fills the container when <code>Responsive = True</code></li><li>No min or max width</li><li>Height from Size</li></ul></td><td><span class="muted">&mdash;</span></td></tr>
+            <tr><td>2</td><td>Label</td><td>Required <span class="draft">Draft</span></td><td>Colour: <code>BW01</code> <span class="sw sw-in" style="background:#FFFFFF"></span>#FFFFFF<br>Text: <code>Subtitle/S2</code> Inter SemiBold 14/20 at Big/40</td><td><ul><li>Text style from Size</li></ul></td><td><ul><li>Single line</li><li>Truncation: <span class="tofill">To fill</span></li><li>Toggle: <code>Label</code>, on by default</li><li>Text property: <span class="tofill">To fill</span></li></ul></td></tr>
+            <tr><td>3</td><td>Leading icon</td><td>Optional</td><td><span class="tofill">To fill</span></td><td><span class="tofill">To fill</span></td><td><ul><li>Toggle: <code>Iconleft</code>, on by default</li><li>Swap: <code>Icon Left Select</code>, default Filled</li><li>Allowed icons: <span class="tofill">To fill</span></li></ul></td></tr>
+            <tr><td>4</td><td>Trailing icon</td><td>Optional</td><td><span class="tofill">To fill</span></td><td><span class="tofill">To fill</span></td><td><ul><li>Toggle: <code>Iconright</code>, on by default</li><li>Swap: <code>Icon Right Select</code>, default Filled</li><li>Allowed icons: <span class="tofill">To fill</span></li></ul></td></tr>
+            <tr><td>5</td><td>Loading spinner</td><td>When Loading = True</td><td><span class="tofill">To fill</span></td><td><span class="tofill">To fill</span></td><td><ul><li>Replaces the label and icons</li><li>Button keeps its size</li></ul></td></tr>
           </tbody>
         </table></div>
-        <p class="muted" style="margin:0">Property types are inferred &mdash; confirm in Figma. Every published variant is drawn with both icons on; the specimens on this page omit them because the artwork cannot be extracted from this environment.</p>
-      </div>
-
-      <div class="group">
-        <h3>Variant matrix</h3>
-        <div class="stage">
-          <div id="btn-gallery"></div>
-        </div>
-      </div>
-
-      <div class="group">
-        <h3>Properties</h3>
-        <div class="sub-block">
-          <p class="sub-h">Variant properties <span>proposed renames after →</span></p>
-          <div class="tbl-wrap"><table class="tbl">
-            <thead><tr><th>Size</th><th>Height</th><th>Label style</th></tr></thead>
-            <tbody>
-              <tr><td>Big/40 <span class="ren">→ Large</span></td><td>40</td><td><code>Subtitle/S2</code></td></tr>
-              <tr><td>Med/36 <span class="ren">→ Medium</span></td><td>36</td><td><span class="tofill">To fill</span></td></tr>
-              <tr><td>Small/32 <span class="ren">→ Small</span></td><td>32</td><td><span class="tofill">To fill</span> <span class="muted"><code>S3</code> is bound to the set</span></td></tr>
-            </tbody>
-          </table></div>
-          <div class="tbl-wrap"><table class="tbl">
-            <thead><tr><th>Tipe <span class="ren">→ Intent</span></th><th>Container fill (Solid)</th></tr></thead>
-            <tbody>
-              <tr><td>Buy</td><td><span class="sw sw-in" style="background:#00A88C"></span><code>T09</code> #00A88C</td></tr>
-              <tr><td>Sell</td><td><span class="sw sw-in" style="background:#FF586C"></span><code>R03</code> #FF586C</td></tr>
-            </tbody>
-          </table></div>
-          <div class="tbl-wrap"><table class="tbl">
-            <thead><tr><th>Type/Color <span class="ren">→ Emphasis</span></th><th>Tokens</th></tr></thead>
-            <tbody>
-              <tr><td>Solid</td><td>Fill from Tipe (above)</td></tr>
-              <tr><td>Soft</td><td><span class="tofill">To fill</span> <span class="muted">15% tint of the Tipe colour</span></td></tr>
-              <tr><td>Outline</td><td><span class="tofill">To fill</span> <span class="muted">Tipe colour as the border</span></td></tr>
-              <tr><td>Transparant <span class="ren">→ Transparent</span></td><td><span class="tofill">To fill</span> <span class="muted">Tipe colour, no fill</span></td></tr>
-              <tr><td>Transparant/White</td><td><span class="tofill">To fill</span></td></tr>
-            </tbody>
-          </table></div>
-          <p class="muted" style="margin:0 0 4px">Disable <span class="ren">→ Disabled</span> and Loading are covered in States.</p>
-        </div>
-      </div>
-
-      <div class="group">
-        <h3>States</h3>
-        <p class="sub-h">Only what changes from the default in Anatomy and Properties</p>
-        <div class="tbl-wrap"><table class="tbl">
-          <thead><tr><th>State</th><th>Container · Buy</th><th>Container · Sell</th><th>Label</th></tr></thead>
-          <tbody>
-            <tr><td>Hover</td><td><span class="sw sw-in" style="background:#008375"></span><code>T08</code> #008375</td><td><span class="sw sw-in" style="background:#FA3149"></span><code>R05</code> #FA3149</td><td>unchanged</td></tr>
-            <tr><td>Disable <span class="ren">→ Disabled</span></td><td><span class="tofill">To fill</span></td><td>not published</td><td><span class="sw sw-in" style="background:#9498A1"></span><code>BW07</code> #9498A1</td></tr>
-            <tr><td>Loading</td><td>unchanged</td><td>unchanged</td><td>hidden, spinner shown</td></tr>
-            <tr><td>Pressed</td><td colspan="3">Not published. <code>T12</code> #172022 is documented as "Click button" but no variant uses it; the demo borrows it</td></tr>
-            <tr><td>Focus</td><td colspan="3">Not published</td></tr>
-          </tbody>
-        </table></div>
+        <p class="muted" style="margin:0">Property types are inferred &mdash; confirm in Figma. Every published variant is drawn with both icons on; the demo omits them because the artwork cannot be extracted from this environment.</p>
       </div>
 
       <div class="group">
         <h3>Changelog</h3>
         <div class="tbl-wrap"><table class="tbl">
-          <thead><tr><th>Date</th><th>User</th><th>Change</th></tr></thead>
-          <tbody><tr><td>16 Sep 2026</td><td>Vina Zerlina</td><td>Page restructured to the engineering template</td></tr></tbody>
+          <thead><tr><th>Version</th><th>Date</th><th>User</th><th>Change</th></tr></thead>
+          <tbody><tr><td>v1</td><td>16 Sep 2026</td><td>Vina Zerlina</td><td>Page restructured to the engineering template</td></tr><tr><td>v0</td><td><span class="tofill">To fill</span></td><td>Vina Zerlina</td><td>Audit page, before the engineering template</td></tr></tbody>
         </table></div>
       </div>
 
@@ -762,7 +655,7 @@
         </div></div>
         <div class="finding"><div class="sev high"></div><div class="finding-body">
           <div class="finding-top"><span class="finding-title">Sell has no disabled state, at any size or style</span><span class="pill high">High</span></div>
-          <p>Every dashed cell in the Disable column above sits in a Red row. Green publishes 48 variants plus three disabled-and-loading; Red publishes 36 and stops. There is no way to show a disabled Sell button, which in a trading product is exactly the state you need when an order cannot be placed — insufficient balance, market closed, suspended counter. It gets built by hand on the screen that needs it, outside the library, where nothing keeps it in step.</p>
+          <p>Every missing disabled variant in the Figma set is a Red one. Green publishes 48 variants plus three disabled-and-loading; Red publishes 36 and stops. There is no way to show a disabled Sell button, which in a trading product is exactly the state you need when an order cannot be placed — insufficient balance, market closed, suspended counter. It gets built by hand on the screen that needs it, outside the library, where nothing keeps it in step.</p>
         </div></div>
         <div class="finding"><div class="sev med"></div><div class="finding-body">
           <div class="finding-top"><span class="finding-title">One decision is encoded in two properties</span><span class="pill med">Medium</span></div>
@@ -815,8 +708,8 @@
         <h1>Button Group</h1>
         <p class="lede">Lets the user pick one of two or three options, or switch between Buy and Sell. <span class="draft">Draft</span></p>
         <div class="meta">
-          <span class="meta-i"><span class="meta-k">Status</span>🟢 Approved</span>
-          <span class="meta-i"><span class="meta-k">Version</span>v0</span>
+          <span class="meta-i"><span class="meta-k">Status</span><span class="st" tabindex="0" aria-describedby="st-tip-buttongroup">🟢 Approved<span class="st-q" aria-hidden="true">?</span><span class="st-tip" role="tooltip" id="st-tip-buttongroup"><span class="st-tip-h">Status definitions <span class="draft">Draft</span></span><ul><li class="on"><b>🟢 Approved</b><span>Passed component and final review. Safe to build against.</span></li><li class=""><b>🟡 In review</b><span>Designed and waiting for review. May still change.</span></li><li class=""><b>⚪ Not reviewed</b><span>In the library without the 🟢 marker, e.g. Filter and Toggle Button. Check with design before building.</span></li><li class=""><b>🔴 Deprecated</b><span>Being replaced. Don&rsquo;t use in new work.</span></li></ul></span></span></span>
+          <span class="meta-i"><span class="meta-k">Version</span><select class="ver" data-page="buttongroup" aria-label="Version"><option value="" selected>v1 · 16 Sep 2026 (current)</option><option value="archive/makmur-ds-v0.html">v0</option></select></span>
           <span class="meta-i"><span class="meta-k">Figma</span><a href="https://www.figma.com/design/aqR1UBKLKuHXRZCCXJbeE6/DS-DESKTOP?node-id=10128-2148" target="_blank" rel="noopener">Open page 10128:2148 ↗</a></span>
         </div>
       </div>
@@ -840,63 +733,11 @@
         <div class="tbl-wrap"><table class="tbl">
           <thead><tr><th>#</th><th>Part</th><th>Required</th><th>Tokens</th><th>Size</th><th>Behaviour</th></tr></thead>
           <tbody>
-            <tr><td>1</td><td>Container</td><td>Required</td><td>Border: <code>BW08</code> <span class="sw sw-in" style="background:#333333"></span>#333333</td><td>Width: set by Type<br>Height: set by Size</td><td><span class="muted">&mdash;</span></td></tr>
-            <tr><td>2</td><td>Selected segment</td><td>Exactly one</td><td>Fill: <code>Turquoise/T09</code> <span class="sw sw-in" style="background:#00A88C"></span>#00A88C</td><td>Same as an unselected segment</td><td>Always the first segment on Dual and Triple; no property sets it</td></tr>
-            <tr><td>3</td><td>Unselected segment</td><td>Required</td><td>Fill: <code>BW09</code> <span class="sw sw-in" style="background:#28292D"></span>#28292D</td><td>Equal share of the width: 191px on Dual, 181.7px on Triple</td><td><span class="muted">&mdash;</span></td></tr>
-            <tr><td>4</td><td>Segment label</td><td>Required</td><td>Selected: <code>BW01</code> <span class="sw sw-in" style="background:#FFFFFF"></span>#FFFFFF<br>Unselected: <code>BW16</code> <span class="sw sw-in" style="background:#B9BFCE"></span>#B9BFCE</td><td>Text style set by Size</td><td>Single line. Truncation not defined <span class="tofill">To fill</span><br>Editable text property: <span class="tofill">To fill</span></td></tr>
-            <tr><td>5</td><td>Divider</td><td>Customize only</td><td><span class="tofill">To fill</span></td><td>14px slant; the two 170px blocks overlap by it, which is why Customize is narrower than Dual</td><td><span class="muted">&mdash;</span></td></tr>
-          </tbody>
-        </table></div>
-      </div>
-
-      <div class="group">
-        <h3>Variant matrix</h3>
-        <div class="stage">
-          <div id="bg-gallery"></div>
-        </div>
-      </div>
-
-      <div class="group">
-        <h3>Properties</h3>
-        <div class="sub-block">
-          <p class="sub-h">Variant properties <span>proposed renames after →</span></p>
-          <div class="tbl-wrap"><table class="tbl">
-            <thead><tr><th>Size</th><th>Height</th><th>Label style</th></tr></thead>
-            <tbody>
-              <tr><td>Large</td><td>44</td><td><code>Subtitle/S2</code></td></tr>
-              <tr><td>Medium</td><td>40</td><td><code>Subtitle/S3</code></td></tr>
-              <tr><td>Small</td><td>36</td><td><code>Subtitle/S3</code></td></tr>
-            </tbody>
-          </table></div>
-          <div class="tbl-wrap"><table class="tbl">
-            <thead><tr><th>Type</th><th>Segments</th><th>Width</th></tr></thead>
-            <tbody>
-              <tr><td>Dual</td><td>2</td><td>382px, fixed</td></tr>
-              <tr><td>Triple</td><td>3</td><td>545px, fixed</td></tr>
-              <tr><td>Customize <span class="ren">→ separate Order toggle</span></td><td>2, slanted divider</td><td>326px, fixed</td></tr>
-            </tbody>
-          </table></div>
-          <div class="tbl-wrap"><table class="tbl">
-            <thead><tr><th>Tipe Oder <span class="ren">→ Order type</span></th><th>Selected segment fill</th><th>Applies to</th></tr></thead>
-            <tbody>
-              <tr><td>Buy</td><td><span class="sw sw-in" style="background:#00A88C"></span><code>T09</code>, left block</td><td>Customize with Buy selected</td></tr>
-              <tr><td>Sell</td><td><span class="sw sw-in" style="background:#FF586C"></span><code>R03</code> #FF586C, right block</td><td>Customize with Sell selected</td></tr>
-              <tr><td>Default</td><td><span class="sw sw-in" style="background:#00A88C"></span><code>T09</code>, first segment</td><td>Dual, Triple, and every disabled variant</td></tr>
-            </tbody>
-          </table></div>
-          <p class="muted" style="margin:0 0 4px">Disable <span class="ren">→ Disabled</span> is covered in States.</p>
-        </div>
-      </div>
-
-      <div class="group">
-        <h3>States</h3>
-        <p class="sub-h">Only what changes from the default in Anatomy and Properties</p>
-        <div class="tbl-wrap"><table class="tbl">
-          <thead><tr><th>State</th><th>Selected segment</th><th>Unselected segment</th><th>Label</th></tr></thead>
-          <tbody>
-            <tr><td>Hover</td><td>unchanged &mdash; no hover token exists</td><td><span class="sw sw-in" style="background:#27292F"></span><code>BW17</code> #27292F</td><td>unchanged</td></tr>
-            <tr><td>Disable <span class="ren">→ Disabled</span></td><td><span class="tofill">To fill</span></td><td><span class="tofill">To fill</span></td><td><span class="sw sw-in" style="background:#9498A1"></span><code>BW07</code> #9498A1</td></tr>
-            <tr><td>Focus · Pressed</td><td colspan="3">Not published</td></tr>
+            <tr><td>1</td><td>Container</td><td>Required</td><td>Border: <code>BW08</code> <span class="sw sw-in" style="background:#333333"></span>#333333</td><td><ul><li>Width from Type</li><li>Height from Size</li></ul></td><td><span class="muted">&mdash;</span></td></tr>
+            <tr><td>2</td><td>Selected segment</td><td>Exactly one</td><td>Fill: <code>Turquoise/T09</code> <span class="sw sw-in" style="background:#00A88C"></span>#00A88C</td><td><ul><li>Same as an unselected segment</li></ul></td><td><ul><li>Always the first segment on Dual and Triple</li><li>No property sets it</li></ul></td></tr>
+            <tr><td>3</td><td>Unselected segment</td><td>Required</td><td>Fill: <code>BW09</code> <span class="sw sw-in" style="background:#28292D"></span>#28292D</td><td><ul><li>Equal share of the width</li><li>Dual 191px, Triple 181.7px</li></ul></td><td><span class="muted">&mdash;</span></td></tr>
+            <tr><td>4</td><td>Segment label</td><td>Required</td><td>Selected: <code>BW01</code> <span class="sw sw-in" style="background:#FFFFFF"></span>#FFFFFF<br>Unselected: <code>BW16</code> <span class="sw sw-in" style="background:#B9BFCE"></span>#B9BFCE</td><td><ul><li>Text style from Size</li></ul></td><td><ul><li>Single line</li><li>Truncation: <span class="tofill">To fill</span></li><li>Text property: <span class="tofill">To fill</span></li></ul></td></tr>
+            <tr><td>5</td><td>Divider</td><td>Customize only</td><td><span class="tofill">To fill</span></td><td><ul><li>14px slant</li><li>Makes Customize narrower than Dual</li></ul></td><td><span class="muted">&mdash;</span></td></tr>
           </tbody>
         </table></div>
       </div>
@@ -904,8 +745,8 @@
       <div class="group">
         <h3>Changelog</h3>
         <div class="tbl-wrap"><table class="tbl">
-          <thead><tr><th>Date</th><th>User</th><th>Change</th></tr></thead>
-          <tbody><tr><td>16 Sep 2026</td><td>Vina Zerlina</td><td>Page restructured to the engineering template</td></tr></tbody>
+          <thead><tr><th>Version</th><th>Date</th><th>User</th><th>Change</th></tr></thead>
+          <tbody><tr><td>v1</td><td>16 Sep 2026</td><td>Vina Zerlina</td><td>Page restructured to the engineering template</td></tr><tr><td>v0</td><td><span class="tofill">To fill</span></td><td>Vina Zerlina</td><td>Audit page, before the engineering template</td></tr></tbody>
         </table></div>
       </div>
 
@@ -2555,5 +2396,19 @@
 })();
 </script>
 
+
+<script>
+  // Version dropdown: older versions open their archived copy at the same page.
+  (function () {
+    Array.prototype.forEach.call(document.querySelectorAll('select.ver'), function (sel) {
+      sel.addEventListener('change', function () {
+        var href = sel.value;
+        if (!href) { return; }
+        try { window.location.href = href + '#' + sel.dataset.page; }
+        catch (e) { sel.selectedIndex = 0; }
+      });
+    });
+  })();
+</script>
 </body>
 </html>
