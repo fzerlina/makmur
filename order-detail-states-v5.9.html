@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rincian Order — Order States</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     Makmur design tokens — pulled from Figma "Detail Transaksi"
+     (file SiYyGQqIBBzl65GMhMQshs, node 494:190034)
+     ============================================================ */
+  :root{
+    --stage:#e9f5f3;
+
+    /* Black - White ramp */
+    --modal:#0F1113;            /* modal shell                        */
+    --panel:#18191C;            /* BW10  Card 1                       */
+    --line:#27292F;             /* BW13  Line / Focus State           */
+    --line-soft:#1F2022;        /* BW20                               */
+    --text:#FFFFFF;             /* BW01                               */
+    --value:#FFFFFF;            /* BW01                               */
+    --label:#9498A1;            /* BW07  Disable & Subtext            */
+    --muted:#9498A1;            /* BW07                               */
+    --icon:#B9BFCE;             /* BW16  Icon No Active               */
+
+    /* Accents */
+    --teal:#00A88C;             /* T09  Primary                       */
+    --teal-deep:#06322B;
+    --red:#FF586C;              /* R03                                */
+    --red-deep:#2E1419;
+    --blue:#009EC1;             /* B06                                */
+    --blue-deep:#0B1C20;        /* B10                                */
+    --amber:#DCA400;            /* Y06                                */
+    --amber-deep:#241B05;
+    --green:#00A88C;            /* T09                                */
+    --green-deep:#06322B;
+    --grey:#9498A1;             /* BW07                               */
+    --grey-deep:#1F2022;        /* BW20                               */
+
+    --radius:12px;              /* card radius                        */
+    --radius-lg:16px;           /* modal radius                       */
+    --radius-sm:8px;            /* button radius                      */
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--stage);
+    font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    /* Body/B5 — Inter Regular 14 / 20 */
+    font-size:14px;line-height:20px;
+    color:var(--text);-webkit-font-smoothing:antialiased;
+    padding:28px 24px 64px;
+  }
+  .wrap{max-width:1180px;margin:0 auto}
+
+  /* ---------- filters (scaffolding — deliberately kept light) ---------- */
+  .filters{background:#fff;border:1px solid #d3e6e3;border-radius:14px;padding:16px 18px;margin-bottom:16px}
+  .frow{display:flex;align-items:flex-start;gap:14px;padding:8px 0}
+  .frow + .frow{border-top:1px solid #eaf3f1}
+  .frow > label{flex:none;width:126px;padding-top:7px;font-size:11px;line-height:16px;letter-spacing:.12em;text-transform:uppercase;color:#5c817d;font-weight:600}
+  .pills{display:flex;flex-wrap:wrap;gap:7px;flex:1}
+  .grp{display:flex;flex-direction:column;gap:6px}
+  .grp > span{font-size:10px;line-height:13px;letter-spacing:.12em;text-transform:uppercase;color:#9ab3b0;font-weight:600}
+  .frow.grouped > label{padding-top:26px}
+  .filters + .filters{margin-top:-4px}
+  .grp .pills{flex:none}
+  .vsep{width:1px;align-self:stretch;background:#dbeae8;margin:0 6px}
+  .pill{font:inherit;font-size:12.5px;line-height:18px;font-weight:500;padding:7px 13px;border-radius:999px;cursor:pointer;background:#f4faf9;color:#33504d;border:1px solid #cfe3e0;display:inline-flex;align-items:center;gap:8px;transition:background .15s,border-color .15s,color .15s}
+  .pill:hover:not(:disabled){border-color:#8fc6c0}
+  .pill[aria-pressed="true"]{background:#0f2b29;border-color:#0f2b29;color:#eafffb}
+  .pill:disabled{opacity:.35;cursor:not-allowed}
+  .pill .dot{width:7px;height:7px;border-radius:50%}
+  .pill .win{opacity:.5;font-size:11px;font-variant-numeric:tabular-nums}
+  .pill[aria-pressed="true"] .win{opacity:.65}
+  .pill:focus-visible,.btn:focus-visible,.close:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+  .filters.locked{opacity:.45;pointer-events:none}
+  .reset{font:inherit;font-size:12px;font-weight:500;color:#5c817d;background:none;border:1px solid #cfe3e0;border-radius:8px;padding:6px 12px;cursor:pointer;align-self:flex-start;margin-left:auto}
+  .reset:hover{border-color:#8fc6c0;color:#33504d}
+  .reset:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+  .prompt{background:#fff;border:1px dashed #c3ddd9;border-radius:14px;padding:34px 18px;text-align:center;color:#5c817d;font-size:13px}
+  .hint{margin:6px 0 0 140px;font-size:11.5px;color:#7d8f8c}
+
+  /* ============================================================
+     MODAL — 1003 × auto, matching the Figma frame
+     ============================================================ */
+  .modal{
+    max-width:1003px;margin:0 auto;
+    background:var(--modal);
+    border:1px solid var(--line);
+    border-radius:var(--radius-lg);
+    box-shadow:0 24px 60px rgba(12,40,38,.18);
+    overflow:hidden;
+  }
+
+  /* --- header: 60px tall, 20px gutters, 1px rule --- */
+  .modal-head{
+    display:flex;align-items:center;justify-content:space-between;
+    height:60px;padding:0 20px;
+    border-bottom:1px solid var(--line);
+  }
+  .modal-head h2{
+    margin:0;
+    /* Subtitle/S1 — Inter Semi Bold 16 / 22 */
+    font-size:16px;line-height:22px;font-weight:600;letter-spacing:0;
+    color:var(--text);
+  }
+  .close{
+    background:none;border:0;color:var(--text);cursor:pointer;
+    width:30px;height:30px;border-radius:var(--radius-sm);
+    display:grid;place-items:center;transition:background .15s,color .15s;
+  }
+  .close svg{width:18px;height:18px}
+  .close:hover{background:var(--line-soft);color:var(--icon)}
+
+  /* --- body: 15px side gutters, 10px gaps --- */
+  .modal-body{padding:12px 15px 0}
+
+  .client{
+    background:var(--panel);
+    border:1px solid var(--line-soft);
+    border-radius:var(--radius);
+    padding:15px 20px;
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+    margin-bottom:10px;
+  }
+  .client-name{font-size:16px;line-height:22px;font-weight:600;color:var(--text)}
+  .head-right{display:flex;align-items:center;gap:12px}
+  .substate{font-size:12px;line-height:18px;color:var(--label)}
+  .side{font-size:16px;line-height:22px;font-weight:600;color:var(--value)}
+  .side em{font-style:normal;margin-right:6px}
+  .side em.beli{color:var(--teal)}
+  .side em.jual{color:var(--red)}
+
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start}
+  .left-stack{display:flex;flex-direction:column;gap:10px}
+  .card{
+    background:var(--panel);
+    border:1px solid var(--line-soft);
+    border-radius:var(--radius);
+    padding:16px 20px;
+  }
+  .right-stack{
+    display:flex;flex-direction:column;gap:10px;
+    max-height:520px;overflow-y:auto;padding-right:2px;
+    scrollbar-width:thin;scrollbar-color:var(--line) transparent;
+  }
+  .right-stack::-webkit-scrollbar{width:8px}
+  .right-stack::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px}
+  .card.blank{display:flex;align-items:center;justify-content:center;min-height:360px}
+
+  /* --- section headings --- */
+  .eyebrow{
+    /* Subtitle/S3 — Inter Semi Bold 12 / 18 */
+    font-size:12px;line-height:18px;font-weight:600;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--label);margin:0 0 12px;
+  }
+  /* reads as one more label row, matching "Perkiraan Total Pembelian" */
+  .alasan-label{margin:0;padding:6px 0 2px;font-size:14px;line-height:20px;font-weight:400;
+                letter-spacing:0;text-transform:none;color:var(--label)}
+  .alasan{margin:0;font-size:14px;line-height:21px;color:var(--value)}
+  .alasan-group:not(.open) .alasan{display:-webkit-box;-webkit-line-clamp:3;
+                                   -webkit-box-orient:vertical;overflow:hidden}
+  .alasan-group:not(.open) .alasan-extra{display:none}
+
+  .readmore{display:none;margin-top:6px;padding:0;background:none;border:0;cursor:pointer;
+            font:inherit;font-size:13px;line-height:19px;font-weight:600;color:var(--teal)}
+  .readmore.show{display:inline-block}
+  .readmore:hover{filter:brightness(1.25)}
+  .readmore:focus-visible{outline:2px solid var(--teal);outline-offset:2px;border-radius:4px}
+  .block-title{
+    margin:0;
+    /* Subtitle/S1 — Inter Semi Bold 16 / 22 */
+    font-size:16px;line-height:22px;font-weight:600;color:var(--text);
+  }
+  .list-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:12px}
+  .count{font-size:12px;line-height:18px;color:var(--label);font-variant-numeric:tabular-nums}
+
+  /* --- label / value rows (Body/B5) --- */
+  dl{margin:0}
+  .row{
+    display:flex;align-items:baseline;justify-content:space-between;gap:24px;
+    padding:6px 0;font-size:14px;line-height:20px;
+  }
+  .row dt{color:var(--label);font-weight:400}
+  .row dd{margin:0;color:var(--value);font-weight:400;text-align:right;font-variant-numeric:tabular-nums}
+  .row dd .sub{display:block;font-size:12px;line-height:18px;color:var(--label);margin-top:3px;font-variant-numeric:normal}
+  .row dd.zero,.row dd.na{color:var(--label)}
+  .row.total dt{color:var(--label)}
+  .row.total dd{font-weight:600;color:var(--text)}
+  .rule{height:1px;background:var(--line);margin:12px 0}
+  .rule.soft{background:var(--line-soft)}
+
+  /* --- status badge: Subtitle/S3 on a deep tonal fill --- */
+  .badge{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:4px 10px;border-radius:999px;
+    font-size:12px;line-height:18px;font-weight:600;
+    background:var(--grey-deep);
+  }
+  .badge .dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+  .t-amber{color:var(--amber)} .t-blue{color:var(--blue)}  .t-teal{color:var(--teal)}
+  .t-green{color:var(--green)} .t-red{color:var(--red)}    .t-grey{color:var(--grey)}
+  .badge.t-amber{background:var(--amber-deep)}
+  .badge.t-blue {background:var(--blue-deep)}
+  .badge.t-teal {background:var(--teal-deep)}
+  .badge.t-green{background:var(--green-deep)}
+  .badge.t-red  {background:var(--red-deep)}
+  .badge.t-grey {background:var(--grey-deep)}
+
+  .entry{position:relative}
+  .entry + .entry{border-top:1px solid var(--line);margin-top:12px;padding-top:12px}
+  .more{margin:12px 0 0;font-size:12px;line-height:18px;color:var(--label);text-align:center}
+
+  /* --- inline notes --- */
+  .note{
+    display:flex;gap:10px;align-items:flex-start;
+    border-radius:10px;padding:11px 13px;margin-bottom:10px;
+    font-size:13px;line-height:19px;
+  }
+  .note-red  {background:var(--red-deep);   color:#FF8E9C; border:1px solid rgba(255,88,108,.22)}
+  .note-amber{background:var(--amber-deep); color:#E7BB4D; border:1px solid rgba(220,164,0,.22)}
+  .note-grey {background:var(--grey-deep);  color:#B9BFCE; border:1px solid var(--line)}
+  .note-teal {background:var(--teal-deep);  color:#4FCBB4; border:1px solid rgba(0,168,140,.24)}
+  .note-blue {background:var(--blue-deep);  color:#4FC2DA; border:1px solid rgba(0,158,193,.22)}
+  .note-phase{background:var(--grey-deep);  color:#9498A1; border:1px solid var(--line)}
+  .note svg{flex:none;margin-top:2px}
+  .note strong{font-weight:600}
+  .note .alasan-in{display:block;margin-top:8px;padding-top:8px;
+                   border-top:1px solid rgba(255,255,255,.11);
+                   color:#D9DDE3;font-size:13px;line-height:20px}
+  .note .readmore{color:inherit;margin-top:4px}
+  /* generic 3-line clamp — second selector outranks .note .alasan-in{display:block} */
+  .clamped,
+  .note .alasan-in.clamped{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .notes-wrap .note:last-child{margin-bottom:0}
+
+  /* --- empty / blank states --- */
+  .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;min-height:250px;text-align:center}
+  .empty span{font-size:14px;line-height:20px;font-weight:600;color:var(--text)}
+  .blankstate{text-align:center;max-width:330px;margin:0 auto}
+  .blankstate h4{margin:0 0 10px;font-size:14px;line-height:20px;font-weight:600;color:var(--text)}
+  .blankstate p{margin:0;font-size:13px;line-height:20px;color:var(--label)}
+
+  /* --- footer: 1px rule, 15px gutters, 180×40 buttons --- */
+  .modal-foot{
+    display:flex;justify-content:flex-end;gap:10px;
+    padding:15px;margin-top:12px;
+    border-top:1px solid var(--line);
+  }
+  .btn{
+    font:inherit;
+    /* Subtitle/S2 — Inter Semi Bold 14 / 20 */
+    font-size:14px;line-height:20px;font-weight:600;
+    width:180px;height:40px;padding:0 16px;
+    border-radius:var(--radius-sm);cursor:pointer;border:1px solid transparent;
+    transition:filter .15s;
+  }
+  .btn:hover:not(:disabled){filter:brightness(1.3)}
+  .btn-primary{background:var(--teal-deep);color:var(--teal)}
+  .btn-danger{background:var(--red-deep);color:var(--red)}
+  .btn:disabled{background:var(--grey-deep);color:#565A63;cursor:not-allowed}
+
+  .caption{margin:14px 2px 0;font-size:12px;line-height:18px;color:#547370}
+  @media (max-width:860px){.cols{grid-template-columns:1fr}.right-stack{max-height:none}.frow{flex-direction:column;gap:8px}.frow>label{width:auto}.frow.grouped>label{padding-top:7px}.hint{margin-left:0}.btn{width:auto;min-width:140px;flex:1}}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+  .ordercap{margin:22px 2px 10px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#7b838c;font-weight:600}
+  .ordercap b{color:#3b4148;font-weight:600;letter-spacing:0;text-transform:none;font-size:12.5px;display:block;margin-top:4px;font-family:inherit}
+  .ordercap b i{font-style:normal;background:#3b4148;color:#f2f3f4;border-radius:5px;padding:2px 8px;margin:0 4px;font-size:11.5px}
+  .link{color:var(--teal)}
+</style>
+<body>
+<div class="wrap">
+
+  <div class="filters" id="filters"></div>
+
+  <div id="stage"></div>
+  <p class="caption" id="caption"></p>
+</div>
+
+<script>
+/* ============ constants ============ */
+const LIMIT = 10050, SPL = 100, FEE_RATE = 0.0015, TOTAL_LOT = 100;
+const PARENT_ID = 'MKM-20260602-000187';   /* internal Makmur order number */
+const CHILD_ID  = 'MKM-20260602-000212';
+/* JATS order numbers — new one per pengiriman, and a fresh one after any amend */
+const IDX_POOL  = ['5678jnjmj982i9','5678jnjmk104b2','5678jnjmk377c5','5678jnjml502d8',
+                   '5678jnjml745e1','5678jnjmm018f6','5678jnjmm263g3','5678jnjmn571h7'];
+/* each re-send joins the queue afresh, so these are independent — not a descending series */
+const ANTREAN     = [321, 187, 264,  95, 412, 233, 158, 341];
+const ANTREAN_LOT = [1250, 640, 980, 310, 1520, 870, 520, 1180];
+const CHILD_ID2 = 'MKM-20260602-000213';
+/* an amend creates a NEW recommendation, so the successor carries its own REK id */
+const CHILD_REKO  = 'REK-20260602-0087';
+const CHILD_REKO2 = 'REK-20260602-0088';
+const CHILD_IDX = '5678jnjmm913f4';
+const CHILD_IDX2 = '5678jnjmm914g7';
+const AMEND_PRICE = 10100, ACTION_TIME = '13:40:05';
+/* amend-lot case: the client reduces the outstanding size */
+const amendLot = lot => Math.max(5, Math.floor(lot * 0.6 / 5) * 5);
+const ARA = 12050, ARB = 8050;   /* auto rejection band on a Rp10.050 previous close */
+const LAST_PRICE = 10250;        /* harga terakhir — the reference for a Market JUAL estimate */
+
+/* BELI and JUAL differ in wording and, for Market Orders, in how the estimate is priced:
+   BELI is estimated at ARA (worst case you pay), JUAL at the last traded price. */
+const SISI = {
+  beli: { label:'BELI', ref:ARA,        refLabel:'ARA',
+          nilai:'Nilai Pembelian',  total:'Total Pembelian',
+          eNilai:'Perkiraan Nilai Pembelian', eTotal:'Perkiraan Total Pembelian', arah:1 },
+  jual: { label:'JUAL', ref:LAST_PRICE, refLabel:'harga terakhir',
+          nilai:'Nilai Penjualan',  total:'Total Penjualan',
+          eNilai:'Perkiraan Nilai Penjualan', eTotal:'Perkiraan Total Penjualan', arah:-1 }
+};
+const sisi = () => SISI[cfg.sisi];
+const APPROVED = '2 Jun 2026 07:12:40';
+const CLOCK = { sent:'08:45:10', cancel:'13:12:40', match:['11:27:55','15:34:00','15:49:12'] };
+const REKO = { id:'REK-20260601-0042', waktu:'1 Jun 2026 14:15:00', lot:TOTAL_LOT };
+/* free text the advisor writes when creating the recommendation — max 500 chars */
+const ALASAN_REKO = 'BBCA menunjukkan tren penguatan setelah rilis laporan keuangan kuartal I 2026 dengan pertumbuhan laba bersih 11,4% YoY dan NIM stabil di kisaran 5,8%. Level Rp10.050 berada tepat di atas support MA-50, dan akumulasi asing tercatat positif dalam lima hari bursa terakhir. Risiko downside kami nilai terbatas selama IHSG bertahan di atas 7.200, dengan target jangka menengah Rp11.200. Rekomendasi ini sesuai profil risiko moderat klien dan porsi sektor perbankan di portofolio masih di bawah batas 30%.';
+/* free text the advisor writes when amending or withdrawing — max 500 chars */
+const ALASAN_AMEND = 'Harga bergerak menjauh dari limit awal setelah rilis data inflasi yang lebih rendah dari konsensus. Untuk menjaga peluang eksekusi sisa lot sebelum periode berakhir, harga limit dinaikkan — masih di bawah target beli dan tidak mengubah tesis investasi awal.';
+const ALASAN_WD = 'Klien meminta penundaan pembelian setelah muncul rencana rights issue yang belum terkonfirmasi. Sisa lot dibatalkan sambil menunggu kejelasan dari manajemen, dan rekomendasi akan ditinjau ulang setelah jadwal resmi diumumkan.';
+
+/* every rationale on an order collapses together under one control:
+   collapsed shows three lines of the recommendation's Alasan, expanded reveals
+   the rest plus any action rationale (e.g. Alasan Withdraw) beneath it */
+const alasanBlock = (text = ALASAN_REKO, extra = null) => `
+    <div class="alasan-group">
+      <p class="alasan-label">Alasan Rekomendasi</p>
+      <p class="alasan">${text}</p>
+      ${extra ? `<div class="alasan-extra">
+        <p class="alasan-label">${extra.label}</p>
+        <p class="alasan">${extra.text}</p>
+      </div>` : ''}
+      <button type="button" class="readmore">Selengkapnya</button>
+    </div>`;
+
+const rp = n => 'Rp' + Math.round(n).toLocaleString('id-ID');
+const fee = n => Math.round(n * FEE_RATE);
+const nilaiOf = (lot, price) => lot * SPL * price;
+const ICON = `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.4"/><path d="M8 5v3.6M8 11h.01" stroke-linecap="round"/></svg>`;
+const EMPTY_ART = `<svg width="62" height="62" viewBox="0 0 62 62" fill="none" aria-hidden="true">
+  <path d="M17 10h17l10 10v32a2 2 0 0 1-2 2H17a2 2 0 0 1-2-2V12a2 2 0 0 1 2-2z" fill="#dcdfe1"/>
+  <path d="M34 10l10 10H35a1 1 0 0 1-1-1V10z" fill="#b6bbbe"/>
+  <rect x="21" y="26" width="17" height="2" rx="1" fill="#a6abae"/>
+  <rect x="21" y="32" width="13" height="2" rx="1" fill="#a6abae"/>
+  <circle cx="31" cy="40" r="9" fill="#dcdfe1" stroke="#2dd4bf" stroke-width="2"/>
+  <path d="M24.6 46.4 19 52" stroke="#2dd4bf" stroke-width="2.4" stroke-linecap="round"/>
+</svg>`;
+const emptyState = text => `<div class="empty">${EMPTY_ART}<span>${text}</span></div>`;
+
+/* ============ parent states ============ */
+const STATUSES = {
+  pending:     { label:'Pending',           tone:'t-amber', src:'client', aw:true },
+  declined:    { label:'Declined',          tone:'t-red',   src:'client' },
+  unresponded: { label:'Unresponded',       tone:'t-red',   src:'client' },
+  cancelled:   { label:'Cancelled',         tone:'t-red',   src:'client' },
+
+  waiting:     { label:'Waiting',           tone:'t-amber', src:'bursa', aw:true,  lists:['terkirim'] },
+  open:        { label:'Open',              tone:'t-blue',  src:'bursa', aw:true,  lists:['terkirim'] },
+  matched:     { label:'Matched',           tone:'t-green', src:'bursa', aw:false, lists:['matched','terkirim'] },
+  partial:     { label:'Partial',           tone:'t-teal',  src:'bursa', aw:true,  lists:['matched','terkirim'] },
+  rejected:    { label:'Rejected',          tone:'t-red',   src:'bursa', aw:false, lists:['terkirim'] },
+  pendingwd:   { label:'Pending Withdrawn', tone:'t-grey',  src:'bursa', aw:false, lists:['terkirim'] },
+  withdrawn:   { label:'Withdrawn',         tone:'t-grey',  src:'bursa', aw:false, lists:['terkirim'] },
+  amended:     { label:'Amended',           tone:'t-amber', src:'bursa', aw:false, lists:['terkirim'] },
+  expired:     { label:'Expired',           tone:'t-red',   src:'bursa', aw:false, lists:['terkirim'] }
+};
+const isClient = s => STATUSES[s].src === 'client';
+
+/* every Partial spawns a follow-on order carrying the remainder */
+const VARIANTS = {
+  open:      { label:'Matched-Open',      child:null,        live:true,  aw:true,  parent:'partial'   },
+  amended:   { label:'Matched-Amended',   child:'amended',   live:true,  aw:false, parent:'amended'   },
+  withdrawn: { label:'Matched-Withdrawn', child:null,        live:false, aw:false, parent:'withdrawn' },
+  expired:   { label:'Matched-Expired',   child:null,        live:false, aw:false, parent:'expired'   }
+};
+const CHILD = {
+  open:      { status:'open',      entry:'Open',      note:null },
+  amended:   { status:'open',      entry:'Open',      note:null },
+  withdrawn: { status:'withdrawn', entry:'Withdrawn', note:'Sisa lot ditarik dari bursa. Lot yang sudah matched pada order induk tetap berlaku.' },
+  expired:   { status:'expired',   entry:'Expired',   note:'Sisa lot kedaluwarsa tanpa eksekusi. Lot yang sudah matched pada order induk tetap berlaku.' }
+};
+
+/* ============ simulated clock ============ */
+const PERIODE = { gfd:{label:'Good For Day'}, gtd:{label:'Good Till Date', sub:'5 Jun 2026'}, gtc:{label:'Good Till Cancelled', sub:'1 Nov 2026'} };
+const TIPE = { limit:'Limit Order', market:'Market Order' };
+
+const FILLS = {
+  waiting:[], open:[], rejected:[], withdrawn:[], pendingwd:[], amended:[], expired:[],
+  matched:[20,35,45],
+  partial:[20,35]
+};
+const DAYSETS = {
+  gfd:[{no:null,d:'2 Jun 2026'}],
+  gtd:[{no:1,d:'2 Jun 2026'},{no:2,d:'3 Jun 2026'},{no:3,d:'4 Jun 2026'},{no:4,d:'5 Jun 2026'}],
+  gtc:[{no:1,d:'2 Jun 2026'},{no:2,d:'3 Jun 2026'},{no:3,d:'4 Jun 2026'},{no:4,d:'5 Jun 2026'},
+       {no:5,d:'8 Jun 2026'},{no:6,d:'9 Jun 2026'},{no:7,d:'10 Jun 2026'},{no:8,d:'11 Jun 2026'}]
+};
+const DAYCOUNT = { waiting:2, rejected:1, open:2, matched:3, partial:3, withdrawn:2, pendingwd:2, amended:2, expired:4 };
+/* on GTC an unfilled order keeps being re-sent, so the history runs long */
+const GTC_DAYCOUNT = { waiting:8, open:8, pendingwd:8, amended:6, withdrawn:6 };
+function daysFor(status, periode){
+  if(periode === 'gfd' || DAYCOUNT[status] === 1) return [DAYSETS[periode][0]];
+  if(periode === 'gtd') return DAYSETS.gtd.slice(0, Math.min(DAYCOUNT[status], DAYSETS.gtd.length));
+  return DAYSETS.gtc.slice(0, Math.min(GTC_DAYCOUNT[status] || DAYCOUNT[status], DAYSETS.gtc.length));
+}
+
+/* ============ builder ============ */
+function build(cfg){
+  const DRIFT = [0,75,125,150];
+  const priceOn = di => cfg.tipe === 'market' ? LIMIT + DRIFT[Math.min(di,3)] : LIMIT;
+  const fills = FILLS[cfg.status];
+  const days  = daysFor(cfg.status, cfg.periode);
+  const lastD = days.length - 1;
+
+  const matched = fills.map((lot,i) => {
+    const di = Math.min(i, lastD), day = days[di], price = priceOn(di);
+    const nilai = nilaiOf(lot, price);
+    return { tradeId:'3827ehjb892' + 'hjkm'[i%4] + (i+1), idxId:IDX_POOL[di],
+             waktu:`${day.d} ${CLOCK.match[Math.min(i, CLOCK.match.length-1)]}`,
+             harga:price, lot, nilai, fee:fee(nilai) };
+  });
+  const filled = fills.reduce((a,b)=>a+b,0);
+  const nilaiTotal = matched.reduce((a,x)=>a+x.nilai,0);
+  const feeTotal = matched.reduce((a,x)=>a+x.fee,0);
+  const avgPrice = filled ? nilaiTotal / (filled * SPL) : 0;
+  const filledBefore = di => fills.reduce((a,lot,i)=> a + (Math.min(i,lastD) < di ? lot : 0), 0);
+
+  const LAST = { waiting:'Waiting', open:'Open', matched:'Matched', partial:'Partial',
+                 rejected:'Rejected', expired:'Expired', withdrawn:'Withdrawn',
+                 pendingwd:'Pending Withdrawn', amended:'Amended' };
+  const overnight = cfg.status === 'waiting' && cfg.periode !== 'gfd';
+
+  let terkirim = days.map((day, di) => {
+    const status = overnight ? 'Expired' : (di === lastD ? LAST[cfg.status] : 'Expired');
+    return {
+      idxId: IDX_POOL[di],
+      waktu:`${day.d} ${CLOCK.sent}`,
+      antrean: ANTREAN[di % ANTREAN.length],
+      antreanLot: ANTREAN_LOT[di % ANTREAN_LOT.length],
+      lot: TOTAL_LOT - filledBefore(di),
+      status
+    };
+  }).reverse();
+
+  const last = days[lastD];
+  const notes = [];
+  const left = TOTAL_LOT - filled;
+  const push = (tone,text,alasan) => notes.push({tone,text,alasan});
+  if(cfg.status==='rejected') push('red', 'Placeholder text for Rejection Message');
+  if(cfg.status==='withdrawn') push('grey', `Order dibatalkan pada ${last.d} ${CLOCK.cancel}`);
+  /* the Alasan Amend now lives on the NEW recommendation, not on the order it replaced */
+  if(cfg.status==='amended') push('amber', `Order diubah pada ${last.d} ${ACTION_TIME}`);
+  /* Each partial variant states the action that ended the order.
+     Matched-Open ends nothing — the remainder stays on the same order — so it has no banner. */
+  const PARTIAL_BANNER = {
+    amended:   ['amber', `Order diubah pada ${last.d} ${ACTION_TIME}`],
+    withdrawn: ['grey',  `Sisa lot dibatalkan pada ${last.d} ${CLOCK.cancel}`]
+  };
+  if(cfg.status==='partial' && PARTIAL_BANNER[cfg.variant]) push(...PARTIAL_BANNER[cfg.variant]);
+
+  return { matched, terkirim, notes, filled, nilaiTotal, feeTotal, avgPrice, lotOpen:left,
+           lastDay:last.d };
+}
+
+/* ============ shared render helpers ============ */
+const row = (dt,dd,cls='') => `<div class="row ${cls}"><dt>${dt}</dt><dd>${dd}</dd></div>`;
+const na = () => `<span class="na">—</span>`;
+const badge = (label,tone) => `<span class="badge ${tone}"><span class="dot"></span>${label}</span>`;
+
+const CLIENT_COPY = {
+  pending:     { h:'Menunggu Persetujuan Klien', p:'Rekomendasi akan diteruskan ke bursa setelah klien menyetujui rekomendasi ini' },
+  declined:    { h:'Rekomendasi Ditolak Klien',  p:'Rekomendasi ditolak klien, Anda dapat membuat rekomendasi baru jika diperlukan' },
+  unresponded: { h:'Klien Tidak Merespons',      p:'Rekomendasi tidak mendapat respons dalam batas waktu yang sudah ditentukan.<br>Rekomendasi tidak diteruskan ke bursa' },
+  cancelled:   { h:'Rekomendasi Dibatalkan',     p:'Anda telah membatalkan rekomendasi ini' }
+};
+
+/* `ov` lets an amended successor state its own, newer recommendation */
+function rekoBlock(cfg, pre, ov = {}){
+  /* a market order has no limit, so the estimate is priced off the side's reference:
+     BELI -> ARA (the ceiling it could pay), JUAL -> harga terakhir */
+  const S = SISI[cfg.sisi];
+  const id     = ov.id     ?? REKO.id;
+  const waktu  = ov.waktu  ?? REKO.waktu;
+  const lot    = ov.lot    ?? REKO.lot;
+  const limit  = ov.price  ?? LIMIT;
+  const alasan = ov.alasan ?? ALASAN_REKO;
+  const approved = ov.approved ?? (pre ? na() : APPROVED);
+  const estPrice = cfg.tipe==='market' ? S.ref : limit;
+  const estNilai = nilaiOf(lot, estPrice);
+  const estFee = fee(estNilai);
+  const harga = cfg.tipe==='market' ? 'Market' : rp(limit);
+  const perkiraanNilai = cfg.tipe==='market'
+    ? `${rp(estNilai)}<span class="sub">Dihitung dari ${S.refLabel} ${rp(S.ref)}</span>`
+    : rp(estNilai);
+  return `
+    <p class="eyebrow">Rekomendasi</p>
+    <dl>
+      ${row('Rekomendasi ID', id)}
+      ${row('Waktu Rekomendasi Terbuat', waktu)}
+      ${row('Waktu Rekomendasi Disetujui', approved)}
+      ${row('Harga Rekomendasi', harga)}
+      ${row('Jumlah Lot', lot)}
+      ${row(S.eNilai, perkiraanNilai)}
+      ${row('Perkiraan Fee', rp(estFee))}
+      ${row(S.eTotal, rp(estNilai + S.arah * estFee), 'total')}
+    </dl>${alasanBlock(alasan,
+      ov.alasanWd ? { label:'Alasan Withdraw', text:ov.alasanWd } : null)}`;
+}
+
+/* which follow-on order, if any, this state creates */
+function childKey(cfg){
+  if(cfg.status === 'amended') return 'amended';
+  if(cfg.status === 'partial') return VARIANTS[cfg.variant].child;
+  return null;
+}
+
+function renderLeft(cfg, m){
+  const pre = isClient(cfg.status);
+
+  const per = PERIODE[cfg.periode];
+  /* the link is one-directional: only the new order carries "Order Induk".
+     A parent never names the order that succeeds it. */
+
+  /* a withdraw creates no new recommendation, so its rationale is appended to
+     this order's own — directly under Alasan Rekomendasi */
+  const isWd = cfg.status === 'withdrawn' || cfg.status === 'pendingwd'
+            || (cfg.status === 'partial' && cfg.variant === 'withdrawn');
+
+  return `<div class="card">${rekoBlock(cfg, pre, isWd ? { alasanWd: ALASAN_WD } : {})}
+    <div class="rule"></div>
+    <p class="eyebrow">Order</p>
+    <dl>
+      ${row('Order ID', pre ? na() : PARENT_ID)}
+      ${row('Waktu Order Terbuat', pre ? na() : REKO.waktu)}
+      ${row('Tipe Order', TIPE[cfg.tipe])}
+      ${row('Periode Berakhir', per.sub ? `${per.label} - ${per.sub}` : per.label)}
+      ${row('Jumlah Lot', TOTAL_LOT)}
+      ${cfg.status === 'partial' ? row('Jumlah Lot Open', m.lotOpen) : ''}
+    </dl></div>`;
+}
+
+/* a queue position only exists while the send is sitting in the order book,
+   so it is shown on Open sends and nowhere else */
+const QUEUE_STATUS = ['Open'];
+
+
+/* the send history is unbounded on GTD/GTC, so only the most recent are listed */
+const MAX_TERKIRIM = 5;
+
+function entryCard(entries){
+  const shown = entries.slice(0, MAX_TERKIRIM);          /* entries arrive newest-first */
+  const hidden = entries.length - shown.length;
+  return `<div class="card">
+      <div class="list-head"><h3 class="block-title">List Order Terkirim</h3></div>
+      ${shown.map(e => `
+        <div class="entry">
+          <dl>
+            ${row('IDX ID', e.idxId)}
+            ${row('Waktu Terkirim', e.waktu)}
+            ${QUEUE_STATUS.includes(e.status) ? row('No. Antrean', e.antrean) + row('Antrean Lot', e.antreanLot) : ''}
+            ${row('Jumlah Lot Terkirim', e.lot)}
+            ${row('Status', e.status)}
+          </dl>
+        </div>`).join('')}${hidden > 0
+          ? `<p class="more">Menampilkan ${MAX_TERKIRIM} pengiriman terakhir.</p>`
+          : ''}
+    </div>`;
+}
+
+/* shared: a Partial successor shows the same fills as its parent */
+function matchedCard(m){
+  if(!m.matched.length) return '';
+  return `
+    <div class="card">
+      <div class="list-head"><h3 class="block-title">List Order Matched</h3></div>
+      ${m.matched.map(x => `
+        <div class="entry"><dl>
+          ${row('Trade ID', x.tradeId)}
+          ${row('IDX ID', x.idxId)}
+          ${row('Waktu Matched', x.waktu)}
+          ${row('Harga Matched', rp(x.harga))}
+          ${row('Jumlah Lot', x.lot)}
+          ${row(sisi().nilai, rp(x.nilai))}
+          ${row('Fee', rp(x.fee))}
+          ${row(sisi().total, rp(x.nilai + sisi().arah * x.fee), 'total')}
+        </dl></div>`).join('')}
+    </div>`;
+}
+
+function renderRight(cfg, m){
+  if(isClient(cfg.status)){
+    const c = CLIENT_COPY[cfg.status];
+    return `<div class="card blank"><div class="blankstate"><h4>${c.h}</h4><p>${c.p}</p></div></div>`;
+  }
+  const notes = m.notes.length
+    ? `<div class="notes-wrap">${m.notes.map(n=>`<div class="note note-${n.tone}">${ICON}<span>${
+        n.alasan
+          ? `<strong>${n.text}</strong><span class="alasan-in clamped">${n.alasan}</span>`
+            + `<button type="button" class="readmore">Selengkapnya</button>`
+          : n.text
+      }</span></div>`).join('')}</div>` : '';
+
+  if(cfg.status === 'waiting' && cfg.periode === 'gfd'){
+    return `${notes}<div class="card">
+        <div class="list-head"><h3 class="block-title">List Order Terkirim</h3></div>
+        ${emptyState('Belum Ada Order Terkirim')}
+      </div>`;
+  }
+
+  return notes + STATUSES[cfg.status].lists
+    .map(l => l === 'matched' ? matchedCard(m)
+                             : entryCard(m.terkirim)).join('');
+}
+
+/* ---- the follow-on order created by a Partial ---- */
+function renderChild(cfg, m, kase){
+  const key = childKey(cfg), c = CHILD[key];
+  const amended = key === 'amended';
+  const isLotCase = amended && kase === 'lot';
+  const lot = isLotCase ? amendLot(m.lotOpen) : m.lotOpen;
+  const per = PERIODE[cfg.periode];
+  /* only the harga case moves the price; the lot case keeps it */
+  const price = amended && !isLotCase ? AMEND_PRICE : LIMIT;
+  const harga = cfg.tipe==='market' ? 'Market' : rp(price);
+  const orderId = isLotCase ? CHILD_ID2 : CHILD_ID;
+  const idxId   = isLotCase ? CHILD_IDX2 : CHILD_IDX;
+  const when = `${m.lastDay} ${ACTION_TIME}`;
+
+  /* the amend created a NEW recommendation — new id, new time, and the advisor's
+     Alasan Amend becomes that recommendation's Alasan Rekomendasi */
+  const reko = amended ? {
+    id: isLotCase ? CHILD_REKO2 : CHILD_REKO,
+    waktu: when,
+    approved: when,
+    price, lot, alasan: ALASAN_AMEND
+  } : {};
+
+  const left = `<div class="card">${rekoBlock(cfg, false, reko)}
+    <div class="rule"></div>
+    <p class="eyebrow">Order</p>
+    <dl>
+      ${row('Order ID', orderId)}
+      ${row('Order Induk', `<span class="link">${PARENT_ID}</span>`)}
+      ${row('Waktu Order Terbuat', when)}
+      ${row('Tipe Order', TIPE[cfg.tipe])}
+      ${row('Periode Berakhir', per.sub ? `${per.label} - ${per.sub}` : per.label)}
+      ${amended ? row('Harga Order', harga) : ''}
+      ${row('Jumlah Lot', lot)}
+    </dl></div>`;
+
+  /* the successor is a plain new order — its story is told by its own
+     Rekomendasi block, so it carries no action banner */
+  const entries = [{ idxId, waktu: when,
+                     antrean: isLotCase ? 418 : 412, antreanLot: isLotCase ? 1020 : 980,
+                     lot, status:c.entry }];
+  /* the parent's fills belong to the parent's order, not to this one */
+  const right = entryCard(entries);
+
+  const st = STATUSES[c.status];
+  return modalHTML({ badgeLabel:st.label, tone:st.tone, sub:'', left, right, aw:c.status === 'open' });
+}
+
+/* ---- modal shell ---- */
+function modalHTML(o){
+  return `<div class="modal">
+    <div class="modal-head">
+      <h2>Rincian Order</h2>
+      <button class="close" aria-label="Tutup">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 3l10 10M13 3L3 13"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="client">
+        <span class="client-name">Bramantyo Cipta Kusuma</span>
+        <span class="head-right">
+          ${o.sub ? `<span class="substate">${o.sub}</span>` : ''}
+          ${badge(o.badgeLabel, o.tone)}
+          <span class="side"><em class="${cfg.sisi}">${sisi().label}</em>BBCA</span>
+        </span>
+      </div>
+      <div class="cols">
+        <section class="left-stack">${o.left}</section>
+        <section class="right-stack">${o.right}</section>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-primary" ${o.aw?'':'disabled'}>Amend</button>
+      <button class="btn btn-danger" ${o.aw?'':'disabled'}>Withdraw</button>
+    </div>
+  </div>`;
+}
+
+/* ============ filters ============ */
+const cfg = { status:'partial', variant:'open', sisi:'beli', tipe:'limit', periode:'gfd' };
+const TONE_VAR = {'t-amber':'amber','t-blue':'blue','t-teal':'teal','t-green':'green','t-red':'red','t-grey':'grey'};
+/* Pending Withdrawn is NOT a live status: while the exchange is open a withdraw
+   request is confirmed immediately, so the pending step is never visible. It only
+   persists across a close, waiting for the exchange to confirm at the next session. */
+/* every parent state is reachable on its own terms now — the only rule left is a
+   real contradiction: a GTC order runs to 1 Nov, so it cannot already be Expired. */
+function gtcExpiredClash(status, variant){
+  return status === 'expired' || (status === 'partial' && variant === 'expired');
+}
+
+function isDisabled(axis, key){
+  if(axis === 'status'  && key === 'expired' && cfg.periode === 'gtc') return true;
+  if(axis === 'variant' && key === 'expired' && cfg.periode === 'gtc') return true;
+  if(axis === 'periode' && key === 'gtc' && gtcExpiredClash(cfg.status, cfg.variant)) return true;
+  return false;
+}
+
+function reconcile(){
+  if(cfg.periode === 'gtc' && gtcExpiredClash(cfg.status, cfg.variant)) cfg.periode = 'gtd';
+}
+
+function buildFilters(){
+  const mk = (axis, entries) => entries.map(([key,label,dot,win]) =>
+    `<button class="pill" data-axis="${axis}" data-key="${key}" aria-pressed="${cfg[axis]===key}" ${isDisabled(axis,key)?'disabled':''}>
+       ${dot?`<span class="dot" style="background:var(--${dot})"></span>`:''}${label}${win?`<span class="win">${win}</span>`:''}
+     </button>`).join('');
+  const list = src => Object.entries(STATUSES).filter(([,v])=>v.src===src).map(([k,v])=>[k, v.label, TONE_VAR[v.tone]]);
+
+  const variantRow = cfg.status === 'partial'
+    ? `<div class="frow"><label>Detail Partial</label><div class="pills">${
+        mk('variant', Object.entries(VARIANTS).map(([k,v])=>[k, v.label, 'teal']))}</div></div>` : '';
+
+  document.getElementById('filters').innerHTML = `
+    <div class="frow grouped"><label>Parent State</label>
+      <div class="pills" style="align-items:flex-start">
+        <div class="grp"><span>Sebelum disetujui</span><div class="pills">${mk('status',list('client'))}</div></div>
+        <span class="vsep"></span>
+        <div class="grp"><span>After approved</span><div class="pills">${mk('status',list('bursa'))}</div></div>
+      </div>
+      <button class="reset" data-reset>Reset</button>
+    </div>
+    ${variantRow}
+    <div class="frow"><label>Sisi</label><div class="pills">${mk('sisi',[['beli','Beli','teal'],['jual','Jual','red']])}</div></div>
+    <div class="frow"><label>Tipe Order</label><div class="pills">${mk('tipe',[['limit','Limit Order'],['market','Market Order']])}</div></div>
+    <div class="frow"><label>Periode</label><div class="pills">${mk('periode',[['gfd','GFD'],['gtd','GTD'],['gtc','GTC']])}</div></div>
+    ${isClient(cfg.status)
+      ? `<p class="hint">Order belum dibuat: Order ID, Waktu Order Terbuat, dan Waktu Rekomendasi Disetujui bertanda strip.</p>`
+      : ''}`;
+
+  const rb = document.querySelector('[data-reset]');
+  if(rb) rb.onclick = () => {
+    Object.assign(cfg, { status:'partial', variant:'open', sisi:'beli', tipe:'limit', periode:'gfd' });
+    render();
+  };
+
+  document.querySelectorAll('.filters .pill').forEach(p => p.onclick = () => {
+    cfg[p.dataset.axis] = p.dataset.key;
+    reconcile();
+    render();
+  });
+}
+
+function caption(){
+  const s = cfg.status;
+  if(isClient(s)) return 'Belum ada order di bursa — kolom kanan berisi pesan status dan seluruh field Order bernilai kosong.';
+  const bits = [];
+  if(s==='partial') bits.push(VARIANTS[cfg.variant].child
+    ? 'Sisa lot berpindah ke order lanjutan dengan Order ID dan antrean sendiri; order induk berhenti pada status Partial.'
+    : cfg.variant === 'expired'
+      ? 'Sisa lot kedaluwarsa bersama order induk, jadi tidak ada order lanjutan — hanya satu Order ID.'
+      : cfg.variant === 'withdrawn'
+        ? 'Sisa lot ditarik pada order induk, jadi tidak ada order lanjutan — hanya satu Order ID.'
+        : 'Hanya ada satu order: sisa lot tetap menunggu di antrean order yang sama, jadi tidak ada order lanjutan.');
+  if(s==='amended') bits.push('Order ini berakhir saat di-amend; penggantinya adalah order baru dengan Order ID sendiri.');
+  if(s==='pendingwd') bits.push('Order masih hidup meski withdraw sudah diminta — kedua tombol mati supaya tidak ada permintaan ganda.');
+  if(s==='waiting') bits.push(cfg.periode!=='gfd'
+    ? 'Cabang kedua Waiting: order sudah pernah dikirim tapi sedang tidak ada di order book.'
+    : 'Cabang pertama Waiting: order belum pernah dikirim, jadi List Order Terkirim kosong.');
+  if(cfg.tipe==='market') bits.push(`Market Order: baris Harga menampilkan Market, bukan limit price. Perkiraan ${cfg.sisi==='beli' ? `nilai BELI dihitung dari ARA ${rp(ARA)}` : `nilai JUAL dihitung dari harga terakhir ${rp(LAST_PRICE)}`}.`);
+  if(cfg.periode!=='gfd') bits.push(`Riwayat pengiriman menumpuk per hari bursa; hanya ${MAX_TERKIRIM} pengiriman terakhir ditampilkan.`);
+  return bits.join(' ') || 'Baseline: bursa aktif, satu hari bursa, eksekusi continuous.';
+}
+
+/* the control appears when there is anything hidden: overflowing text,
+   or a second rationale tucked below it */
+function syncReadMore(){
+  document.querySelectorAll('.alasan-group').forEach(g => {
+    const btn = g.querySelector('.readmore');
+    const first = g.querySelector('.alasan');
+    if(!btn || !first) return;
+    const hidden = g.classList.contains('open')
+      || !!g.querySelector('.alasan-extra')
+      || first.scrollHeight > first.clientHeight + 1;
+    btn.classList.toggle('show', hidden);
+  });
+}
+document.addEventListener('click', e => {
+  const btn = e.target.closest('.readmore');
+  if(!btn) return;
+  const g = btn.closest('.alasan-group');
+  if(!g) return;
+  btn.textContent = g.classList.toggle('open') ? 'Tutup' : 'Selengkapnya';
+});
+
+function render(){
+  buildFilters();
+  const stage = document.getElementById('stage');
+  const cap = document.getElementById('caption');
+
+  const m = isClient(cfg.status) ? null : build(cfg);
+  /* a Partial is badged with the action that ended it. Matched-Open ends nothing —
+     the remainder is still resting on the same order — so that one is badged "Partial". */
+  const st = STATUSES[cfg.status === 'partial' ? VARIANTS[cfg.variant].parent : cfg.status];
+  let html = modalHTML({ badgeLabel:st.label, tone:st.tone,
+                         sub: '',
+                         left:renderLeft(cfg,m), right:renderRight(cfg,m),
+                         aw: cfg.status==='partial' ? VARIANTS[cfg.variant].aw : st.aw });
+
+  const key = childKey(cfg);
+  if(key){
+    const induk = `<p class="ordercap">Order induk<b>${PARENT_ID} — ${m.filled ? `${m.filled} dari ${TOTAL_LOT} lot terisi` : 'tidak ada lot terisi'}</b></p>`;
+    if(key === 'amended'){
+      const base = m.lotOpen, newLot = amendLot(base);
+      const hargaCase = cfg.tipe === 'market' ? 'harga tetap Market'
+                      : `harga ${rp(LIMIT)} → ${rp(AMEND_PRICE)}`;
+      html = induk + html
+        + `<p class="ordercap">Order lanjutan — Kasus 1<b>${CHILD_ID} <i>Amend Harga</i> — ${hargaCase}, ${base} lot`
+        + `</b></p>` + renderChild(cfg, m, 'harga')
+        + `<p class="ordercap">Order lanjutan — Kasus 2<b>${CHILD_ID2} <i>Amend Jumlah Lot</i> — jumlah lot ${base} → ${newLot}`
+        + `, ${cfg.tipe === 'market' ? 'harga tetap Market' : `harga tetap ${rp(LIMIT)}`}</b></p>` + renderChild(cfg, m, 'lot');
+    } else {
+      html = induk + html
+        + `<p class="ordercap">Order lanjutan<b>${CHILD_ID} — sisa ${m.lotOpen} lot</b></p>` + renderChild(cfg, m, 'harga');
+    }
+  }
+  stage.innerHTML = html;
+  cap.textContent = caption();
+  syncReadMore();
+}
+render();
+</script>
+</body>
+</html>
