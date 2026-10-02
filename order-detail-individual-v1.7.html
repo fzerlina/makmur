@@ -265,12 +265,6 @@
   .ordercap b{color:#3b4148;font-weight:600;letter-spacing:0;text-transform:none;font-size:12.5px;display:block;margin-top:4px;font-family:inherit}
   .ordercap b i{font-style:normal;background:#3b4148;color:#f2f3f4;border-radius:5px;padding:2px 8px;margin:0 4px;font-size:11.5px}
   .link{color:var(--teal)}
-  /* ---------- Individual: stock header (replaces the advisor's client row) ---------- */
-  .stock{display:flex;align-items:center;gap:12px;min-width:0}
-  .logo{flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;
-        background:#1D4E9E;color:#fff;font-size:13px;font-weight:600;letter-spacing:.02em}
-  .stock-code{font-size:16px;line-height:22px;font-weight:600;color:var(--text)}
-  .stock-name{font-size:14px;line-height:20px;color:var(--label);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .block-title.sec{margin-bottom:8px}
   .row dd.dim{color:var(--label)}
   .empty p{margin:-8px 0 0;max-width:300px;font-size:13px;line-height:20px;color:var(--label)}
@@ -477,7 +471,7 @@ function orderCard(c, m, ov = {}){
   const top = `
       ${row('Order ID', ov.id ?? ORDER_ID)}
       ${ov.induk ? row('Order Induk', `<span class="link">${ov.induk}</span>`) : ''}
-      ${row('Waktu Order', ov.waktu ?? `2 Okt 2026 ${CREATED}`)}
+      ${row('Waktu Order Dibuat', ov.waktu ?? `2 Okt 2026 ${CREATED}`)}
       ${row('Jenis Trading', 'Regular')}
       ${c.sisi === 'beli' ? row('Gunakan Buying Power', c.bp === 'ya' ? 'Ya' : 'Tidak') : ''}
       ${row('Tipe Order', TIPE[c.tipe].label)}
@@ -571,13 +565,7 @@ function modalHTML(o){
     </div>
     <div class="modal-body">
       <div class="client">
-        <div class="stock">
-          <span class="logo" aria-hidden="true">BCA</span>
-          <div style="min-width:0">
-            <div class="stock-code">BBCA</div>
-            <div class="stock-name">PT Bank Central Asia Tbk</div>
-          </div>
-        </div>
+        <div class="client-name">Bramantyo Cipta Kusuma</div>
         <span class="head-right">
           ${badge(o.badgeLabel, o.tone)}
           <span class="side"><em class="${cfg.sisi}">${S().label}</em>BBCA</span>
