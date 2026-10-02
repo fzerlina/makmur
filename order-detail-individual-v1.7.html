@@ -1,0 +1,698 @@
+<title>Rincian Transaksi Individual</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     Makmur design tokens — pulled from Figma "Detail Transaksi"
+     (file SiYyGQqIBBzl65GMhMQshs, node 494:190034)
+     ============================================================ */
+  :root{
+    --stage:#e9f5f3;
+
+    /* Black - White ramp */
+    --modal:#0F1113;            /* modal shell                        */
+    --panel:#18191C;            /* BW10  Card 1                       */
+    --line:#27292F;             /* BW13  Line / Focus State           */
+    --line-soft:#1F2022;        /* BW20                               */
+    --text:#FFFFFF;             /* BW01                               */
+    --value:#FFFFFF;            /* BW01                               */
+    --label:#9498A1;            /* BW07  Disable & Subtext            */
+    --muted:#9498A1;            /* BW07                               */
+    --icon:#B9BFCE;             /* BW16  Icon No Active               */
+
+    /* Accents */
+    --teal:#00A88C;             /* T09  Primary                       */
+    --teal-deep:#06322B;
+    --red:#FF586C;              /* R03                                */
+    --red-deep:#2E1419;
+    --blue:#009EC1;             /* B06                                */
+    --blue-deep:#0B1C20;        /* B10                                */
+    --amber:#DCA400;            /* Y06                                */
+    --amber-deep:#241B05;
+    --green:#00A88C;            /* T09                                */
+    --green-deep:#06322B;
+    --grey:#9498A1;             /* BW07                               */
+    --grey-deep:#1F2022;        /* BW20                               */
+
+    --radius:12px;              /* card radius                        */
+    --radius-lg:16px;           /* modal radius                       */
+    --radius-sm:8px;            /* button radius                      */
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--stage);
+    font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    /* Body/B5 — Inter Regular 14 / 20 */
+    font-size:14px;line-height:20px;
+    color:var(--text);-webkit-font-smoothing:antialiased;
+    padding-block:28px 64px;padding-inline:max(16px,24px);
+  }
+  .wrap{max-width:1180px;margin:0 auto}
+
+  /* ---------- filters (scaffolding — deliberately kept light) ---------- */
+  .filters{background:#fff;border:1px solid #d3e6e3;border-radius:14px;padding:16px 18px;margin-bottom:16px}
+  .frow{display:flex;align-items:flex-start;gap:14px;padding:8px 0}
+  .frow + .frow{border-top:1px solid #eaf3f1}
+  .frow > label{flex:none;width:126px;padding-top:7px;font-size:11px;line-height:16px;letter-spacing:.12em;text-transform:uppercase;color:#5c817d;font-weight:600}
+  .pills{display:flex;flex-wrap:wrap;gap:7px;flex:1}
+  .grp{display:flex;flex-direction:column;gap:6px}
+  .grp > span{font-size:10px;line-height:13px;letter-spacing:.12em;text-transform:uppercase;color:#9ab3b0;font-weight:600}
+  .frow.grouped > label{padding-top:26px}
+  .filters + .filters{margin-top:-4px}
+  .grp .pills{flex:none}
+  .vsep{width:1px;align-self:stretch;background:#dbeae8;margin:0 6px}
+  .pill{font:inherit;font-size:12.5px;line-height:18px;font-weight:500;padding:7px 13px;border-radius:999px;cursor:pointer;background:#f4faf9;color:#33504d;border:1px solid #cfe3e0;display:inline-flex;align-items:center;gap:8px;transition:background .15s,border-color .15s,color .15s}
+  .pill:hover:not(:disabled){border-color:#8fc6c0}
+  .pill[aria-pressed="true"]{background:#0f2b29;border-color:#0f2b29;color:#eafffb}
+  .pill:disabled{opacity:.35;cursor:not-allowed}
+  .pill .dot{width:7px;height:7px;border-radius:50%}
+  .pill .win{opacity:.5;font-size:11px;font-variant-numeric:tabular-nums}
+  .pill[aria-pressed="true"] .win{opacity:.65}
+  .pill:focus-visible,.btn:focus-visible,.close:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+  .filters.locked{opacity:.45;pointer-events:none}
+  .reset{font:inherit;font-size:12px;font-weight:500;color:#5c817d;background:none;border:1px solid #cfe3e0;border-radius:8px;padding:6px 12px;cursor:pointer;align-self:flex-start;margin-left:auto}
+  .reset:hover{border-color:#8fc6c0;color:#33504d}
+  .reset:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+  .prompt{background:#fff;border:1px dashed #c3ddd9;border-radius:14px;padding:34px 18px;text-align:center;color:#5c817d;font-size:13px}
+  .hint{margin:6px 0 0 140px;font-size:11.5px;color:#7d8f8c}
+
+  /* ============================================================
+     MODAL — 1003 × auto, matching the Figma frame
+     ============================================================ */
+  .modal{
+    max-width:1003px;margin:0 auto;
+    background:var(--modal);
+    border:1px solid var(--line);
+    border-radius:var(--radius-lg);
+    box-shadow:0 24px 60px rgba(12,40,38,.18);
+    overflow:hidden;
+  }
+
+  /* --- header: 60px tall, 20px gutters, 1px rule --- */
+  .modal-head{
+    display:flex;align-items:center;justify-content:space-between;
+    height:60px;padding:0 20px;
+    border-bottom:1px solid var(--line);
+  }
+  .modal-head h2{
+    margin:0;
+    /* Subtitle/S1 — Inter Semi Bold 16 / 22 */
+    font-size:16px;line-height:22px;font-weight:600;letter-spacing:0;
+    color:var(--text);
+  }
+  .close{
+    background:none;border:0;color:var(--text);cursor:pointer;
+    width:30px;height:30px;border-radius:var(--radius-sm);
+    display:grid;place-items:center;transition:background .15s,color .15s;
+  }
+  .close svg{width:18px;height:18px}
+  .close:hover{background:var(--line-soft);color:var(--icon)}
+
+  /* --- body: 15px side gutters, 10px gaps --- */
+  .modal-body{padding:12px 15px 0}
+
+  .client{
+    background:var(--panel);
+    border:1px solid var(--line-soft);
+    border-radius:var(--radius);
+    padding:15px 20px;
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+    margin-bottom:10px;
+  }
+  .client-name{font-size:16px;line-height:22px;font-weight:600;color:var(--text)}
+  .head-right{display:flex;align-items:center;gap:12px}
+  .substate{font-size:12px;line-height:18px;color:var(--label)}
+  .side{font-size:16px;line-height:22px;font-weight:600;color:var(--value)}
+  .side em{font-style:normal;margin-right:6px}
+  .side em.beli{color:var(--teal)}
+  .side em.jual{color:var(--red)}
+
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start}
+  .left-stack{display:flex;flex-direction:column;gap:10px}
+  .card{
+    background:var(--panel);
+    border:1px solid var(--line-soft);
+    border-radius:var(--radius);
+    padding:16px 20px;
+  }
+  .right-stack{
+    display:flex;flex-direction:column;gap:10px;
+    max-height:520px;overflow-y:auto;padding-right:2px;
+    scrollbar-width:thin;scrollbar-color:var(--line) transparent;
+  }
+  .right-stack::-webkit-scrollbar{width:8px}
+  .right-stack::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px}
+  .card.blank{display:flex;align-items:center;justify-content:center;min-height:360px}
+
+  /* --- section headings --- */
+  .eyebrow{
+    /* Subtitle/S3 — Inter Semi Bold 12 / 18 */
+    font-size:12px;line-height:18px;font-weight:600;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--label);margin:0 0 12px;
+  }
+  /* reads as one more label row, matching "Perkiraan Total Pembelian" */
+  .alasan-label{margin:0;padding:6px 0 2px;font-size:14px;line-height:20px;font-weight:400;
+                letter-spacing:0;text-transform:none;color:var(--label)}
+  .alasan{margin:0;font-size:14px;line-height:21px;color:var(--value)}
+  .alasan-group:not(.open) .alasan{display:-webkit-box;-webkit-line-clamp:3;
+                                   -webkit-box-orient:vertical;overflow:hidden}
+  .alasan-group:not(.open) .alasan-extra{display:none}
+
+  .readmore{display:none;margin-top:6px;padding:0;background:none;border:0;cursor:pointer;
+            font:inherit;font-size:13px;line-height:19px;font-weight:600;color:var(--teal)}
+  .readmore.show{display:inline-block}
+  .readmore:hover{filter:brightness(1.25)}
+  .readmore:focus-visible{outline:2px solid var(--teal);outline-offset:2px;border-radius:4px}
+  .block-title{
+    margin:0;
+    /* Subtitle/S1 — Inter Semi Bold 16 / 22 */
+    font-size:16px;line-height:22px;font-weight:600;color:var(--text);
+  }
+  .list-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:12px}
+  .count{font-size:12px;line-height:18px;color:var(--label);font-variant-numeric:tabular-nums}
+
+  /* --- label / value rows (Body/B5) --- */
+  dl{margin:0}
+  .row{
+    display:flex;align-items:baseline;justify-content:space-between;gap:24px;
+    padding:6px 0;font-size:14px;line-height:20px;
+  }
+  .row dt{color:var(--label);font-weight:400}
+  .row dd{margin:0;color:var(--value);font-weight:400;text-align:right;font-variant-numeric:tabular-nums}
+  .row dd .sub{display:block;font-size:12px;line-height:18px;color:var(--label);margin-top:3px;font-variant-numeric:normal}
+  .row dd.zero,.row dd.na{color:var(--label)}
+  .row.total dt{color:var(--label)}
+  .row.total dd{font-weight:600;color:var(--text)}
+  .rule{height:1px;background:var(--line);margin:12px 0}
+  .rule.soft{background:var(--line-soft)}
+
+  /* --- status badge: Subtitle/S3 on a deep tonal fill --- */
+  .badge{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:4px 10px;border-radius:999px;
+    font-size:12px;line-height:18px;font-weight:600;
+    background:var(--grey-deep);
+  }
+  .badge .dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+  .t-amber{color:var(--amber)} .t-blue{color:var(--blue)}  .t-teal{color:var(--teal)}
+  .t-green{color:var(--green)} .t-red{color:var(--red)}    .t-grey{color:var(--grey)}
+  .badge.t-amber{background:var(--amber-deep)}
+  .badge.t-blue {background:var(--blue-deep)}
+  .badge.t-teal {background:var(--teal-deep)}
+  .badge.t-green{background:var(--green-deep)}
+  .badge.t-red  {background:var(--red-deep)}
+  .badge.t-grey {background:var(--grey-deep)}
+
+  .entry{position:relative}
+  .entry + .entry{border-top:1px solid var(--line);margin-top:12px;padding-top:12px}
+  .more{margin:12px 0 0;font-size:12px;line-height:18px;color:var(--label);text-align:center}
+
+  /* --- inline notes --- */
+  .note{
+    display:flex;gap:10px;align-items:flex-start;
+    border-radius:10px;padding:11px 13px;margin-bottom:10px;
+    font-size:13px;line-height:19px;
+  }
+  .note-red  {background:var(--red-deep);   color:#FF8E9C; border:1px solid rgba(255,88,108,.22)}
+  .note-amber{background:var(--amber-deep); color:#E7BB4D; border:1px solid rgba(220,164,0,.22)}
+  .note-grey {background:var(--grey-deep);  color:#B9BFCE; border:1px solid var(--line)}
+  .note-teal {background:var(--teal-deep);  color:#4FCBB4; border:1px solid rgba(0,168,140,.24)}
+  .note-blue {background:var(--blue-deep);  color:#4FC2DA; border:1px solid rgba(0,158,193,.22)}
+  .note-phase{background:var(--grey-deep);  color:#9498A1; border:1px solid var(--line)}
+  .note svg{flex:none;margin-top:2px}
+  .note strong{font-weight:600}
+  .note .alasan-in{display:block;margin-top:8px;padding-top:8px;
+                   border-top:1px solid rgba(255,255,255,.11);
+                   color:#D9DDE3;font-size:13px;line-height:20px}
+  .note .readmore{color:inherit;margin-top:4px}
+  /* generic 3-line clamp — second selector outranks .note .alasan-in{display:block} */
+  .clamped,
+  .note .alasan-in.clamped{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .notes-wrap .note:last-child{margin-bottom:0}
+
+  /* --- empty / blank states --- */
+  .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;min-height:250px;text-align:center}
+  .empty span{font-size:14px;line-height:20px;font-weight:600;color:var(--text)}
+  .blankstate{text-align:center;max-width:330px;margin:0 auto}
+  .blankstate h4{margin:0 0 10px;font-size:14px;line-height:20px;font-weight:600;color:var(--text)}
+  .blankstate p{margin:0;font-size:13px;line-height:20px;color:var(--label)}
+
+  /* --- footer: 1px rule, 15px gutters, 180×40 buttons --- */
+  .modal-foot{
+    display:flex;justify-content:flex-end;gap:10px;
+    padding:15px;margin-top:12px;
+    border-top:1px solid var(--line);
+  }
+  .btn{
+    font:inherit;
+    /* Subtitle/S2 — Inter Semi Bold 14 / 20 */
+    font-size:14px;line-height:20px;font-weight:600;
+    width:180px;height:40px;padding:0 16px;
+    border-radius:var(--radius-sm);cursor:pointer;border:1px solid transparent;
+    transition:filter .15s;
+  }
+  .btn:hover:not(:disabled){filter:brightness(1.3)}
+  .btn-primary{background:var(--teal-deep);color:var(--teal)}
+  .btn-danger{background:var(--red-deep);color:var(--red)}
+  .btn:disabled{background:var(--grey-deep);color:#565A63;cursor:not-allowed}
+
+  .caption{margin:14px 2px 0;font-size:12px;line-height:18px;color:#547370}
+  @media (max-width:860px){.cols{grid-template-columns:1fr}.right-stack{max-height:none}.frow{flex-direction:column;gap:8px}.frow>label{width:auto}.frow.grouped>label{padding-top:7px}.hint{margin-left:0}.btn{width:auto;min-width:140px;flex:1}}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+  .ordercap{margin:22px 2px 10px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#7b838c;font-weight:600}
+  .ordercap b{color:#3b4148;font-weight:600;letter-spacing:0;text-transform:none;font-size:12.5px;display:block;margin-top:4px;font-family:inherit}
+  .ordercap b i{font-style:normal;background:#3b4148;color:#f2f3f4;border-radius:5px;padding:2px 8px;margin:0 4px;font-size:11.5px}
+  .link{color:var(--teal)}
+  /* ---------- Individual: stock header (replaces the advisor's client row) ---------- */
+  .stock{display:flex;align-items:center;gap:12px;min-width:0}
+  .logo{flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;
+        background:#1D4E9E;color:#fff;font-size:13px;font-weight:600;letter-spacing:.02em}
+  .stock-code{font-size:16px;line-height:22px;font-weight:600;color:var(--text)}
+  .stock-name{font-size:14px;line-height:20px;color:var(--label);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .block-title.sec{margin-bottom:8px}
+  .row dd.dim{color:var(--label)}
+  .empty p{margin:-8px 0 0;max-width:300px;font-size:13px;line-height:20px;color:var(--label)}
+  .note .chg{display:block;margin-top:6px;color:#D9DDE3}
+  .modal-body:last-child{padding-bottom:15px}
+</style>
+<div class="wrap">
+  <div class="filters" id="filters"></div>
+  <div id="stage"></div>
+  <p class="caption" id="caption"></p>
+</div>
+
+<script>
+/* ============ constants ============ */
+const SPL = 100, FEE_RATE = 0.0015, TOTAL_LOT = 100;
+const ORDER_ID  = 'MKM-20261002-004187';
+const CHILD_ID  = 'MKM-20261002-004215';
+const IDX_POOL  = ['5678jnjmj982i9','5678jnjmk104b2','5678jnjmk377c5','5678jnjml502d8',
+                   '5678jnjml745e1','5678jnjmm018f6','5678jnjmm263g3','5678jnjmn571h7'];
+const CHILD_IDX = '5678jnjmm913f4';
+const ANTREAN     = [321, 187, 264,  95, 412, 233, 158, 341];
+const ANTREAN_LOT = [1250, 640, 980, 310, 1520, 870, 520, 1180];
+const ARA = 12050, LAST_PRICE = 10250;
+const CREATED = '08:41:22', ACTION_TIME = '13:40:05';
+const CLOCK = { sent:'08:45:10', trig:'10:12:05', cancel:'13:12:40', match:['10:27:55','14:34:00','15:49:12'] };
+
+/* harga per tipe & sisi.
+   Stop BELI terpicu saat harga terakhir ≥ trigger (breakout); stop JUAL saat ≤ trigger (stop loss).
+   Trailing Stop hanya JUAL: trigger = harga tertinggi − jarak trailing, lalu dikirim sebagai market. */
+const PX = {
+  beli: { limit:10050, trigger:10200, stopLimit:10250, amendLimit:10100, amendStop:10300 },
+  jual: { limit:10450, trigger:9800,  stopLimit:9750,  amendLimit:10400, amendStop:9700 }
+};
+const TRAIL = { persen:10, stop:9045 };   /* Stop Price = harga tertinggi − persentase trailing */
+const trailTrigger = () => TRAIL.stop;
+
+const SISI = {
+  beli: { label:'BELI', nilai:'Nilai Pembelian', total:'Total Pembelian',
+          eNilai:'Perkiraan Nilai', eTotal:'Perkiraan Total Pembelian', fee:'Fee', eFee:'Perkiraan Fee', arah:1, op:'≥' },
+  jual: { label:'JUAL', nilai:'Nilai Penjualan', total:'Total Penjualan',
+          eNilai:'Perkiraan Nilai', eTotal:'Perkiraan Total Penjualan', fee:'Fee dan PPh', eFee:'Perkiraan Fee dan PPh', arah:-1, op:'≤' }
+};
+const TIPE = {
+  limit:      { label:'Limit Order',       cond:false },
+  market:     { label:'Market Order',      cond:false },
+  stoplimit:  { label:'Stop Limit Order',  cond:true  },
+  stopmarket: { label:'Stop Market Order', cond:true  },
+  trailing:   { label:'Trailing Stop',     cond:true, jualOnly:true }
+};
+const PERIODE = {
+  gfd:{ code:'GFD', label:'Good For Day',       end:'2 Okt 2026' },
+  gtd:{ code:'GTD', label:'Good Till Date',     end:'9 Okt 2026' },
+  gtc:{ code:'GTC', label:'Good Till Canceled', end:'18 Okt 2026' }
+};
+/* GFD cukup ditulis labelnya; GTD/GTC ditulis "<tanggal berakhir> (KODE)" */
+const periodeText = p => p === 'gfd' ? PERIODE.gfd.label : `${PERIODE[p].end} (${PERIODE[p].code})`;
+
+const STATUSES = {
+  waiting:   { label:'Waiting',           tone:'t-amber', live:true  },
+  open:      { label:'Open',              tone:'t-blue',  live:true  },
+  partial:   { label:'Partial',           tone:'t-teal',  live:true  },
+  matched:   { label:'Matched',           tone:'t-green', live:false },
+  rejected:  { label:'Rejected',          tone:'t-red',   live:false },
+  expired:   { label:'Expired',           tone:'t-red',   live:false },
+  withdrawn: { label:'Withdrawn',         tone:'t-grey',  live:false },
+  pendingwd: { label:'Pending Withdrawn', tone:'t-grey',  live:false },
+  amended:   { label:'Amended',           tone:'t-amber', live:false }
+};
+/* status yang bisa berakhir setelah sebagian lot matched */
+const CAN_FILL = ['withdrawn','expired','amended','pendingwd'];
+
+const DAYSETS = {
+  gfd:['2 Okt 2026'],
+  gtd:['2 Okt 2026','5 Okt 2026','6 Okt 2026','7 Okt 2026','8 Okt 2026','9 Okt 2026'],
+  gtc:['2 Okt 2026','5 Okt 2026','6 Okt 2026','7 Okt 2026','8 Okt 2026','9 Okt 2026','12 Okt 2026','13 Okt 2026']
+};
+const DAYCOUNT = { waiting:2, rejected:1, open:2, matched:3, partial:3, withdrawn:2, pendingwd:2, amended:2, expired:6 };
+const GTC_DAYCOUNT = { waiting:8, open:8, pendingwd:8, amended:6, withdrawn:6 };
+function daysFor(status, periode){
+  if(periode === 'gfd' || DAYCOUNT[status] === 1) return [DAYSETS[periode][0]];
+  const n = periode === 'gtc' ? (GTC_DAYCOUNT[status] || DAYCOUNT[status]) : DAYCOUNT[status];
+  return DAYSETS[periode].slice(0, Math.min(n, DAYSETS[periode].length));
+}
+
+const rp  = n => 'Rp' + Math.round(n).toLocaleString('id-ID');
+const fee = n => Math.round(n * FEE_RATE);
+const nilaiOf = (lot, price) => lot * SPL * price;
+
+/* ============ state ============ */
+const DEFAULT = { status:'open', isi:'none', sisi:'beli', tipe:'limit', periode:'gfd', bp:'tidak' };
+const cfg = { ...DEFAULT };
+const S  = () => SISI[cfg.sisi];
+const T  = () => TIPE[cfg.tipe];
+const P  = () => PX[cfg.sisi];
+
+function fillsFor(c){
+  if(c.status === 'matched') return [20,35,45];
+  if(c.status === 'partial') return [20,35];
+  if(CAN_FILL.includes(c.status) && c.isi === 'some') return [20,35];
+  return [];
+}
+/* Order bersyarat baru masuk bursa setelah terpicu. Tanpa lot matched,
+   Waiting / Amended / Withdrawn / Expired dianggap belum pernah terpicu.
+   Pending Withdrawn hanya ada saat order sudah di bursa, jadi selalu terpicu. */
+function isTriggered(c){
+  if(!TIPE[c.tipe].cond) return true;
+  if(fillsFor(c).length) return true;
+  if(c.isi === 'trig') return true;
+  return !['waiting','amended','withdrawn','expired'].includes(c.status);
+}
+
+/* harga eksekusi yang diharapkan per hari (untuk Matched) */
+function priceOn(di){
+  const drift = [0,50,75,100][Math.min(di,3)] * (cfg.sisi === 'beli' ? 1 : -1);
+  switch(cfg.tipe){
+    case 'limit':      return P().limit;
+    case 'stoplimit':  return P().stopLimit;
+    case 'market':     return P().limit + drift;
+    case 'stopmarket': return P().trigger + drift;
+    case 'trailing':   return trailTrigger() + drift;
+  }
+}
+
+/* ============ builder ============ */
+function build(c){
+  const fills = fillsFor(c);
+  const trig  = isTriggered(c);
+  const days  = daysFor(c.status, c.periode);
+  const lastD = days.length - 1;
+
+  const matched = fills.map((lot,i) => {
+    const di = Math.min(i, lastD), price = priceOn(di), nilai = nilaiOf(lot, price);
+    return { tradeId:'3827ehjb892' + 'hjkm'[i%4] + (i+1), idxId:IDX_POOL[di],
+             waktu:`${days[di]} ${CLOCK.match[Math.min(i,2)]}`, harga:price, lot, nilai, fee:fee(nilai) };
+  });
+  const filled = fills.reduce((a,b)=>a+b,0);
+  const filledBefore = di => fills.reduce((a,lot,i)=> a + (Math.min(i,lastD) < di ? lot : 0), 0);
+
+  const LAST = { waiting:'Waiting', open:'Open', matched:'Matched', partial:'Partial', rejected:'Rejected',
+                 expired:'Expired', withdrawn:'Withdrawn', pendingwd:'Pending Withdrawn', amended:'Amended' };
+  /* order reguler GTD/GTC yang Waiting = sudah pernah dikirim, sedang menunggu sesi berikutnya */
+  const overnight = c.status === 'waiting' && c.periode !== 'gfd';
+
+  const terkirim = !trig ? [] : days.map((d, di) => ({
+      idxId: IDX_POOL[di],
+      waktu: `${d} ${di === 0 && T().cond ? CLOCK.trig : CLOCK.sent}`,
+      antrean: ANTREAN[di], antreanLot: ANTREAN_LOT[di],
+      lot: TOTAL_LOT - filledBefore(di),
+      status: overnight ? 'Expired' : (di === lastD ? LAST[c.status] : 'Expired')
+    })).reverse();
+
+  const last = days[lastD];
+  const notes = [];
+  const push = (tone, text, chg) => notes.push({ tone, text, chg });
+  if(c.status === 'rejected') push('red', c.sisi === 'beli'
+      ? 'Order ditolak karena saldo RDN tidak mencukupi saat order dikirim ke bursa.'
+      : 'Order ditolak karena jumlah lot melebihi saham yang tersedia di portofolio.');
+  /* Amended & Withdrawn: tanpa info label — pengguna pro trader */
+
+  const avg = filled ? matched.reduce((a,x)=>a+x.nilai,0) / (filled * SPL) : 0;
+  return { matched, terkirim, notes, filled, avg, lotOpen: TOTAL_LOT - filled, trig, last, days };
+}
+
+/* apa yang berubah saat di-amend: harga untuk tipe berharga, jumlah lot untuk tipe market */
+function amendChange(c, filled){
+  const left = TOTAL_LOT - filled;
+  const priced = c.tipe === 'limit' || c.tipe === 'stoplimit';
+  if(priced){
+    const px = PX[c.sisi], isL = c.tipe === 'limit';
+    const from = isL ? px.limit : px.stopLimit, to = isL ? px.amendLimit : px.amendStop;
+    return { priced, lot:left, price:to, text:`Harga ${rp(from)} → ${rp(to)}` };
+  }
+  const newLot = Math.max(5, Math.floor(left * 0.6 / 5) * 5);
+  return { priced, lot:newLot, text:`Jumlah lot ${left} → ${newLot}` };
+}
+
+/* ============ render helpers ============ */
+const row = (dt,dd,cls='',ddCls='') => `<div class="row ${cls}"><dt>${dt}</dt><dd class="${ddCls}">${dd}</dd></div>`;
+const badge = (label,tone) => `<span class="badge ${tone}"><span class="dot"></span>${label}</span>`;
+const ICON = `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.4"/><path d="M8 5v3.6M8 11h.01" stroke-linecap="round"/></svg>`;
+const EMPTY_ART = `<svg width="62" height="62" viewBox="0 0 62 62" fill="none" aria-hidden="true">
+  <path d="M17 10h17l10 10v32a2 2 0 0 1-2 2H17a2 2 0 0 1-2-2V12a2 2 0 0 1 2-2z" fill="#dcdfe1"/>
+  <path d="M34 10l10 10H35a1 1 0 0 1-1-1V10z" fill="#b6bbbe"/>
+  <rect x="21" y="26" width="17" height="2" rx="1" fill="#a6abae"/>
+  <rect x="21" y="32" width="13" height="2" rx="1" fill="#a6abae"/>
+  <circle cx="31" cy="40" r="9" fill="#dcdfe1" stroke="#2dd4bf" stroke-width="2"/>
+  <path d="M24.6 46.4 19 52" stroke="#2dd4bf" stroke-width="2.4" stroke-linecap="round"/>
+</svg>`;
+const emptyState = (h, p) => `<div class="empty">${EMPTY_ART}<span>${h}</span>${p ? `<p>${p}</p>` : ''}</div>`;
+
+/* ============ kartu Order ============ */
+const PRICED  = t => t === 'limit' || t === 'stoplimit';      /* punya harga sendiri */
+const HAS_EST = t => PRICED(t) || t === 'trailing';           /* punya perkiraan nilai */
+const orderPrice = (c, ov = {}) => ov.price ?? (c.tipe === 'limit' ? PX[c.sisi].limit
+                                 : c.tipe === 'stoplimit' ? PX[c.sisi].stopLimit : TRAIL.stop);
+
+function orderCard(c, m, ov = {}){
+  const s = SISI[c.sisi], px = PX[c.sisi];
+  const lot = ov.lot ?? TOTAL_LOT;
+  const done = c.status === 'matched';
+  /* Jumlah Lot Matched tampil selama sebagian lot sudah matched; sisa lot bisa dihitung sendiri */
+  const lotOpen = m.filled > 0 && !ov.id ? row('Jumlah Lot Matched', m.filled) : '';
+
+  const top = `
+      ${row('Order ID', ov.id ?? ORDER_ID)}
+      ${ov.induk ? row('Order Induk', `<span class="link">${ov.induk}</span>`) : ''}
+      ${row('Waktu Order', ov.waktu ?? `2 Okt 2026 ${CREATED}`)}
+      ${row('Jenis Trading', 'Regular')}
+      ${c.sisi === 'beli' ? row('Gunakan Buying Power', c.bp === 'ya' ? 'Ya' : 'Tidak') : ''}
+      ${row('Tipe Order', TIPE[c.tipe].label)}
+      ${c.tipe === 'stoplimit' || c.tipe === 'stopmarket' ? row('Trigger Price', `${s.op} ${rp(px.trigger)}`) : ''}
+      ${row('Periode Berakhir', periodeText(c.periode))}`;
+
+  let bottom;
+  if(done){
+    /* setelah matched: tipe berharga tampilkan Harga, tipe market tampilkan Harga Rata-Rata */
+    bottom = (PRICED(c.tipe) ? row('Harga', rp(orderPrice(c, ov))) : row('Harga Rata-Rata', rp(m.avg)))
+           + row('Jumlah Lot', lot);
+  } else {
+    const est = () => {
+      const nilai = nilaiOf(lot, orderPrice(c, ov)), f = fee(nilai);
+      return row(s.eNilai, rp(nilai)) + row(s.eFee, rp(f)) + row(s.eTotal, rp(nilai + s.arah * f));
+    };
+    if(PRICED(c.tipe))          bottom = row('Harga', rp(orderPrice(c, ov))) + row('Jumlah Lot', lot) + lotOpen + est();
+    else if(c.tipe === 'trailing') bottom = row('Jumlah Lot', lot) + lotOpen
+                                        + row('Persentase Trailing', `${TRAIL.persen}%`)
+                                        + row('Stop Price', rp(TRAIL.stop)) + est();
+    else                         bottom = row('Jumlah Lot', lot) + lotOpen;   /* Market & Stop Market */
+  }
+
+  return `<div class="card">
+    <h3 class="block-title sec">Order</h3>
+    <dl>${top}</dl>
+    <div class="rule"></div>
+    <dl>${bottom}</dl>
+  </div>`;
+}
+
+/* ============ kolom kanan ============ */
+const MAX_TERKIRIM = 5;
+function terkirimCard(entries){
+  if(!entries.length) return `<div class="card"><div class="list-head"><h3 class="block-title">List Order Terkirim</h3></div>
+      ${emptyState('Belum Ada Order Terkirim')}</div>`;
+  const shown = entries.slice(0, MAX_TERKIRIM);
+  return `<div class="card">
+    <div class="list-head"><h3 class="block-title">List Order Terkirim</h3></div>
+    ${shown.map(e => `<div class="entry"><dl>
+        ${row('IDX ID', e.idxId)}
+        ${row('Waktu Terkirim', e.waktu)}
+        ${e.status === 'Open' || e.status === 'Partial' ? row('No. Antrean', e.antrean) + row('Antrean Lot', e.antreanLot) : ''}
+        ${row('Jumlah Lot Terkirim', e.lot)}
+        ${row('Status', e.status)}
+      </dl></div>`).join('')}
+    ${entries.length > MAX_TERKIRIM ? `<p class="more">Menampilkan ${MAX_TERKIRIM} pengiriman terakhir.</p>` : ''}
+  </div>`;
+}
+
+function matchedCard(m){
+  if(!m.matched.length) return '';
+  const s = S();
+  return `<div class="card">
+    <div class="list-head"><h3 class="block-title">List Order Matched</h3></div>
+    ${m.matched.map(x => `<div class="entry"><dl>
+        ${row('Trade ID', x.tradeId)}
+        ${row('IDX ID', x.idxId)}
+        ${row('Waktu Matched', x.waktu)}
+        ${row('Harga Matched', rp(x.harga))}
+        ${row('Jumlah Lot', x.lot)}
+        ${row(s.nilai, rp(x.nilai))}
+        ${row(s.fee, rp(x.fee))}
+        ${row(s.total, rp(x.nilai + s.arah * x.fee))}
+      </dl></div>`).join('')}
+  </div>`;
+}
+
+const notesHTML = notes => notes.length
+  ? `<div class="notes-wrap">${notes.map(n => `<div class="note note-${n.tone}">${ICON}<span>${
+      n.chg ? `<strong>${n.text}</strong><span class="chg">${n.chg}</span>` : n.text}</span></div>`).join('')}</div>`
+  : '';
+
+/* footer selalu tampil (selaras dengan Advisory): aktif untuk order yang masih hidup,
+   mati untuk Pending Withdrawn dan semua status akhir */
+function footFor(status){
+  return STATUSES[status].live ? 'on' : 'off';
+}
+
+function modalHTML(o){
+  const foot = o.foot === 'none' ? '' : `<div class="modal-foot">
+      <button class="btn btn-primary" ${o.foot === 'on' ? '' : 'disabled'}>Amend</button>
+      <button class="btn btn-danger" ${o.foot === 'on' ? '' : 'disabled'}>Withdraw</button>
+    </div>`;
+  return `<div class="modal">
+    <div class="modal-head">
+      <h2>Rincian Order</h2>
+      <button class="close" aria-label="Tutup">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 3l10 10M13 3L3 13"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="client">
+        <div class="stock">
+          <span class="logo" aria-hidden="true">BCA</span>
+          <div style="min-width:0">
+            <div class="stock-code">BBCA</div>
+            <div class="stock-name">PT Bank Central Asia Tbk</div>
+          </div>
+        </div>
+        <span class="head-right">
+          ${badge(o.badgeLabel, o.tone)}
+          <span class="side"><em class="${cfg.sisi}">${S().label}</em>BBCA</span>
+        </span>
+      </div>
+      <div class="cols">
+        <section class="left-stack">${o.left}</section>
+        <section class="right-stack">${o.right}</section>
+      </div>
+    </div>
+    ${foot}
+  </div>`;
+}
+
+/* order pengganti hasil amend — Order ID sendiri, menunjuk balik ke order induk */
+function renderChild(c, m){
+  const ch = amendChange(c, m.filled);
+  const when = `${m.last} ${ACTION_TIME}`;
+  const waiting = TIPE[c.tipe].cond && !m.trig;   /* di-amend sebelum terpicu: tetap menunggu */
+  const status = waiting ? 'waiting' : 'open';
+  const ov = { id:CHILD_ID, induk:ORDER_ID, waktu:when, lot:ch.lot, price: ch.priced ? ch.price : undefined };
+  const left = orderCard({ ...c, status }, m, ov);
+  const right = terkirimCard(waiting ? [] : [{ idxId:CHILD_IDX, waktu:when, antrean:412, antreanLot:980, lot:ch.lot, status:'Open' }]);
+  const st = STATUSES[status];
+  return modalHTML({ badgeLabel:st.label, tone:st.tone, left, right, foot:'on' });
+}
+
+/* ============ filters ============ */
+function isDisabled(axis, key){
+  if(axis === 'status'  && key === 'expired' && cfg.periode === 'gtc') return true;
+  if(axis === 'periode' && key === 'gtc' && cfg.status === 'expired') return true;
+  if(axis === 'sisi'    && key === 'beli' && T().jualOnly) return true;
+  return false;
+}
+function reconcile(){
+  if(TIPE[cfg.tipe].jualOnly) cfg.sisi = 'jual';
+  if(cfg.status === 'expired' && cfg.periode === 'gtc') cfg.periode = 'gtd';
+  if(!CAN_FILL.includes(cfg.status)) cfg.isi = 'none';
+  if((!T().cond || cfg.status === 'pendingwd') && cfg.isi === 'trig') cfg.isi = 'none';
+}
+
+function buildFilters(){
+  const mk = (axis, entries) => entries.map(([key,label,dot]) =>
+    `<button class="pill" data-axis="${axis}" data-key="${key}" aria-pressed="${cfg[axis]===key}" ${isDisabled(axis,key)?'disabled':''}>
+       ${dot?`<span class="dot" style="background:var(--${dot})"></span>`:''}${label}</button>`).join('');
+  const TONE_VAR = {'t-amber':'amber','t-blue':'blue','t-teal':'teal','t-green':'green','t-red':'red','t-grey':'grey'};
+  const isiRow = CAN_FILL.includes(cfg.status)
+    ? `<div class="frow"><label>Lot Matched</label><div class="pills">${
+        mk('isi', T().cond && cfg.status !== 'pendingwd'
+          ? [['none','Belum terpicu'],['trig','Terpicu, belum ada lot matched','blue'],['some','Sebagian lot sudah matched','teal']]
+          : [['none','Belum ada lot matched'],['some','Sebagian lot sudah matched','teal']])}</div></div>` : '';
+  const bpRow = cfg.sisi === 'beli'
+    ? `<div class="frow"><label>Buying Power</label><div class="pills">${mk('bp',[['tidak','Tidak'],['ya','Ya']])}</div></div>` : '';
+
+  document.getElementById('filters').innerHTML = `
+    <div class="frow"><label>Status</label>
+      <div class="pills">${mk('status', Object.entries(STATUSES).map(([k,v])=>[k,v.label,TONE_VAR[v.tone]]))}</div>
+      <button class="reset" data-reset>Reset</button>
+    </div>
+    ${isiRow}
+    <div class="frow"><label>Jenis Transaksi</label><div class="pills">${mk('sisi',[['beli','Beli','teal'],['jual','Jual','red']])}</div></div>
+    ${bpRow}
+    <div class="frow grouped"><label>Tipe Order</label>
+      <div class="pills" style="align-items:flex-start">
+        <div class="grp"><span>Reguler</span><div class="pills">${mk('tipe',[['limit','Limit Order'],['market','Market Order']])}</div></div>
+        <span class="vsep"></span>
+        <div class="grp"><span>Bersyarat</span><div class="pills">${mk('tipe',[['stoplimit','Stop Limit Order'],['stopmarket','Stop Market Order'],['trailing','Trailing Stop (Jual)']])}</div></div>
+      </div>
+    </div>
+    <div class="frow"><label>Periode</label><div class="pills">${mk('periode',[['gfd','Good For Day'],['gtd','Good Till Date'],['gtc','Good Till Canceled']])}</div></div>`;
+
+  document.querySelector('[data-reset]').onclick = () => { Object.assign(cfg, DEFAULT); render(); };
+  document.querySelectorAll('.filters .pill').forEach(p => p.onclick = () => {
+    cfg[p.dataset.axis] = p.dataset.key; reconcile(); render();
+  });
+}
+
+function caption(m){
+  const bits = [];
+  const cond = T().cond;
+  if(cond) bits.push(m.trig
+    ? 'Order bersyarat ini sudah terpicu, jadi sudah masuk ke bursa dan punya IDX ID.'
+    : 'Order bersyarat ini belum terpicu, jadi belum dikirim ke bursa dan belum punya IDX ID.');
+  if(cfg.status === 'matched') bits.push(PRICED(cfg.tipe)
+    ? 'Setelah matched, perkiraan nilai dihapus; rincian nilai ada di List Order Matched.'
+    : 'Setelah matched, tipe tanpa harga menampilkan Harga Rata-Rata dari semua lot matched.');
+  if(!PRICED(cfg.tipe) && cfg.tipe !== 'trailing' && cfg.status !== 'matched') bits.push('Market dan Stop Market tidak punya harga, jadi tidak ada perkiraan nilai.');
+  if(cfg.status === 'partial') bits.push('Sisa lot masih antre di order yang sama, jadi Amend dan Withdraw tetap aktif.');
+  if(cfg.status === 'amended') bits.push('Order ini berakhir saat di-amend; penggantinya adalah order baru yang menunjuk balik lewat Order Induk.');
+  if(cfg.status === 'pendingwd') bits.push('Tombol dimatikan sampai pembatalan dikonfirmasi bursa, supaya tidak ada permintaan ganda.');
+  if(cfg.status !== 'pendingwd' && footFor(cfg.status) === 'off') bits.push('Status akhir: tombol Amend dan Withdraw tetap tampil tapi dimatikan, sama seperti di Advisory.');
+  if(cfg.periode !== 'gfd' && m.terkirim.length > 1 && cfg.status !== 'matched') bits.push(`Order ${PERIODE[cfg.periode].code} dikirim ulang setiap hari bursa; hanya ${MAX_TERKIRIM} pengiriman terakhir yang ditampilkan.`);
+  return bits.join(' ');
+}
+
+function render(){
+  buildFilters();
+  const m = build(cfg);
+  const st = STATUSES[cfg.status];
+  /* Matched cukup menampilkan List Order Matched */
+  const right = cfg.status === 'matched'
+    ? matchedCard(m)
+    : notesHTML(m.notes) + matchedCard(m) + terkirimCard(m.terkirim);
+  let html = modalHTML({ badgeLabel:st.label, tone:st.tone, left:orderCard(cfg, m), right, foot:footFor(cfg.status) });
+
+  if(cfg.status === 'amended'){
+    const ch = amendChange(cfg, m.filled);
+    html = `<p class="ordercap">Order induk<b>${ORDER_ID} — ${m.filled ? `${m.filled} dari ${TOTAL_LOT} lot matched` : 'tidak ada lot matched'}</b></p>`
+         + html
+         + `<p class="ordercap">Order pengganti<b>${CHILD_ID} <i>Amend</i> ${ch.text}</b></p>`
+         + renderChild(cfg, m);
+  }
+  document.getElementById('stage').innerHTML = html;
+  document.getElementById('caption').textContent = caption(m);
+}
+render();
+</script>
+
