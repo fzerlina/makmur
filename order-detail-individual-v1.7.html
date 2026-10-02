@@ -265,6 +265,12 @@
   .ordercap b{color:#3b4148;font-weight:600;letter-spacing:0;text-transform:none;font-size:12.5px;display:block;margin-top:4px;font-family:inherit}
   .ordercap b i{font-style:normal;background:#3b4148;color:#f2f3f4;border-radius:5px;padding:2px 8px;margin:0 4px;font-size:11.5px}
   .link{color:var(--teal)}
+  /* ---------- Individual: stock header (replaces the advisor's client row) ---------- */
+  .stock{display:flex;align-items:center;gap:12px;min-width:0}
+  .logo{flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;
+        background:#1D4E9E;color:#fff;font-size:13px;font-weight:600;letter-spacing:.02em}
+  .stock-code{font-size:16px;line-height:22px;font-weight:600;color:var(--text)}
+  .stock-name{font-size:14px;line-height:20px;color:var(--label);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .block-title.sec{margin-bottom:8px}
   .row dd.dim{color:var(--label)}
   .empty p{margin:-8px 0 0;max-width:300px;font-size:13px;line-height:20px;color:var(--label)}
@@ -471,7 +477,7 @@ function orderCard(c, m, ov = {}){
   const top = `
       ${row('Order ID', ov.id ?? ORDER_ID)}
       ${ov.induk ? row('Order Induk', `<span class="link">${ov.induk}</span>`) : ''}
-      ${row('Waktu Order Dibuat', ov.waktu ?? `2 Okt 2026 ${CREATED}`)}
+      ${row('Waktu Order', ov.waktu ?? `2 Okt 2026 ${CREATED}`)}
       ${row('Jenis Trading', 'Regular')}
       ${c.sisi === 'beli' ? row('Gunakan Buying Power', c.bp === 'ya' ? 'Ya' : 'Tidak') : ''}
       ${row('Tipe Order', TIPE[c.tipe].label)}
@@ -545,10 +551,10 @@ const notesHTML = notes => notes.length
       n.chg ? `<strong>${n.text}</strong><span class="chg">${n.chg}</span>` : n.text}</span></div>`).join('')}</div>`
   : '';
 
-/* footer selalu tampil (selaras dengan Advisory): aktif untuk order yang masih hidup,
-   mati untuk Pending Withdrawn dan semua status akhir */
+/* footer hanya tampil untuk order yang masih hidup (Waiting, Open, Partial);
+   hilang untuk Rejected, Matched, Expired, Withdrawn, Pending Withdrawn, dan Amended */
 function footFor(status){
-  return STATUSES[status].live ? 'on' : 'off';
+  return STATUSES[status].live ? 'on' : 'none';
 }
 
 function modalHTML(o){
@@ -565,7 +571,13 @@ function modalHTML(o){
     </div>
     <div class="modal-body">
       <div class="client">
-        <div class="client-name">Bramantyo Cipta Kusuma</div>
+        <div class="stock">
+          <span class="logo" aria-hidden="true">BCA</span>
+          <div style="min-width:0">
+            <div class="stock-code">BBCA</div>
+            <div class="stock-name">PT Bank Central Asia Tbk</div>
+          </div>
+        </div>
         <span class="head-right">
           ${badge(o.badgeLabel, o.tone)}
           <span class="side"><em class="${cfg.sisi}">${S().label}</em>BBCA</span>
@@ -655,8 +667,7 @@ function caption(m){
   if(!PRICED(cfg.tipe) && cfg.tipe !== 'trailing' && cfg.status !== 'matched') bits.push('Market dan Stop Market tidak punya harga, jadi tidak ada perkiraan nilai.');
   if(cfg.status === 'partial') bits.push('Sisa lot masih antre di order yang sama, jadi Amend dan Withdraw tetap aktif.');
   if(cfg.status === 'amended') bits.push('Order ini berakhir saat di-amend; penggantinya adalah order baru yang menunjuk balik lewat Order Induk.');
-  if(cfg.status === 'pendingwd') bits.push('Tombol dimatikan sampai pembatalan dikonfirmasi bursa, supaya tidak ada permintaan ganda.');
-  if(cfg.status !== 'pendingwd' && footFor(cfg.status) === 'off') bits.push('Status akhir: tombol Amend dan Withdraw tetap tampil tapi dimatikan, sama seperti di Advisory.');
+  if(footFor(cfg.status) === 'none') bits.push('Tombol Amend dan Withdraw tidak ditampilkan untuk status ini.');
   if(cfg.periode !== 'gfd' && m.terkirim.length > 1 && cfg.status !== 'matched') bits.push(`Order ${PERIODE[cfg.periode].code} dikirim ulang setiap hari bursa; hanya ${MAX_TERKIRIM} pengiriman terakhir yang ditampilkan.`);
   return bits.join(' ');
 }
